@@ -1,3 +1,6 @@
 [submodule ".tk"]
 	path = .tk
 	url = git@github.com:Themekraft/tk_script.git
+[submodule "admin/pricing-page"]
+	path = admin/pricing-page
+	url = git@github.com:Themekraft/pricing-page.git

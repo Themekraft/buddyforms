@@ -419,7 +419,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/form-builder/form-templates.php';
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/admin-ajax.php';
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/welcome-screen.php';
-				require_once( BUDDYFORMS_INCLUDES_PATH . '/admin/pricing-screen.php' );
+				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/pricing-page.php';
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/submissions.php';
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/settings.php';
 				require_once BUDDYFORMS_INCLUDES_PATH . '/admin/password-strengh-settings.php';
