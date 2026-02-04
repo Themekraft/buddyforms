@@ -373,6 +373,6 @@ class Element_Upload extends Element_Textbox {
 				$box .= sprintf( '<span class="help-inline">%s</span>', $description );
 			}
 		}
-		echo wp_kses( $box, buddyforms_wp_kses_allowed_atts() );
+		echo wp_kses( $box, buddyforms_wp_kses_upload_form_allowed_atts() );
 	}
 }

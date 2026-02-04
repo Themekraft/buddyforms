@@ -2339,7 +2339,6 @@ function buddyforms_wp_kses_allowed_atts(){
 			'data-form'           => array(),
 			'data-rule-minlength' => array(),
 			'data-rule-maxlength' => array(),
-			'placeholder'         => array(),
 			'aria-autocomplete' => array(),
 			'data-rule-upload-required' => array(),
 			'data-msg-upload-required'  => array(),
@@ -2631,5 +2630,26 @@ function buddyforms_wp_kses_allowed_atts(){
 			'src' => array()
 		),
 	);
+	return $allowed_tags;
+}
+
+/**
+ * BuddyForms WP KSES allowed attributes for upload forms.
+ *
+ * @return array
+ */
+function buddyforms_wp_kses_upload_form_allowed_atts() {
+	$allowed_tags                             = buddyforms_wp_kses_allowed_atts();
+	$allowed_tags['div']['file_limit']        = array();
+	$allowed_tags['div']['accepted_files']    = array();
+	$allowed_tags['div']['multiple_files']    = array();
+	$allowed_tags['div']['action']            = array();
+	$allowed_tags['div']['data-entry']        = array();
+	$allowed_tags['div']['page']              = array();
+	$allowed_tags['div']['form-slug']         = array();
+	$allowed_tags['input']['field-id']        = array();
+	$allowed_tags['button']['field-id']       = array();
+	$allowed_tags['button']['accepted_files'] = array();
+
 	return $allowed_tags;
 }
