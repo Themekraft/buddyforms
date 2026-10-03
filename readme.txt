@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.0
+Stable tag: 2.10.1
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,12 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.1 - 03 Oct 2026 =
+* Security: tightened permission checks when submitting and editing entries, uploading and removing files, viewing and deleting submissions in the admin, and listing entries with shortcodes.
+* Security: escaped login error messages and kept failed submissions private to the visitor who sent them.
+* Fixed the personal data export, which could include entries that did not belong to the requested email address.
+* Removed build scripts that were included in the 2.10.0 package by mistake.
+
 = 2.10.0 - 03 Oct 2026 =
 * Plugin Check: fixed plugin-header License field, removed the invalid Network header, stripped hidden macOS metadata, removed vestigial empty Freemius leftover directories, and dropped the manual `load_plugin_textdomain()` call (WordPress.org loads translations automatically since WP 4.6).
 * Cleaned up the user-facing English copy: "Admin rights can not get changed" → "cannot be changed", "logged of user" → "logged-out users", "logged off users / not need to get checked" → "logged-out users / do not need to be checked", missing text-domain on a login-form fallback string, and three template-error messages that were embedding `$form_slug` directly into `esc_html__()` calls (now sprintf'd so translators can localize the template). POT regenerated; bundled de_DE / es_ES / fr_FR / pt_BR / pt_PT / zh_CN translations carried forward where the meaning was preserved.

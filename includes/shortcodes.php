@@ -162,7 +162,9 @@ function buddyforms_the_loop( $args ) {
 
 	$the_author_id = apply_filters( 'buddyforms_the_loop_author_id', $author, $form_slug );
 
-	if ( ! $the_author_id ) {
+	// Unpublished entries are only listed to their own author or to users who can manage every entry of the form.
+	$is_own_list = ! empty( $the_author_id ) && (int) $the_author_id === get_current_user_id() && $caller !== 'buddyforms_list_all';
+	if ( ! $is_own_list && ! current_user_can( 'buddyforms_' . $form_slug . '_all' ) ) {
 		$post_status = array( 'publish' );
 	}
 

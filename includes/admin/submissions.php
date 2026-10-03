@@ -168,7 +168,12 @@ class BuddyFormsSubmissionPage {
 				if ( isset( $_GET['action'] ) && isset( $_GET['entry'] ) ) {
 					$post_id   = filter_var( wp_unslash( $_GET['entry'] ), FILTER_VALIDATE_INT );
 					$form_slug = get_post_meta( $post_id, '_bf_form_slug', true );
-					require_once BUDDYFORMS_INCLUDES_PATH . 'admin/submission-single.php';
+					// The entry can belong to another form than the one in the URL, so check the entry's own form.
+					if ( $this->has_the_capability( $form_slug ) ) {
+						require_once BUDDYFORMS_INCLUDES_PATH . 'admin/submission-single.php';
+					} else {
+						echo '<strong>' . esc_html__( 'You do not have sufficient permissions to access this page.', 'buddyforms' ) . '</strong>';
+					}
 				}
 				?>
 				</div>
@@ -205,7 +210,12 @@ class BuddyFormsSubmissionPage {
 		$action    = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$entry     = isset( $_GET['post'] ) ? filter_var( wp_unslash( $_GET['post'] ), FILTER_VALIDATE_INT ) : '';
 		$form_slug = isset( $_GET['form_slug'] ) ? filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) : '';
-		if ( $action === 'delete' && $this->has_the_capability( $form_slug ) ) {
+		// Only clean up files of an entry the user is really deleting: the core delete link nonce must be valid,
+		// the entry must belong to this form and the user must be able to delete it.
+		if ( $action === 'delete' && ! empty( $entry ) && $this->has_the_capability( $form_slug )
+			&& isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'delete-post_' . $entry )
+			&& get_post_meta( $entry, '_bf_form_slug', true ) === $form_slug
+			&& current_user_can( 'delete_post', $entry ) ) {
 			$buddyFData = isset( $buddyforms[ $form_slug ]['form_fields'] ) ? $buddyforms[ $form_slug ]['form_fields'] : array();
 			foreach ( $buddyFData as $key => $value ) {
 
