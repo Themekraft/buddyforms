@@ -44,7 +44,7 @@ function buddyforms_display_form_element( $args ) {
 	}
 
 	if ( ! isset( $field_id ) ) {
-		$field_id = $mod5 = substr( md5( time() * rand() ), 0, 10 );
+		$field_id = $mod5 = substr( md5( time() * wp_rand() ), 0, 10 );
 	}
 
 	$customfield = isset( $buddyform['form_fields'][ $field_id ] ) ? $buddyform['form_fields'][ $field_id ] : array();
@@ -676,8 +676,8 @@ function buddyforms_display_form_element( $args ) {
 				'<b>' . __( 'The color theme of the widget', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][captcha_data_theme]',
 				array(
-					'dark'  => __( 'Dark', 'buddyform' ),
-					'light' => __( 'Light', 'buddyform' ),
+					'dark'  => __( 'Dark', 'buddyforms' ),
+					'light' => __( 'Light', 'buddyforms' ),
 				),
 				array(
 					'value'    => isset( $customfield['captcha_data_theme'] ) ? $customfield['captcha_data_theme'] : 'dark',
@@ -689,8 +689,8 @@ function buddyforms_display_form_element( $args ) {
 				'<b>' . __( 'The type of CAPTCHA to serve', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][captcha_data_type]',
 				array(
-					'image' => __( 'Image', 'buddyform' ),
-					'audio' => __( 'Audio', 'buddyform' ),
+					'image' => __( 'Image', 'buddyforms' ),
+					'audio' => __( 'Audio', 'buddyforms' ),
 				),
 				array(
 					'value'    => isset( $customfield['captcha_data_type'] ) ? $customfield['captcha_data_type'] : 'image',
@@ -702,8 +702,8 @@ function buddyforms_display_form_element( $args ) {
 				'<b>' . __( 'The size of the widget', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][captcha_data_size]',
 				array(
-					'normal'  => __( 'Normal', 'buddyform' ),
-					'compact' => __( 'Compact', 'buddyform' ),
+					'normal'  => __( 'Normal', 'buddyforms' ),
+					'compact' => __( 'Compact', 'buddyforms' ),
 				),
 				array(
 					'value'    => isset( $customfield['captcha_data_size'] ) ? $customfield['captcha_data_size'] : 'normal',
@@ -717,8 +717,8 @@ function buddyforms_display_form_element( $args ) {
 				'<b>' . __( 'Version of Captcha', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][version]',
 				array(
-					'v2' => __( 'Version 2', 'buddyform' ),
-					'v3' => __( 'Version 3', 'buddyform' ),
+					'v2' => __( 'Version 2', 'buddyforms' ),
+					'v3' => __( 'Version 3', 'buddyforms' ),
 				),
 				array(
 					'value'    => $captcha_version,
@@ -1476,7 +1476,7 @@ function buddyforms_display_form_element( $args ) {
 				if ( ! empty( $post_type ) ) {
 					$error = '<table style="width:100%;"id="table_row_' . $field_id . '_post_type_no_taxonomy_error" class="wp-list-table posts fixed">
                         <td colspan="2">
-                            <div class="post_type_no_taxonomy_error bf-error">' . __( 'This Post Type does not have any ' . $error_field_type_name . '.', 'buddyforms' ) . '</div>
+                            <div class="post_type_no_taxonomy_error bf-error">' . sprintf( /* translators: %s: name of the field type, for example Categories. */ __( 'This Post Type does not have any %s.', 'buddyforms' ), $error_field_type_name ) . '</div>
                         </td>
                         </table>';
 					$form_fields['general']['post_type_no_taxonomies'] = new Element_HTML( $error );

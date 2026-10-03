@@ -287,7 +287,7 @@ function buddyforms_string_have_html( $string ) {
 		return false;
 	}
 
-	return ( $string != strip_tags( $string ) );
+	return ( $string != strip_tags( $string ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- detects markup; wp_strip_all_tags() also trims and would flag plain text.
 }
 
 /**

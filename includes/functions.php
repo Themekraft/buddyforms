@@ -199,7 +199,7 @@ function buddyforms_get_the_excerpt( $post = null ) {
 	}
 
 	if ( post_password_required( $post ) ) {
-		return __( 'There is no excerpt because this is a protected post.' );
+		return __( 'There is no excerpt because this is a protected post.', 'buddyforms' );
 	}
 
 	return apply_filters( 'buddyforms_get_the_excerpt', $post->post_excerpt, $post );
@@ -503,7 +503,7 @@ function buddyforms_edit_post_link( $text = null, $before = '', $after = '', $id
 	}
 
 	if ( null === $text ) {
-		$text = __( 'Edit This' );
+		$text = __( 'Edit This', 'buddyforms' );
 	}
 
 	$link = '<a title="' . __( 'Edit', 'buddyforms' ) . '" class="post-edit-link" href="' . $url . '"><span aria-label="' . __( 'Edit', 'buddyforms' ) . '" class="dashicons dashicons-edit"> </span></a>';
@@ -1537,9 +1537,10 @@ function buddyforms_upload_image_from_url() {
 			echo wp_json_encode(
 				array(
 					'status'   => 'FAILED',
-					'response' => __(
-						'File type ' . $image_mime_information . ' is not allowed.',
-						'buddyforms'
+					'response' => sprintf(
+						/* translators: %s: MIME type of the uploaded file. */
+						__( 'File type %s is not allowed.', 'buddyforms' ),
+						$image_mime_information
 					),
 				)
 			);
@@ -2107,7 +2108,7 @@ function buddyforms_get_exclude_field_slugs() {
  * @see sanitize_title_with_dashes
  */
 function buddyforms_sanitize_slug( $slug, $context = 'save' ) {
-	$slug = strip_tags( $slug );
+	$slug = wp_strip_all_tags( $slug );
 	// Preserve escaped octets.
 	$slug = preg_replace( '|%([a-fA-F0-9][a-fA-F0-9])|', '---$1---', $slug );
 	// Remove percent signs that are not part of an octet.

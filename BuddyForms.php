@@ -643,7 +643,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		?>
 		<div class="notice notice-error is-dismissible">
 			<p><?php esc_html_e( 'PHP Version Update Required!', 'buddyforms' ); ?></p>
-			<p><?php esc_html_e( 'You are using PHP Version ' . PHP_VERSION, 'buddyforms' ); ?></p>
+			<p><?php /* translators: %s: PHP version running on the server. */ printf( esc_html__( 'You are using PHP Version %s', 'buddyforms' ), esc_html( PHP_VERSION ) ); ?></p>
 			<p><?php esc_html_e( 'Please make sure you have at least php version 5.3 installed.', 'buddyforms' ); ?></p>
 		</div>
 		<?php

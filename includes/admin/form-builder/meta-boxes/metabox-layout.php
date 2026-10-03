@@ -649,7 +649,7 @@ function buddyforms_layout_screen( $option_name = 'buddyforms_options' ) {
 	);
 
 	if ( get_post_type() == 'buddyforms' ) {
-		echo '<p>' . esc_html__( 'Copy layout settings from' ) . '</p>';
+		echo '<p>' . esc_html__( 'Copy layout settings from', 'buddyforms' ) . '</p>';
 
 		echo '<p><select id="bf_form_layout_select" style="width: 50% !important; margin-right: 10px">';
 		echo '<option value="bf_global">Global Settings</option>';

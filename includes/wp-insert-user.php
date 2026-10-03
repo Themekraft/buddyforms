@@ -190,7 +190,7 @@ function buddyforms_wp_insert_user() {
 		}
 		if ( isset( $buddyforms[ $form_slug ]['public_submit_username_from_email'] ) ) {
 			$user_login = explode( '@', $user_email );
-			$user_login = $user_login[0] . substr( md5( time() * rand() ), 0, 10 );
+			$user_login = $user_login[0] . substr( md5( time() * wp_rand() ), 0, 10 );
 
 		}
 		// Username already registered?
@@ -241,7 +241,7 @@ function buddyforms_wp_insert_user() {
 				'user_email'      => $user_email,
 				'first_name'      => $user_first,
 				'last_name'       => $user_last,
-				'user_registered' => date( 'Y-m-d H:i:s' ),
+				'user_registered' => gmdate( 'Y-m-d H:i:s' ),
 				'role'            => $user_role,
 				'user_url'        => $user_url,
 				'display_name'    => $display_name,
@@ -610,7 +610,7 @@ function buddyforms_admin_users_views( $views ) {
 		$url                 = add_query_arg( 'bf_users_need_activation', 'true', 'users.php' );
 		$name                = apply_filters( 'buddyforms_admin_user_list_head_filter_text', __( 'Need Activation', 'buddyforms' ) );
 		$pending_users       = buddyforms_get_users_pending_for_activation();
-		$name                = sprintf( __( '%1$s <span class="count">(%2$s)</span>' ), $name, number_format_i18n( $pending_users ) );
+		$name                = sprintf( __( '%1$s <span class="count">(%2$s)</span>', 'buddyforms' ), $name, number_format_i18n( $pending_users ) );
 		$views['bf_pending'] = "<a href='" . esc_url( $url ) . "'$current_link_attributes>$name</a>";
 	}
 

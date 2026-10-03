@@ -82,7 +82,7 @@ function buddyforms_add_label_to_post_list( $post_states, $post ) {
 		if ( ! empty( $is_buddyform_post ) ) {
 			$title_field = buddyforms_get_form_field_by_slug( $is_buddyform_post, 'buddyforms_form_title' );
 			if ( ! empty( $title_field ) && ! empty( $title_field['generate_title'] ) ) {
-				$post_states = array( '<span class="bf-auto-generated-title">' . __( 'Generated Title', 'buddyform' ) . '</span>' );
+				$post_states = array( '<span class="bf-auto-generated-title">' . __( 'Generated Title', 'buddyforms' ) . '</span>' );
 			}
 		}
 	}
@@ -214,11 +214,11 @@ add_filter( 'display_post_states', 'buddyforms_add_display_post_states', 999, 2 
 function buddyforms_add_display_post_states( $post_states, $post ) {
 
 	if ( $post->ID === (int) get_option( 'buddyforms_preview_page' ) ) {
-		$post_states['buddyforms-preview-page'] = __( 'BuddyForms Preview Page', 'woocommerce' );
+		$post_states['buddyforms-preview-page'] = __( 'BuddyForms Preview Page', 'buddyforms' );
 	}
 
 	if ( $post->ID === (int) get_option( 'buddyforms_submissions_page' ) ) {
-		$post_states['buddyforms-submissions-page'] = __( 'BuddyForms Submissions Page', 'woocommerce' );
+		$post_states['buddyforms-submissions-page'] = __( 'BuddyForms Submissions Page', 'buddyforms' );
 	}
 
 	return $post_states;

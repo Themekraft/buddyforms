@@ -378,7 +378,7 @@ function bf_get_default_post_to_edit( $post_type = 'post', $create_in_db = false
 	if ( $create_in_db ) {
 		$post_id = wp_insert_post(
 			array(
-				'post_title'  => __( 'Auto Draft' ),
+				'post_title'  => __( 'Auto Draft', 'buddyforms' ),
 				'post_type'   => $post_type,
 				'post_status' => 'auto-draft',
 			)

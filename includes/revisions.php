@@ -46,7 +46,7 @@ function buddyforms_wp_list_post_revisions( $post_id = 0, $type = 'all' ) {
 	if ( $restored_from_meta = get_post_meta( $post->ID, '_post_restored_from', true ) ) {
 		$author = get_user_by( 'id', $restored_from_meta['restored_by_user'] );
 		/* translators: revision date format, see http://php.net/date */
-		$datef     = _x( 'j F, Y @ G:i:s', 'revision date format' );
+		$datef     = _x( 'j F, Y @ G:i:s', 'revision date format', 'buddyforms' );
 		$date      = date_i18n( $datef, strtotime( $restored_from_meta['restored_time'] ) );
 		$time_diff = human_time_diff( $restored_from_meta['restored_time'] );
 		?>
@@ -55,7 +55,7 @@ function buddyforms_wp_list_post_revisions( $post_id = 0, $type = 'all' ) {
 			<?php
 			printf(
 			/* translators: restored revision details: 1: gravatar image, 2: author name, 3: time ago, 4: date */
-				esc_html__( 'Previously restored by %1$s %2$s, %3$s ago (%4$s)' ),
+				esc_html__( 'Previously restored by %1$s %2$s, %3$s ago (%4$s)', 'buddyforms' ),
 				get_avatar( $author->ID, 24 ),
 				$author->display_name,
 				$time_diff,
@@ -169,7 +169,7 @@ function buddyforms_wp_post_revision_title_expanded( $revision, $post_id, $link 
 
 	$author = get_the_author_meta( 'display_name', $revision->post_author );
 	/* translators: revision date format, see http://php.net/date */
-	$datef = _x( 'j F, Y @ G:i:s', 'revision date format' );
+	$datef = _x( 'j F, Y @ G:i:s', 'revision date format', 'buddyforms' );
 
 	$gravatar = get_avatar( $revision->post_author, 24 );
 
@@ -180,15 +180,15 @@ function buddyforms_wp_post_revision_title_expanded( $revision, $post_id, $link 
 
 	$revision_date_author = sprintf(
 	/* translators: post revision title: 1: author avatar, 2: author name, 3: time ago, 4: date */
-		_x( '%1$s %2$s, %3$s ago (%4$s)', 'post revision title' ),
+		_x( '%1$s %2$s, %3$s ago (%4$s)', 'post revision title', 'buddyforms' ),
 		$gravatar,
 		$author,
 		human_time_diff( strtotime( $revision->post_modified ), time() ),
 		$date
 	);
 
-	$autosavef = __( '%1$s [Autosave]' );
-	$currentf  = __( '%1$s [Current Revision]' );
+	$autosavef = __( '%1$s [Autosave]', 'buddyforms' );
+	$currentf  = __( '%1$s [Current Revision]', 'buddyforms' );
 
 	if ( ! wp_is_post_revision( $revision ) ) {
 		$revision_date_author = sprintf( $currentf, $revision_date_author );

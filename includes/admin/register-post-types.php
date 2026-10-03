@@ -417,9 +417,9 @@ function buddyforms_form_updated_messages( $messages ) {
 		/* translators: %s: date and time of the revision */
 		5  => isset( $_GET['revision'] ) ? sprintf( __( 'Form restored to revision from %s', 'buddyforms' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
 		6  => __( 'Form published.', 'buddyforms' ),
-		7  => __( 'Form saved.' ),
+		7  => __( 'Form saved.', 'buddyforms' ),
 		8  => __( 'Form submitted.', 'buddyforms' ),
-		9  => sprintf( __( 'Form scheduled for: <strong>%1$s</strong>.' ), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ) ),
+		9  => sprintf( __( 'Form scheduled for: <strong>%1$s</strong>.', 'buddyforms' ), date_i18n( __( 'M j, Y @ G:i', 'buddyforms' ), strtotime( $post->post_date ) ) ),
 		10 => __( 'Form draft updated.', 'buddyforms' ),
 	);
 
