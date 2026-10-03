@@ -289,8 +289,9 @@ function buddyforms_get_wp_login_form( $form_slug = 'none', $title = '', $args =
 
 		$wp_login_form .= '<div class="bf-login-error">';
 		foreach ( $_GET as $key => $value ) {
-			if ( strpos( $key, 'error_msg_' ) !== false ) {
-				$error          = str_replace( 'Error: ', '<strong>Error: </strong>', $value );
+			if ( strpos( $key, 'error_msg_' ) !== false && is_string( $value ) ) {
+				// The messages come from the URL, so they are printed as plain text.
+				$error          = str_replace( 'Error: ', '<strong>Error: </strong>', esc_html( wp_unslash( $value ) ) );
 				$wp_login_form .= $error . '<br />';
 			}
 		}
@@ -1444,21 +1445,40 @@ function buddyforms_default_message_on_create() {
 	return __( 'Form Submitted Successfully.', 'buddyforms' );
 }
 
+/**
+ * Whether the current visitor may upload files through the given form.
+ *
+ * @param string $form_slug
+ *
+ * @return bool
+ * @since 2.10.1
+ */
+function buddyforms_current_user_can_upload_to_form( $form_slug ) {
+	global $buddyforms;
+
+	if ( empty( $form_slug ) || empty( $buddyforms[ $form_slug ] ) ) {
+		return false;
+	}
+
+	$allow_public_submit = isset( $buddyforms[ $form_slug ]['public_submit'] ) && 'public_submit' === $buddyforms[ $form_slug ]['public_submit'];
+	if ( $allow_public_submit ) {
+		return true;
+	}
+
+	$current_user_id = get_current_user_id();
+
+	return bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug )
+		|| bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_create', array(), $form_slug )
+		|| bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
+}
+
 add_action( 'wp_ajax_nopriv_handle_dropped_media', 'buddyforms_upload_handle_dropped_media' );
 
 add_action( 'wp_ajax_handle_dropped_media', 'buddyforms_upload_handle_dropped_media' );
 function buddyforms_upload_handle_dropped_media() {
 	check_ajax_referer( 'fac_drop', 'nonce' );
-	$form_slug               = isset( $_POST['form_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['form_slug'] ) ) : '';
-	$form_post               = get_page_by_path( $form_slug, OBJECT, 'buddyforms' );
-	$form_id                 = $form_post->ID;
-	$public_submit           = get_post_meta( $form_id, '_buddyforms_options', true )['public_submit'] ?? false;
-	$allow_public_submit     = 'public_submit' === $public_submit;
-	$current_user            = wp_get_current_user();
-	$current_user_can_edit   = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug );
-	$current_user_can_create = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_create', array(), $form_slug );
-	$current_user_can_draft  = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
-	if ( $current_user_can_edit || $current_user_can_create || $current_user_can_draft || $allow_public_submit ) {
+	$form_slug = isset( $_POST['form_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['form_slug'] ) ) : '';
+	if ( buddyforms_current_user_can_upload_to_form( $form_slug ) ) {
 		status_header( 200 );
 		$newupload = 0;
 		if ( ! empty( $_FILES ) ) {
@@ -1487,11 +1507,12 @@ add_action( 'wp_ajax_handle_deleted_media', 'buddyforms_upload_handle_delete_med
 function buddyforms_upload_handle_delete_media() {
 	check_ajax_referer( 'fac_drop', 'nonce' );
 	if ( isset( $_REQUEST['media_id'] ) ) {
-		$post_id = absint( $_REQUEST['media_id'] );
-		$post = get_post($post_id);
-		$current_user = wp_get_current_user();
-		if ($post->post_author == $current_user->ID) {
-			$status = wp_delete_attachment($post_id, true);
+		$post_id         = absint( $_REQUEST['media_id'] );
+		$post            = get_post( $post_id );
+		$current_user_id = get_current_user_id();
+		// Visitors who are not logged in all share user ID 0, so they cannot prove they uploaded the file.
+		if ( ! empty( $post ) && 'attachment' === $post->post_type && ! empty( $current_user_id ) && (int) $post->post_author === $current_user_id ) {
+			$status = wp_delete_attachment( $post_id, true );
 		} else {
 			$status = false;
 		}
@@ -1506,101 +1527,108 @@ function buddyforms_upload_handle_delete_media() {
 	die();
 }
 
+/**
+ * Send a JSON response for the upload from URL field and stop.
+ *
+ * @param string $status
+ * @param string $response
+ * @param int    $attachment_id
+ */
+function buddyforms_upload_image_from_url_response( $status, $response, $attachment_id = 0 ) {
+	$result = array(
+		'status'   => $status,
+		'response' => $response,
+	);
+	if ( ! empty( $attachment_id ) ) {
+		$result['attachment_id'] = $attachment_id;
+	}
+	echo wp_json_encode( $result );
+	die();
+}
+
 add_action( 'wp_ajax_nopriv_upload_image_from_url', 'buddyforms_upload_image_from_url' );
 add_action( 'wp_ajax_upload_image_from_url', 'buddyforms_upload_image_from_url' );
 function buddyforms_upload_image_from_url() {
-	$url            = isset( $_REQUEST['url'] ) ? wp_kses_post( wp_unslash( $_REQUEST['url'] ) ) : '';
-	$valid_url = strtolower( $url );
-	if ( ( strpos( $valid_url, 'phar://') !== false ) || ( pathinfo( $valid_url, PATHINFO_EXTENSION ) === 'phar') || ( strpos( $valid_url, 'php://') !== false )  ) {
-		return false;
+	global $buddyforms;
+
+	check_ajax_referer( 'fac_drop', 'nonce' );
+
+	$url       = isset( $_REQUEST['url'] ) ? esc_url_raw( urldecode( wp_unslash( $_REQUEST['url'] ) ), array( 'http', 'https' ) ) : '';
+	$file_id   = isset( $_REQUEST['id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) : '';
+	$form_slug = isset( $_REQUEST['form_slug'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['form_slug'] ) ) : '';
+
+	if ( empty( $url ) || empty( $file_id ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'Wrong Format or Empty Url.', 'buddyforms' ) );
 	}
-	$file_id        = isset( $_REQUEST['id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) : '';
-	$accepted_files = isset( $_REQUEST['accepted_files'] ) ? explode( ',', buddyforms_sanitize( '', wp_unslash( $_REQUEST['accepted_files'] ) ) ) : array( 'jpeg' );
 
-	if ( ! empty( $url ) && ! empty( $file_id ) ) {
-		$upload_dir             = wp_upload_dir();
-		$image_url              = urldecode( $url );
-		$url_response              = wp_safe_remote_get( $image_url );
-		if( isset( $url_response['response']['code'] ) && $url_response['response']['code'] != 200){
-			echo wp_json_encode(
-				array(
-					'status'   => 'FAILED',
-					'response' => __(
-						'Error downloading image.',
-						'buddyforms'
-					),
-				)
-			);
-			die();
-		} else {
-			$image_data = wp_remote_retrieve_body( $url_response );
-		}
-		$image_data_information = getimagesize( $image_url );
-		$image_mime_information = $image_data_information['mime'];
-		if ( ! in_array( $image_mime_information, $accepted_files ) ) {
-			echo wp_json_encode(
-				array(
-					'status'   => 'FAILED',
-					'response' => sprintf(
-						/* translators: %s: MIME type of the uploaded file. */
-						__( 'File type %s is not allowed.', 'buddyforms' ),
-						$image_mime_information
-					),
-				)
-			);
-			die();
-		}
+	if ( ! buddyforms_current_user_can_upload_to_form( $form_slug ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'You are not allowed to upload files with this form.', 'buddyforms' ) );
+	}
 
-		if ( $image_data && $image_data_information ) {
-			$file_name   = $file_id . '.png';
-			$full_path   = wp_normalize_path( $upload_dir['path'] . DIRECTORY_SEPARATOR . $file_name );
-			$upload_file = wp_upload_bits( $file_name, null, $image_data );
-			if ( ! $upload_file['error'] ) {
-				$wp_filetype   = wp_check_filetype( $file_name, null );
-				$attachment    = array(
-					'post_mime_type' => $wp_filetype['type'],
-					'post_title'     => preg_replace( '/\.[^.]+$/', '', $file_name ),
-					'post_content'   => '',
-					'post_status'    => 'inherit',
-				);
-				$attachment_id = wp_insert_attachment( $attachment, $upload_file['file'] );
-				$url           = wp_get_attachment_thumb_url( $attachment_id );
-				echo wp_json_encode(
-					array(
-						'status'        => 'OK',
-						'response'      => $url,
-						'attachment_id' => $attachment_id,
-					)
-				);
-				die();
-			} else {
-				echo wp_json_encode(
-					array(
-						'status'   => 'FAILED',
-						'response' => 'Error uploading image.',
-					)
-				);
-				die();
-			}
-		} else {
-			echo wp_json_encode(
-				array(
-					'status'   => 'FAILED',
-					'response' => 'The Url provided is not an image.',
-				)
-			);
-			die();
+	// The accepted types come from the field settings, never from the request.
+	$field = buddyforms_get_form_field_by_slug( $form_slug, $file_id );
+	if ( empty( $field ) || 'upload' !== $field['type'] || empty( $field['upload_from_url'] ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'Wrong Format or Empty Url.', 'buddyforms' ) );
+	}
+	$allowed_types  = get_allowed_mime_types();
+	$accepted_files = array();
+	$extensions     = ! empty( $field['accepted_files'] ) ? (array) $field['accepted_files'] : array( 'jpg|jpeg|jpe' );
+	foreach ( $extensions as $extension ) {
+		if ( isset( $allowed_types[ $extension ] ) && 0 === strpos( $allowed_types[ $extension ], 'image/' ) ) {
+			$accepted_files[] = $allowed_types[ $extension ];
 		}
-	} else {
-		echo wp_json_encode(
-			array(
-				'status'   => 'FAILED',
-				'response' => 'Wrong Format or Empty Url.',
+	}
+
+	// wp_safe_remote_get rejects local and private network addresses.
+	$url_response = wp_safe_remote_get(
+		$url,
+		array(
+			'timeout'             => 10,
+			'limit_response_size' => wp_max_upload_size(),
+		)
+	);
+	if ( is_wp_error( $url_response ) || 200 !== (int) wp_remote_retrieve_response_code( $url_response ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'Error downloading image.', 'buddyforms' ) );
+	}
+
+	$image_data             = wp_remote_retrieve_body( $url_response );
+	$image_data_information = ! empty( $image_data ) ? @getimagesizefromstring( $image_data ) : false;
+	if ( empty( $image_data_information['mime'] ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'The Url provided is not an image.', 'buddyforms' ) );
+	}
+
+	$image_mime_information = $image_data_information['mime'];
+	if ( ! in_array( $image_mime_information, $accepted_files, true ) ) {
+		buddyforms_upload_image_from_url_response(
+			'FAILED',
+			sprintf(
+				/* translators: %s: MIME type of the uploaded file. */
+				__( 'File type %s is not allowed.', 'buddyforms' ),
+				$image_mime_information
 			)
 		);
-		die();
-
 	}
+
+	$extension   = wp_get_default_extension_for_mime_type( $image_mime_information );
+	$file_name   = sanitize_file_name( $file_id . '.' . ( $extension ? $extension : 'png' ) );
+	$upload_file = wp_upload_bits( $file_name, null, $image_data );
+	if ( ! empty( $upload_file['error'] ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'Error uploading image.', 'buddyforms' ) );
+	}
+
+	$wp_filetype   = wp_check_filetype( $upload_file['file'], null );
+	$attachment    = array(
+		'post_mime_type' => $wp_filetype['type'],
+		'post_title'     => preg_replace( '/\.[^.]+$/', '', wp_basename( $upload_file['file'] ) ),
+		'post_content'   => '',
+		'post_status'    => 'inherit',
+	);
+	$attachment_id = wp_insert_attachment( $attachment, $upload_file['file'] );
+	if ( empty( $attachment_id ) || is_wp_error( $attachment_id ) ) {
+		buddyforms_upload_image_from_url_response( 'FAILED', __( 'Error uploading image.', 'buddyforms' ) );
+	}
+
+	buddyforms_upload_image_from_url_response( 'OK', wp_get_attachment_thumb_url( $attachment_id ), $attachment_id );
 }
 
 /**
