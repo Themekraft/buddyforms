@@ -423,7 +423,7 @@ function buddyforms_form_updated_messages( $messages ) {
 		6  => __( 'Form published.', 'buddyforms' ),
 		7  => __( 'Form saved.', 'buddyforms' ),
 		8  => __( 'Form submitted.', 'buddyforms' ),
-		9  => sprintf( __( 'Form scheduled for: <strong>%1$s</strong>.', 'buddyforms' ), date_i18n( __( 'M j, Y @ G:i', 'buddyforms' ), strtotime( $post->post_date ) ) ),
+		9  => sprintf( /* translators: %1$s: date and time the form is scheduled for. */ __( 'Form scheduled for: <strong>%1$s</strong>.', 'buddyforms' ), date_i18n( __( 'M j, Y @ G:i', 'buddyforms' ), strtotime( $post->post_date ) ) ),
 		10 => __( 'Form draft updated.', 'buddyforms' ),
 	);
 

@@ -404,7 +404,7 @@ class BuddyFormsAssets {
 		) {
 
 			// Change the footer text
-			$footer_text = sprintf( __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
+			$footer_text = sprintf( /* translators: %1$s: opening link tag to the plugin reviews; %2$s: closing link tag. */ __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
 		}
 
 		return $footer_text;

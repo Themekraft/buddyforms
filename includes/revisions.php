@@ -191,8 +191,8 @@ function buddyforms_wp_post_revision_title_expanded( $revision, $post_id, $link 
 		$date
 	);
 
-	$autosavef = __( '%1$s [Autosave]', 'buddyforms' );
-	$currentf  = __( '%1$s [Current Revision]', 'buddyforms' );
+	$autosavef = /* translators: %1$s: revision date. */ __( '%1$s [Autosave]', 'buddyforms' );
+	$currentf  = /* translators: %1$s: revision date. */ __( '%1$s [Current Revision]', 'buddyforms' );
 
 	if ( ! wp_is_post_revision( $revision ) ) {
 		$revision_date_author = sprintf( $currentf, $revision_date_author );

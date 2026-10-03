@@ -614,7 +614,7 @@ function buddyforms_admin_users_views( $views ) {
 		$url                 = add_query_arg( 'bf_users_need_activation', 'true', 'users.php' );
 		$name                = apply_filters( 'buddyforms_admin_user_list_head_filter_text', __( 'Need Activation', 'buddyforms' ) );
 		$pending_users       = buddyforms_get_users_pending_for_activation();
-		$name                = sprintf( __( '%1$s <span class="count">(%2$s)</span>', 'buddyforms' ), $name, number_format_i18n( $pending_users ) );
+		$name                = sprintf( /* translators: %1$s: $name; %2$s: $pending_users. */ __( '%1$s <span class="count">(%2$s)</span>', 'buddyforms' ), $name, number_format_i18n( $pending_users ) );
 		$views['bf_pending'] = "<a href='" . esc_url( $url ) . "'$current_link_attributes>$name</a>";
 	}
 

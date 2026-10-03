@@ -152,23 +152,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
@@ -271,23 +271,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 			break;
@@ -332,23 +332,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 			break;
@@ -823,23 +823,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
@@ -906,23 +906,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
@@ -1022,23 +1022,23 @@ function buddyforms_display_form_element( $args ) {
 				)
 			);
 
-			$validation_min_msj                              = isset( $customfield['validation_min_msj'] ) ? $customfield['validation_min_msj'] : __( 'The minimum value allowed is: %s. Please check.', 'buddyforms' );
+			$validation_min_msj                              = isset( $customfield['validation_min_msj'] ) ? $customfield['validation_min_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum value allowed is: %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_min_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Value Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_min_msj]',
 				array(
 					'value'     => $validation_min_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Value as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Value as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_max_msj                              = isset( $customfield['validation_max_msj'] ) ? $customfield['validation_max_msj'] : __( 'The maximum value allowed is: %s. Please check.', 'buddyforms' );
+			$validation_max_msj                              = isset( $customfield['validation_max_msj'] ) ? $customfield['validation_max_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum value allowed is: %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_max_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Value Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_max_msj]',
 				array(
 					'value'     => $validation_max_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Value as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Value as part of the error message.', 'buddyforms' ),
 				)
 			);
 			break;
@@ -1880,23 +1880,23 @@ JS;
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
@@ -1972,23 +1972,23 @@ JS;
 				)
 			);
 
-			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : __( 'The minimum character length is %s. Please check.', 'buddyforms' );
+			$validation_minlength_msj                              = isset( $customfield['validation_minlength_msj'] ) ? $customfield['validation_minlength_msj'] : /* translators: %s: minimum number of characters. */ __( 'The minimum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_minlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Min Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_minlength_msj]',
 				array(
 					'value'     => $validation_minlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Min Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 
-			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : __( 'The maximum character length is %s. Please check.', 'buddyforms' );
+			$validation_maxlength_msj                              = isset( $customfield['validation_maxlength_msj'] ) ? $customfield['validation_maxlength_msj'] : /* translators: %s: maximum number of characters. */ __( 'The maximum character length is %s. Please check.', 'buddyforms' );
 			$form_fields['validation']['validation_maxlength_msj'] = new Element_Textbox(
 				'<b>' . __( 'Max Length Message', 'buddyforms' ) . '</b>',
 				'buddyforms_options[form_fields][' . $field_id . '][validation_maxlength_msj]',
 				array(
 					'value'     => $validation_maxlength_msj,
-					'shortDesc' => __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
+					'shortDesc' => /* translators: %s: the literal placeholder %s, which must stay in the message. */ __( 'You need to keep the %s in your new string to include the Max Length as part of the error message.', 'buddyforms' ),
 				)
 			);
 

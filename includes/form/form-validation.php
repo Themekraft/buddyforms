@@ -60,7 +60,7 @@ function buddyforms_server_validation( $valid, $form_slug ) {
 			if ( isset( $form_field['validation_minlength'] ) && intval( $form_field['validation_minlength'] ) > 0 ) {
 				if ( mb_strlen( trim( sanitize_text_field( wp_unslash( $_POST[ $form_field['slug'] ] ) ) ) ) < $form_field['validation_minlength'] ) {
 					$valid                    = false;
-					$validation_error_message = sprintf( __( 'Please enter at least %d characters.', 'buddyforms' ), $form_field['validation_minlength'] );
+					$validation_error_message = sprintf( /* translators: %s: $form_field['validation_minlength']. */ __( 'Please enter at least %d characters.', 'buddyforms' ), $form_field['validation_minlength'] );
 					$global_error->add_error( new BuddyForms_Error( 'buddyforms_form_' . $form_slug, $validation_error_message, $form_field['name'] ) );
 				}
 			}
@@ -68,7 +68,7 @@ function buddyforms_server_validation( $valid, $form_slug ) {
 			if ( isset( $form_field['validation_maxlength'] ) && intval( $form_field['validation_maxlength'] ) > 0 ) {
 				if ( mb_strlen( trim( sanitize_text_field( wp_unslash( $_POST[ $form_field['slug'] ] ) ) ) ) > intval( $form_field['validation_maxlength'] ) ) {
 					$valid                    = false;
-					$validation_error_message = sprintf( __( 'Please enter no more than %d characters.', 'buddyforms' ), $form_field['validation_maxlength'] );
+					$validation_error_message = sprintf( /* translators: %s: $form_field['validation_maxlength']. */ __( 'Please enter no more than %d characters.', 'buddyforms' ), $form_field['validation_maxlength'] );
 					$global_error->add_error( new BuddyForms_Error( 'buddyforms_form_' . $form_slug, $validation_error_message, $form_field['name'] ) );
 				}
 			}
