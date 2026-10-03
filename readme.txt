@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.0-beta.7
+Stable tag: 2.10.0
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,7 +264,7 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
-= 2.10.0 - 04 May 2026 =
+= 2.10.0 - 03 Oct 2026 =
 * Plugin Check: fixed plugin-header License field, removed the invalid Network header, stripped hidden macOS metadata, removed vestigial empty Freemius leftover directories, and dropped the manual `load_plugin_textdomain()` call (WordPress.org loads translations automatically since WP 4.6).
 * Cleaned up the user-facing English copy: "Admin rights can not get changed" → "cannot be changed", "logged of user" → "logged-out users", "logged off users / not need to get checked" → "logged-out users / do not need to be checked", missing text-domain on a login-form fallback string, and three template-error messages that were embedding `$form_slug` directly into `esc_html__()` calls (now sprintf'd so translators can localize the template). POT regenerated; bundled de_DE / es_ES / fr_FR / pt_BR / pt_PT / zh_CN translations carried forward where the meaning was preserved.
 * Updated Freemius SDK to 2.13.1.
