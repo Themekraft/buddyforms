@@ -35,7 +35,7 @@ function buddyforms_get_go_pro( $h2 = '', $h4 = '', $pros = array(), $link = tru
 		$tmp .= '</ul>';
 
 		if ( $link ) {
-			$tmp .= '<a class="buddyforms_get_pro button button-primary" href="' . buddyforms_core_fs()->get_upgrade_url() . '">' . __( 'Upgrade Now!', 'buddyforms' ) . '</a>';
+			$tmp .= '<a class="buddyforms_get_pro button button-primary" href="' . esc_url( admin_url( 'edit.php?post_type=buddyforms&page=buddyforms_bundle_screen' ) ) . '">' . __( 'Upgrade Now!', 'buddyforms' ) . '</a>';
 		}
 
 		$tmp .= '</div></div>';
