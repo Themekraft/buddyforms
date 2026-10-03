@@ -12,3 +12,5 @@
 /package.json
 /package-lock.json
 /includes/admin/pricing-page/package-lock.json
+/.gitattributes
+/assets/resources/tk_icons/Read Me.txt

@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin URI:  https://themekraft.com/buddyforms/
  * Description: Contact Forms, Post Forms for User Generated Content and Registration Forms easily build in minutes. Extendable with Addons!
  * Version: 2.10.0-beta.6
+ * Requires at least: 5.9
+ * Requires PHP: 7.4
  * Author: ThemeKraft
  * Author URI: https://themekraft.com/buddyforms/
  * License: GPLv2

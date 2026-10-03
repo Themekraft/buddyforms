@@ -84,7 +84,7 @@ class BuddyFormsAssets {
 	function register_bf_thickbox() {
 		wp_register_script(
 			'buddyforms-thickbox',
-			BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox.js',
+			BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox-init.js',
 			array( 'jquery', 'thickbox' ),
 			BUDDYFORMS_VERSION,
 			true

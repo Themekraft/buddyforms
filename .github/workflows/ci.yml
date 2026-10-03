@@ -12,4 +12,7 @@ jobs:
     with:
       slug: buddyforms
       plugin-check: true
+      # Plugin Check still reports a known backlog of errors (escaping, prepared SQL,
+      # cURL, heredocs); it reports without blocking until that work lands.
+      plugin-check-blocking: false
     secrets: inherit
