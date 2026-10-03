@@ -1,0 +1,15 @@
+# Copy to .github/workflows/ci.yml in a product repo.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+jobs:
+  ci:
+    uses: Themekraft/release-tooling/.github/workflows/ci.yml@main
+    with:
+      slug: buddyforms
+      plugin-check: true
+    secrets: inherit
