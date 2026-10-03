@@ -54,8 +54,10 @@ jQuery(document).ready(function() {
                     });
 
                     this.on('sending', function (file, xhr, formData) {
+                        var form_slug = jQuery('#form_slug').val();
                         formData.append('action', 'handle_dropped_media');
                         formData.append('nonce', buddyformsGlobal.ajaxnonce);
+                        formData.append('form_slug', form_slug );
                     });
 
                     this.on('success', function (file, response) {

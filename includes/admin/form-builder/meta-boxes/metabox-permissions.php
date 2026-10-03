@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function buddyforms_permissions_unregistered_screen() {
 	global $buddyform, $buddyforms;
 
@@ -75,7 +79,7 @@ function buddyforms_permissions_unregistered_screen() {
 		$all_forms,
 		array(
 			'value'     => $logged_in_only_reg_form,
-			'shortDesc' => __( 'Give your existing customers the choice to login. Just place a login form above or under the form. The Login Form is only visible for logged of user.', 'buddyforms' ),
+			'shortDesc' => __( 'Give your existing customers the option to log in. Just place a login form above or below the form. The login form is only visible to logged-out users.', 'buddyforms' ),
 			'class'     => 'registration-form-option',
 		)
 	);
@@ -197,7 +201,7 @@ function buddyforms_permissions_screen() {
 		);
 
 		if ( $role_name == 'administrator' ) {
-			$element->setAttribute( 'shortDesc', __( 'Admin rights can not get changed', 'buddyforms' ) );
+			$element->setAttribute( 'shortDesc', __( 'Admin rights cannot be changed.', 'buddyforms' ) );
 		}
 
 		if ( buddyforms_core_fs()->is_not_paying() && ! buddyforms_core_fs()->is_trial() ) {

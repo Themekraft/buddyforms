@@ -1,4 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
+### macOS
+.DS_Store
+
 ### WordPress template
 *.log
 
@@ -9,8 +12,6 @@
 
 ### Composer template
 composer.phar
-composer.lock
-/vendor/
 /vendor-scope/**/vendor
 
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
@@ -54,7 +55,6 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-package-lock.json
 
 # TypeScript v1 declaration files
 typings/

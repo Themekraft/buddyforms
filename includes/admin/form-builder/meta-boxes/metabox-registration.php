@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class to handle the registration metaBox form options.
  */
@@ -170,6 +174,14 @@ class BuddyFormsMetaBoxRegistration {
 		);
 
 		$new_user_role = isset( $buddyform['registration']['new_user_role'] ) ? $buddyform['registration']['new_user_role'] : 'subscriber';
+
+		$new_role_obj = get_role( $new_user_role );
+
+		if ( ! $new_role_obj || ( $new_role_obj->has_cap( 'edit_posts' ) && ! current_user_can( 'promote_users' ) ) ) {
+			$buddyform['registration']['new_user_role'] = 'subscriber';
+			$new_user_role                            = 'subscriber';
+			update_post_meta( get_the_ID(), '_buddyforms_options', $buddyform );
+		}
 
 		// User Role
 		$form_setup[] = new Element_Select(

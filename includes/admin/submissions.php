@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BuddyFormsSubmissionPage {
 	/**
 	 * @var BuddyForms_Submissions_List_Table
@@ -44,7 +48,7 @@ class BuddyFormsSubmissionPage {
 		?>
 		<div id="post" class="bf_admin_wrap wrap">
 		<?php
-		include BUDDYFORMS_INCLUDES_PATH . '/admin/admin-header.php';
+		include BUDDYFORMS_INCLUDES_PATH . 'admin/admin-header.php';
 		?>
 		<hr style="margin-bottom: 0px !important;"/>
 		<?php
@@ -79,7 +83,7 @@ class BuddyFormsSubmissionPage {
 		$user_list = get_users( array( 'include' => array_unique( $user_list_ids ) ) );
 
 		$selected_form   = '';
-		$selected_author = isset( $_GET['submission_author'] ) ? buddyforms_sanitize( wp_unslash( $_GET['submission_author'] ) ) : 'all';
+		$selected_author = isset( $_GET['submission_author'] ) ? buddyforms_sanitize( '', wp_unslash( $_GET['submission_author'] ) ) : 'all';
 		if ( isset( $_GET['form_slug'] ) ) {
 			$current_screen->set_parentage( $parent_file );
 			$current_screen->render_screen_meta();
@@ -155,7 +159,7 @@ class BuddyFormsSubmissionPage {
 			<?php if ( $this->has_the_capability( filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) ) ) : ?>
 				<?php if ( ! isset( $_GET['entry'] ) ) { ?>
 					<form id="filter" method="get">
-						<input type="hidden" name="page" value="<?php echo esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) ); ?>"/>
+						<input type="hidden" name="page" value="<?php echo esc_attr( filter_var( wp_unslash( $_REQUEST['page'] ), FILTER_SANITIZE_STRING ) ); ?>"/>
 						<?php $this->bf_submissions_table->display(); ?>
 					</form>
 				<?php } ?>
@@ -294,7 +298,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		);
 
 		if ( isset( $buddyforms[ $_GET['form_slug'] ]['post_type'] ) && $buddyforms[ $form_slug ]['post_type'] == 'bf_submissions' ) {
-			$actions['edit'] = sprintf( '<a href="?post_type=buddyforms&page=%s&action=%s&entry=%s&form_slug=%s">%s</a>', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'edit', $item->ID, $form_slug, __( 'View Submission', 'buddyforms' ) );
+			$actions['edit'] = sprintf( '<a href="?post_type=buddyforms&page=%s&action=%s&entry=%s&form_slug=%s">%s</a>', filter_var( wp_unslash( $_REQUEST['page'] ), FILTER_SANITIZE_STRING ), 'edit', $item->ID, $form_slug, __( 'View Submission', 'buddyforms' ) );
 		}
 
 		// Return the title contents
@@ -377,7 +381,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		if ( isset( $_GET['form_slug'] ) && isset( $buddyforms[ $_GET['form_slug'] ]['form_fields'] ) ) {
 			foreach ( $buddyforms[ filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) ]['form_fields'] as $key => $field ) {
 				if ( ! empty( $field['slug'] ) && ! in_array( $field['slug'], $this->exclude_columns ) ) {
-					$columns[ $field['slug'] ] = ! empty( $field['name'] ) ? $field['name'] : $field['slug'];
+					$columns[ $field['slug'] ] = ! empty( $field['name'] ) ? sanitize_text_field( $field['name'] ) : sanitize_text_field( $field['slug'] );
 				}
 			}
 		}

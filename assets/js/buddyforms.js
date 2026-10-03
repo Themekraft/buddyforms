@@ -611,7 +611,8 @@ function BuddyForms() {
 
             msjString = msjString.replace('%s', param);
 
-            var count = value.length;
+            var numNewlines = value.split("\n").length - 1;
+            var count = value.length + numNewlines;  
             if (count > param) {
                 jQuery.validator.messages['maxlength'] = msjString;
                 return false;

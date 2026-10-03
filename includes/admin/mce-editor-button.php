@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Add a button to the content editor, next to the media button
  * This button will show a popup that contains inline content

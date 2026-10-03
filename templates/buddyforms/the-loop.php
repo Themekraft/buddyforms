@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The users submissions loop
  *
@@ -13,7 +17,7 @@ if ( empty( $wp_date_format ) ) {
 
 
 ob_start();
-require BUDDYFORMS_INCLUDES_PATH . '/resources/pfbc/Style/LoopStyle.php';
+require BUDDYFORMS_INCLUDES_PATH . 'resources/pfbc/Style/LoopStyle.php';
 $css = ob_get_clean();
 $the_loop_css = buddyforms_minify_css( $css );
 file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/css/bf-the-loop-css-' . $form_slug . '.css', $the_loop_css );

@@ -32,7 +32,7 @@ function from_setup_form_type(value) {
             jQuery('.bf_show_if_f_type_registration').hide();
             jQuery('.bf_show_if_f_type_all').show();
             jQuery('.bf_show_if_f_type_contact').show();
-
+            jQuery('.public-submit-option, .permission_roles').show();
 
             // Show/Hide after submission post options
             jQuery('#bf-after-submission-action option[value=display_form]').hide();

@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Generate the Preview
 add_action( 'init', 'buddyforms_preview_form' );
 function buddyforms_preview_form() {

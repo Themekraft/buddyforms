@@ -31,7 +31,8 @@ function createNewPageOpenModal(e) {
                         url: buddyformsGlobal.admin_url,
                         data: {
                             "action": "buddyforms_new_page",
-                            "page_name": page_name
+                            "page_name": page_name,
+                            "nonce": buddyformsGlobal.ajaxnonce // Add the nonce parameter
                         },
                         success: function (data) {
                             if (data['error']) {

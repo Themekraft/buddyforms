@@ -17,13 +17,22 @@
   "homepage": "https://themekraft.com/buddyforms/",
   "license": "GPLv2 or later",
   "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "freemius/wordpress-sdk": "^2.13.1"
+  },
   "require-dev": {
-  	"consolidation/robo": "^1.0.0",
-    "bamarni/composer-bin-plugin": "dev-master"
+  	"bamarni/composer-bin-plugin": "dev-master"
   },
   "extra": {
     "bamarni-bin": {
       "target-directory": "vendor-scope"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "bamarni/composer-bin-plugin": true
     }
   }
 }

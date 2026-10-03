@@ -1,5 +1,8 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
+
 // Shortcode to add the form everywhere easily ;) the form is located in form.php
 add_shortcode( 'buddyforms_form', 'buddyforms_create_edit_form_shortcode' );
 add_shortcode( 'bf', 'buddyforms_create_edit_form_shortcode' );
@@ -313,6 +316,8 @@ add_shortcode( 'bf_nav', 'buddyforms_nav' );
  * @return mixed|string
  */
 function buddyforms_nav( $args ) {
+	global $buddyforms;
+
 	$form_slug = $separator = $label_add = $label_view = '';
 	extract(
 		shortcode_atts(
@@ -329,13 +334,21 @@ function buddyforms_nav( $args ) {
 	BuddyFormsAssets::front_js_css( '', $form_slug );
 	BuddyFormsAssets::load_tk_font_icons();
 
+	if ( ! isset( $buddyforms[ $form_slug ] ) ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'The form with the slug "%s" does not exist.', 'buddyforms' ), esc_html( $form_slug ) );
+	}
+
+	if ( ! isset( $buddyforms[ $form_slug ]['attached_page'] ) || 'none' === $buddyforms[ $form_slug ]['attached_page'] ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'No submission management page has been configured for the form "%s".', 'buddyforms' ), esc_html( $form_slug ) );
+	}
+
 	$args['label'] = isset( $args['label_view'] ) ? $args['label_view'] : __( 'View', 'buddyforms' );
 	$tmp           = buddyforms_button_view_posts( $args );
 	$tmp          .= $separator;
 	$args['label'] = isset( $args['label_add'] ) ? $args['label_add'] : __( 'Add New', 'buddyforms' );
 	$tmp          .= buddyforms_button_add_new( $args );
 
-	return $tmp;
+	return wp_kses( $tmp, buddyforms_wp_kses_allowed_atts() );
 }
 
 add_shortcode( 'buddyforms_button_view_posts', 'buddyforms_button_view_posts' );
@@ -361,10 +374,18 @@ function buddyforms_button_view_posts( $args ) {
 	BuddyFormsAssets::front_js_css( '', $form_slug );
 	BuddyFormsAssets::load_tk_font_icons();
 
-	$button = '<a class="button bf-navigation bf-navigation-view" href="/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/view/' . $form_slug . '/"> ' . $label_view . ' </a>';
+	if ( ! isset( $buddyforms[ $form_slug ] ) ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'The form with the slug "%s" does not exist.', 'buddyforms' ), esc_html( $form_slug ) );
+	}
 
-	return apply_filters( 'buddyforms_button_view_posts', $button, $args );
+	if ( ! isset( $buddyforms[ $form_slug ]['attached_page'] ) || 'none' === $buddyforms[ $form_slug ]['attached_page'] ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'No submission management page has been configured for the form "%s".', 'buddyforms' ), esc_html( $form_slug ) );
+	}
 
+	$href = '/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/view/' . $form_slug . '/';
+	$button = '<a class="button bf-navigation bf-navigation-view" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_view, buddyforms_wp_kses_allowed_atts() ) . ' </a>';
+
+	return wp_kses( apply_filters( 'buddyforms_button_view_posts', $button, $args ), buddyforms_wp_kses_allowed_atts() );
 }
 
 add_shortcode( 'buddyforms_button_add_new', 'buddyforms_button_add_new' );
@@ -390,10 +411,18 @@ function buddyforms_button_add_new( $args ) {
 	BuddyFormsAssets::front_js_css( '', $form_slug );
 	BuddyFormsAssets::load_tk_font_icons();
 
-	$button = '<a class="button bf-navigation bf-navigation-create" href="/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/create/' . $form_slug . '/"> ' . $label_add . '</a>';
+	if ( ! isset( $buddyforms[ $form_slug ] ) ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'The form with the slug "%s" does not exist.', 'buddyforms' ), esc_html( $form_slug ) );
+	}
 
-	return apply_filters( 'buddyforms_button_add_new', $button, $args );
+	if ( ! isset( $buddyforms[ $form_slug ]['attached_page'] ) || 'none' === $buddyforms[ $form_slug ]['attached_page'] ) {
+		return sprintf( /* translators: %s: $form_slug. */ esc_html__( 'The form with the slug "%s" does not have an attached page.', 'buddyforms' ), esc_html( $form_slug ) );
+	}
 
+	$href = '/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/create/' . $form_slug . '/';
+	$button = '<a class="button bf-navigation bf-navigation-create" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_add, buddyforms_wp_kses_allowed_atts() ) . '</a>';
+
+	return wp_kses( apply_filters( 'buddyforms_button_add_new', $button, $args ), buddyforms_wp_kses_allowed_atts() );
 }
 
 add_shortcode( 'bf_login_form', 'buddyforms_view_login_form' );
@@ -430,7 +459,7 @@ function buddyforms_view_login_form( $args ) {
 		$tmp = buddyforms_get_wp_login_form( $form_slug, $title, $args );
 	}
 
-	return $tmp;
+	return wp_kses( $tmp, buddyforms_wp_kses_allowed_atts() );
 }
 
 
@@ -462,7 +491,7 @@ function buddyforms_reset_password_form( $args ) {
 
 		$buddyforms_registration_form = get_option( 'buddyforms_registration_form', 'none' );
 
-		return buddyforms_get_wp_login_form( $buddyforms_registration_form, __( 'You need to login to change your password.' ) );
+		return buddyforms_get_wp_login_form( $buddyforms_registration_form, __( 'You need to log in to change your password.', 'buddyforms' ) );
 	}
 }
 
@@ -504,9 +533,13 @@ function buddyforms_create_submission_link_shortcode( $args ) {
 		$target = sprintf( ' target="%s" ', $arguments['target'] );
 	}
 	if ( ! empty( $arguments['link'] ) ) {
-		return sprintf( '<a href="%s" %s >%s</a>', $arguments['link'], $target, $arguments['name'] );
+		return sprintf(
+			'<a href="%s" %s >%s</a>',
+			( empty( esc_url( $arguments['link'] ) ) ? esc_url( $arguments['link'] ) : '#' ),
+			esc_attr( $target ), esc_html( $arguments['name'] )
+		);
 	} else {
-		return $arguments['name'];
+		return esc_html( $arguments['name'] );
 	}
 }
 

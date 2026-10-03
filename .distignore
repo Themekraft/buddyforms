@@ -1,0 +1,17 @@
+# Files and folders that must not ship in the release zip (rsync exclude syntax).
+# VCS metadata, .github, node_modules and the old tk_script files are always excluded.
+/.circleci
+/tests
+/docs
+/codeception.yml
+/docker-compose.yml
+/easy-coding-standard.yml
+/phpcs.xml
+/scoper.inc.php
+/readme.md
+/package.json
+/package-lock.json
+/includes/admin/pricing-page/package-lock.json
+/.gitattributes
+/assets/resources/tk_icons/Read Me.txt
+/vendor-scope/buddyforms/vendor/*/*/tests

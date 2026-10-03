@@ -74,6 +74,33 @@ class Validation_Captcha extends Validation {
 	}
 
 	public function validate_google_captcha( $captcha, $secret ) {
-		return json_decode( file_get_contents( 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret . '&response=' . $captcha . '&remoteip=' . sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ), true );
+		$url = 'https://www.google.com/recaptcha/api/siteverify';
+
+		$data = [
+			'secret'   => $secret,
+			'response' => $captcha,
+			'remoteip' => sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ),
+		];
+
+		// Initialize cURL
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, $url );
+		curl_setopt( $ch, CURLOPT_POST, true );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $data ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true ); // Ensure SSL verification
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 ); // Set timeout
+
+		$response = curl_exec( $ch );
+		$error    = curl_error( $ch ); // Check for errors
+
+		curl_close( $ch );
+
+		if ( $error ) {
+			error_log( 'Google CAPTCHA cURL error: ' . $error ); // Log errors if any
+			return false;
+		}
+
+		return json_decode( $response, true );
 	}
 }

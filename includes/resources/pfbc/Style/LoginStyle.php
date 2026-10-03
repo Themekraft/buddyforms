@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $css_form_id = 'buddyforms_form_' . $form_slug;
 ?>
 <style data-target="global" type="text/css" <?php echo wp_kses( apply_filters( 'buddyforms_add_global_style_attributes', '', $css_form_id ), buddyforms_wp_kses_allowed_atts() ); ?>>

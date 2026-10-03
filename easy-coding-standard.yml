@@ -81,4 +81,3 @@ parameters:
     'Unused variable $the_author_id.': ~
     'Useless variable $message.': ~
   exclude_files:
-    - 'includes/resources/freemius/*'

@@ -101,8 +101,10 @@ function uploadHandler() {
 
     function DropZoneSending(file, xhr, formData) {
         disableSubmitButtons(true);
+        var form_slug = jQuery('#form_slug').val();
         formData.append('action', 'handle_dropped_media');
         formData.append('nonce', buddyformsGlobal.ajaxnonce);
+        formData.append('form_slug', form_slug );
     }
 
     function DropZoneSuccess(file, response, currentField) {

@@ -20,7 +20,7 @@ class Element_Week extends Element_Textbox {
 	 * @param array|null $properties
 	 */
 	public function __construct( $label, $name, array $properties = null ) {
-		$this->_attributes['placeholder'] = 'YYYY-Www (e.g. ' . date( 'Y-\WW' ) . ')';
+		$this->_attributes['placeholder'] = 'YYYY-Www (e.g. ' . gmdate( 'Y-\WW' ) . ')';
 		$this->_attributes['title']       = $this->_attributes['placeholder'];
 
 		parent::__construct( $label, $name, $properties );

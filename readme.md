@@ -76,6 +76,7 @@ To configure all the needed code to run in your environment you need to follow t
 * [Konrad Sroka](https://github.com/konradS)
 * [Guillermo Figueroa](https://github.com/gfirem)
 * [Victor Marin](https://github.com/marin250189)
+* [Camilo Luna](https://github.com/camilolunacom)
 
 ## License
 

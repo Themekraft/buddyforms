@@ -6,10 +6,7 @@
   "homepage": "https://themekraft.com/buddyforms/",
   "version": "2.5.14",
   "main": "gulpfile.js",
-  "dependencies": {
-    "@wordpress/scripts": "^7.0.1",
-    "gulp": "^3.9.1"
-  },
+  "dependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +16,7 @@
     "npm": ">=6.0.0"
   },
   "devDependencies": {
+    "@wordpress/scripts": "^7.0.1",
     "babel-eslint": "^8.2.1",
     "eslint": "^4.17.0",
     "eslint-config-wordpress": "^2.0.0",
@@ -26,6 +24,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-wordpress": "^0.1.0",
+    "gulp": "^3.9.1",
     "gulp-clean": "^0.4.0",
     "gulp-concat": "^2.6.1",
     "gulp-deporder": "^1.1.0",

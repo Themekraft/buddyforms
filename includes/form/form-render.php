@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * @param $args
  *
@@ -213,7 +217,7 @@ function buddyforms_form_html( $args ) {
 	// only output the whole CSS if the option to disable CSS is unchecked
 	if ( $bfdesign['extras_disable_all_css'] == '' ) {
 		ob_start();
-		require BUDDYFORMS_INCLUDES_PATH . '/resources/pfbc/Style/FormStyle.php';
+		require BUDDYFORMS_INCLUDES_PATH . 'resources/pfbc/Style/FormStyle.php';
 		$layout = ob_get_clean();
 		if ( ! empty( $layout ) ) {
 			$layout     = buddyforms_minify_css( $layout );
@@ -322,6 +326,7 @@ function buddyforms_form_html( $args ) {
 
 	// Hook under the form inside the BuddyForms form div
 	$form_html  = apply_filters( 'buddyforms_form_hero_last', $form_html, $form_slug );
+	$form_html  = apply_filters( 'buddyforms_form_hero_form_html_last', $form_html, $form_slug, $post_id );
 	$form_html .= ! is_user_logged_in() && isset( $buddyforms[ $form_slug ]['public_submit_login'] ) && $buddyforms[ $form_slug ]['public_submit_login'] == 'under' ? buddyforms_get_login_form_template( $form_slug ) : '';
 
 	if ( buddyforms_core_fs()->is_not_paying() && ! buddyforms_core_fs()->is_trial() ) {

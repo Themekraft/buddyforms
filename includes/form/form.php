@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Adds a form shortcode for the create and edit screen
  *
@@ -95,7 +99,7 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 	}
 	$form_output = '';
 	ob_start();
-	require BUDDYFORMS_INCLUDES_PATH . '/resources/pfbc/Style/GlobalStyle.php';
+	require BUDDYFORMS_INCLUDES_PATH . 'resources/pfbc/Style/GlobalStyle.php';
 	$global_css = ob_get_clean();
 	if ( ! empty( $global_css ) ) {
 		$global_css = buddyforms_minify_css( $global_css );
@@ -334,7 +338,7 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 
 	$echo_content = buddyforms_form_html( $args );
 	if ( $echo ) {
-    		 echo wp_kses( $form_output . $echo_content, buddyforms_wp_kses_allowed_atts() );     
+		echo wp_kses( $form_output . $echo_content, buddyforms_wp_kses_allowed_atts() );
 	} else {
 		return wp_kses( $form_output . $echo_content, buddyforms_wp_kses_allowed_atts() );
 	}
@@ -378,7 +382,7 @@ function bf_get_default_post_to_edit( $post_type = 'post', $create_in_db = false
 	if ( $create_in_db ) {
 		$post_id = wp_insert_post(
 			array(
-				'post_title'  => __( 'Auto Draft' ),
+				'post_title'  => __( 'Auto Draft', 'buddyforms' ),
 				'post_type'   => $post_type,
 				'post_status' => 'auto-draft',
 			)
@@ -447,7 +451,7 @@ function bf_get_default_post_to_edit( $post_type = 'post', $create_in_db = false
 /**
  * Save the submited form and create a global array with the response array
  *
- * @package buddyforms
+ * @package BuddyForms
  * @since 1.5
  */
 

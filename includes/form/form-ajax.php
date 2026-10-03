@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 add_action( 'wp_ajax_buddyforms_ajax_edit_post', 'buddyforms_ajax_edit_post' );
 function buddyforms_ajax_edit_post() {
 	$post_id   = intval( $_POST['post_id'] );
@@ -95,7 +99,7 @@ function buddyforms_ajax_process_edit_post() {
 	$form_data = array();
 
 	if ( isset( $_POST['data'] ) ) {
-		parse_str( filter_var( wp_unslash( $_POST['data'] ), FILTER_SANITIZE_STRING ), $form_data );
+		parse_str( filter_var( wp_unslash( $_POST['data'] ), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES ), $form_data );
 		$_POST = $form_data;
 	}
 

@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Process the form submission. Validate all. Saves or update the post and post meta. Sent aut notifications if needed
  *
@@ -629,7 +633,7 @@ function buddyforms_update_post( $args ) {
 			$post_schedule         = Element_Date::create_from_format( $post_schedule_request );
 			if ( ! empty( $post_schedule ) ) {
 				$post_schedule_ts         = $post_schedule->getTimestamp();
-				$post_date                = date( 'Y-m-d H:i:s', $post_schedule_ts );
+				$post_date                = gmdate( 'Y-m-d H:i:s', $post_schedule_ts );
 				$bf_post['post_date']     = $post_date;
 				$bf_post['post_date_gmt'] = get_date_from_gmt( $post_schedule->format( 'Y-m-d H:i:s' ), 'Y-m-d H:i:s' );
 			}
@@ -954,7 +958,7 @@ function buddyforms_get_field_output( $post_id, $custom_field, $post, $meta_valu
 						$attachment_thumbnail_url = wp_get_attachment_image_src( $attachment_id, 'thumbnail' );
 
 						if ( ! $attachment_thumbnail_url ) {
-							$attachment_thumbnail_url = array( BUDDYFORMS_ASSETS . '/images/multimedia.png' );
+							$attachment_thumbnail_url = array( BUDDYFORMS_ASSETS . 'images/multimedia.png' );
 						}
 
 						$result[] = "<a href='" . $attachment_url . "' target='_blank'> <img src='" . $attachment_thumbnail_url[0] . "' /></a>";

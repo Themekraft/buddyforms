@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var int $size */
 /** @var string[] $errors */
 ?>

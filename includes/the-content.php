@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // We need this function to support yoast seo. For a strange reason yoast seo remove the dashicons
 add_action( 'template_include', 'buddyforms_template_include' );
 function buddyforms_template_include( $template ) {
@@ -62,11 +66,48 @@ function buddyforms_attached_page_content( $content ) {
 				$new_content = $bf_form;
 			}
 
-			$content = $new_content;
+			$content = apply_filters('buddyforms_the_content', $new_content, $content, $form_slug);
+
 		}
 	}
 	// Rebuild the removed filters
 	add_filter( 'the_content', 'buddyforms_attached_page_content', 50, 1 );
 
 	return $content;
+}
+
+/**
+ *
+ * check if a dynamic content place exist to display the buddyforms related views
+ *
+ * @param $content
+ *
+ * @return string
+ */
+add_filter( 'buddyforms_the_content', 'buddyforms_the_conten_dynamic', 10, 3 );
+function buddyforms_the_conten_dynamic( $new_content, $content, $form_slug ){
+	global $buddyforms;
+
+	if( empty( $buddyforms[$form_slug]['attached_page_div_id'] ) ){
+		return $new_content;
+	}
+
+	ob_start();
+	?>
+	<script>
+		jQuery(document).ready(function() { 
+
+			if( jQuery("<?php echo $buddyforms[$form_slug]['attached_page_div_id']; ?>").length ){
+				jQuery("<?php echo $buddyforms[$form_slug]['attached_page_div_id']; ?>").html('');
+				jQuery("#buddyforms_dashboard_auto_update").appendTo("<?php echo $buddyforms[$form_slug]['attached_page_div_id']; ?>");
+				jQuery("#buddyforms_dashboard_auto_update").show();
+			}
+
+		});
+	</script>
+	<?php
+	$script = ob_get_clean();
+
+	return $content .'<div id="buddyforms_dashboard_auto_update" style="display:none;">'.$new_content.'</div>'. $script;
+
 }

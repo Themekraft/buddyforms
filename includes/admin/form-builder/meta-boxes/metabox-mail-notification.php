@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function buddyforms_mail_notification_screen() {
 	global $post, $buddyform;
 
@@ -23,7 +27,7 @@ function buddyforms_mail_notification_screen() {
 			buddyforms_mail_notification_form( $key, $buddyform['slug'] );
 		}
 	} else {
-		echo '<div id="no-trigger-mailcontainer">' . esc_html__( 'No Mail Notification Trigger so far.' ) . '</div>';
+		echo '<div id="no-trigger-mailcontainer">' . esc_html__( 'No Mail Notification Trigger so far.', 'buddyforms' ) . '</div>';
 	}
 	echo '<div id="mailcontainer"></div>';
 	echo '</ul>';
@@ -64,7 +68,7 @@ function buddyforms_post_status_mail_notification_screen() {
 			buddyforms_new_post_status_mail_notification_form( $buddyform['mail_notification'][ $key ]['mail_trigger'], $buddyform['slug'] );
 		}
 	} else {
-		echo '<div id="no-trigger-post-status-mail-container">' . esc_html__( 'No Post Status Mail Notification Trigger so far.' ) . '</div>';
+		echo '<div id="no-trigger-post-status-mail-container">' . esc_html__( 'No Post Status Mail Notification Trigger so far.', 'buddyforms' ) . '</div>';
 	}
 	echo '<div id="post-status-mail-container"></div>';
 	echo '</ul>';
@@ -83,7 +87,7 @@ function buddyforms_mail_notification_form( $trigger = false, $form_slug = '' ) 
 	global $buddyform;
 
 	if ( $trigger == false ) {
-		$trigger = substr( md5( time() * rand() ), 0, 10 );
+		$trigger = substr( md5( time() * wp_rand() ), 0, 10 );
 	}
 
 	$is_edit_action = ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'edit' );

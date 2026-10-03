@@ -20,7 +20,7 @@ class Element_Month extends Element_Textbox {
 	 * @param array|null $properties
 	 */
 	public function __construct( $label, $name, array $properties = null ) {
-		$this->_attributes['placeholder'] = 'YYYY-MM (e.g. ' . date( 'Y-m' ) . ')';
+		$this->_attributes['placeholder'] = 'YYYY-MM (e.g. ' . gmdate( 'Y-m' ) . ')';
 		$this->_attributes['title']       = $this->_attributes['placeholder'];
 
 		parent::__construct( $label, $name, $properties );

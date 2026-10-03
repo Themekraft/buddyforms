@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use tk\GuzzleHttp\Client;
 use tk\GuzzleHttp\Psr7\Request;
 
@@ -76,7 +80,9 @@ add_action( 'wp_ajax_buddyforms_new_page', 'buddyforms_new_page' );
  */
 function buddyforms_new_page() {
 
-	if ( ! is_admin() ) {
+	check_ajax_referer( 'fac_drop', 'nonce' );
+	
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 

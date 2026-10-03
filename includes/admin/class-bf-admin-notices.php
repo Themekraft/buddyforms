@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * @package WordPress
  * @subpackage BuddyForms
@@ -77,13 +81,13 @@ class BfAdminNotices {
 
 			$post_types = buddyforms_get_post_types();
 
-			if ( ! isset( $post_types[ $buddyform['post_type'] ] ) ) {
-				$messages['pro'] = __( 'BuddyForms Professional is required to use this Form. You need to upgrade to the Professional Plan. The Free and Starter Versions does not support Custom Post Types <a href="edit.php?post_type=buddyforms&page=buddyforms-pricing">Go Pro Now</a>', 'buddyforms' );
+				if ( ! isset( $post_types[ $buddyform['post_type'] ] ) ) {
+					$messages['pro'] = __( 'BuddyForms Professional is required to use this Form. You need to upgrade to the Professional Plan. The Free and Starter Versions does not support Custom Post Types <a href="edit.php?post_type=buddyforms&page=buddyforms_bundle_screen">Go Pro Now</a>', 'buddyforms' );
 			}
 			if ( buddyforms_core_fs()->is__premium_only() ) {
 				if ( buddyforms_core_fs()->is_plan( 'professional' ) || buddyforms_core_fs()->is_trial() ) {
 					if ( ! in_array( $buddyform['post_type'], $post_types ) ) {
-						$messages[] = __( 'The Selected Post Type does not exist', 'buddyforms' );
+						$messages[] = __( 'The selected post type does not exist.', 'buddyforms' );
 					}
 				}
 			}
@@ -91,8 +95,8 @@ class BfAdminNotices {
 
 		if ( isset( $buddyform['form_fields'] ) ) {
 			foreach ( $buddyform['form_fields'] as $field_key => $field ) {
-				if ( $field['type'] == 'taxonomy' ) {
-					$messages['pro'] = __( 'BuddyForms Professional is required to use this Form. You need to upgrade to the Professional Plan. The Free and Starter Versions does not support the required Form Elements <a href="edit.php?post_type=buddyforms&page=buddyforms-pricing">Go Pro Now</a>', 'buddyforms' );
+					if ( $field['type'] == 'taxonomy' ) {
+						$messages['pro'] = __( 'BuddyForms Professional is required to use this Form. You need to upgrade to the Professional Plan. The Free and Starter Versions does not support the required Form Elements <a href="edit.php?post_type=buddyforms&page=buddyforms_bundle_screen">Go Pro Now</a>', 'buddyforms' );
 				}
 			}
 		}

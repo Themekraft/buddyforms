@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_track( $event_name, $data_args = array() ) {
 	try {
 		$is_debug = ( ! defined( 'WP_DEBUG' ) || ( defined( 'WP_DEBUG' ) && WP_DEBUG ) );
@@ -32,13 +36,6 @@ function buddyforms_track( $event_name, $data_args = array() ) {
 
 					$data = array( 'data' => base64_encode( json_encode( $data ) . '|' . wp_nonce_tick() ) );
 
-					$free_track_api = new TkTrackApi();
-					$res            = $free_track_api->track( $data );
-
-					// Check for success
-					if ( empty( $res ) || empty( $res->success ) ) {
-						error_log( 'buddyforms::analytics', E_USER_NOTICE );
-					}
 				}
 			}
 		}
@@ -51,9 +48,9 @@ function buddyforms_track( $event_name, $data_args = array() ) {
 
 function buddyforms_track_admin_pages( $hook ) {
 	if ( ! empty( $hook ) ) {
-		if ( $hook === 'buddyforms_page_buddyforms-contact' || $hook === 'buddyforms_page_buddyforms-account' ||
-			 $hook === 'buddyforms_page_buddyforms-affiliation' || $hook === 'buddyforms_page_buddyforms-addons' ||
-			 $hook === 'buddyforms_page_buddyforms-pricing' || $hook === 'buddyforms_page_buddyforms_welcome_screen' ) {
+			if ( $hook === 'buddyforms_page_buddyforms-contact' || $hook === 'buddyforms_page_buddyforms-account' ||
+				 $hook === 'buddyforms_page_buddyforms-affiliation' || $hook === 'buddyforms_page_buddyforms-addons' ||
+				 $hook === 'buddyforms_page_buddyforms_bundle_screen' || $hook === 'buddyforms_page_buddyforms_welcome_screen' ) {
 			buddyforms_track( $hook );
 		} elseif ( $hook === 'post-new.php' ) {
 			$action_create = empty( $_REQUEST['action'] );

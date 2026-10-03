@@ -1,4 +1,11 @@
-<?php global $buddyforms, $form_slug, $post_id; ?>
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+global $buddyforms, $form_slug, $post_id;
+?>
+
 <script>
 	jQuery(document).ready(function () {
 		jQuery(".bf_submit_form<?php echo esc_js( $post_id ); ?> :input").attr("disabled", true);

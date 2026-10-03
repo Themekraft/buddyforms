@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * BuddyForms Session
  *
@@ -52,12 +56,12 @@ class BuddyForms_Session {
 		}
 
 		if ( ! class_exists( 'Recursive_ArrayAccess' ) ) {
-			require_once BUDDYFORMS_INCLUDES_PATH . '/resources/sessions/class-recursive-arrayaccess.php';
+			require_once BUDDYFORMS_INCLUDES_PATH . 'resources/sessions/class-recursive-arrayaccess.php';
 		}
 
 		if ( ! class_exists( 'BF_Session' ) ) {
-			require_once BUDDYFORMS_INCLUDES_PATH . '/resources/sessions/class-bf-session.php';
-			require_once BUDDYFORMS_INCLUDES_PATH . '/resources/sessions/bf-session.php';
+			require_once BUDDYFORMS_INCLUDES_PATH . 'resources/sessions/class-bf-session.php';
+			require_once BUDDYFORMS_INCLUDES_PATH . 'resources/sessions/bf-session.php';
 		}
 
 		add_action( 'init', array( $this, 'init' ), - 1 );

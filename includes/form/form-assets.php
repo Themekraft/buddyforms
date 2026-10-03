@@ -29,7 +29,7 @@ class BuddyFormsAssets {
 	/**
 	 * Check if a buddyforms view is displayed and load the needed styles and scripts
 	 *
-	 * @package buddyforms
+	 * @package BuddyForms
 	 * @since 1.0
 	 */
 	function front_js_loader() {
@@ -74,23 +74,20 @@ class BuddyFormsAssets {
 	}
 
 	/**
-	 * Register buddyforms thickbox this library is used from other buddyforms extension
+	 * Register the BuddyForms thickbox shim. Used by BuddyForms core and
+	 * downstream add-ons (BuddyForms-Modal, BuddyForms-Moderation, ...) that
+	 * emit `<a class="bf-thickbox">` trigger links. The shim binds WordPress
+	 * core's bundled thickbox to our `.bf-thickbox` selectors instead of
+	 * forking the entire 700-line library; the script handle and CSS class
+	 * remain the same public API as before.
 	 */
 	function register_bf_thickbox() {
-		wp_register_style( 'buddyforms-thickbox', BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox.css', array(), BUDDYFORMS_VERSION );
-		wp_register_script( 'buddyforms-thickbox', BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox.js', array( 'jquery' ), BUDDYFORMS_VERSION );
-		wp_localize_script(
+		wp_register_script(
 			'buddyforms-thickbox',
-			'bf_thickboxL10n',
-			array(
-				'next'             => __( 'Next &gt;' ),
-				'prev'             => __( '&lt; Prev' ),
-				'image'            => __( 'Image' ),
-				'of'               => __( 'of' ),
-				'close'            => __( 'Close' ),
-				'noiframes'        => __( 'This feature requires inline frames. You have iframes disabled or your browser does not support them.' ),
-				'loadingAnimation' => includes_url( 'js/thickbox/loadingAnimation.gif' ),
-			)
+			BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox-init.js',
+			array( 'jquery', 'thickbox' ),
+			BUDDYFORMS_VERSION,
+			true
 		);
 	}
 
@@ -116,7 +113,7 @@ class BuddyFormsAssets {
 	 * @since 2.5.9 return the form slug
 	 * @since 2.4.6 added the $form_slug as parameter
 	 *
-	 * @package buddyforms
+	 * @package BuddyForms
 	 * @since 1.0
 	 */
 	public static function front_js_css( $content = '', $form_slug = '' ) {
@@ -151,7 +148,7 @@ class BuddyFormsAssets {
 					'empty'             => ! empty( $password_strength_settings['hint_text'] ) && ! empty( $password_strength_settings['hint_text'] ) ? $password_strength_settings['hint_text'] : __( 'Strength indicator', 'buddyforms' ),
 					'short'             => ! empty( $password_strength_settings['lavel_1'] ) && ! empty( $password_strength_settings['lavel_1'] ) ? $password_strength_settings['lavel_1'] : __( 'Short: Your password is too short.', 'buddyforms' ),
 					'bad'               => ! empty( $password_strength_settings['lavel_2'] ) && ! empty( $password_strength_settings['lavel_2'] ) ? $password_strength_settings['lavel_2'] : __( 'Password Strength: Weak', 'buddyforms' ),
-					'good'              => ! empty( $password_strength_settings['lavel_3'] ) && ! empty( $password_strength_settings['lavel_3'] ) ? $password_strength_settings['lavel_3'] : _x( 'Password Strength: OK', 'buddyforms' ),
+					'good'              => ! empty( $password_strength_settings['lavel_3'] ) && ! empty( $password_strength_settings['lavel_3'] ) ? $password_strength_settings['lavel_3'] : _x( 'Password Strength: OK', 'password strength', 'buddyforms' ),
 					'strong'            => ! empty( $password_strength_settings['lavel_4'] ) && ! empty( $password_strength_settings['lavel_4'] ) ? $password_strength_settings['lavel_4'] : __( 'Password Strength: Strong', 'buddyforms' ),
 					'mismatch'          => ! empty( $password_strength_settings['mismatch'] ) && ! empty( $password_strength_settings['mismatch'] ) ? $password_strength_settings['mismatch'] : __( 'Mismatch', 'buddyforms' ),
 					'hint_text'         => ! empty( $password_strength_settings['hint_text'] ) && ! empty( $password_strength_settings['hint_text'] ) ? $password_strength_settings['hint_text'] : __( 'Hint: The password should be at least twelve characters long. To make it stronger, use upper and lower case letters, numbers, and symbols like ! \" ? $ % ^ &amp; ).', 'buddyforms' ),
@@ -233,7 +230,7 @@ class BuddyFormsAssets {
 	 *
 	 * @since 0.1-beta
 	 *
-	 * @package buddyforms
+	 * @package BuddyForms
 	 */
 	public function admin_styles( $hook_suffix ) {
 		global $post;
@@ -279,7 +276,7 @@ class BuddyFormsAssets {
 	 *
 	 * @since 0.1-beta
 	 *
-	 * @package buddyforms
+	 * @package BuddyForms
 	 */
 	function admin_js( $hook_suffix ) {
 		global $post, $wp_query, $buddyforms;
@@ -325,8 +322,8 @@ class BuddyFormsAssets {
 			$admin_text_array['uncheck'] = __( 'Uncheck all', 'buddyforms' );
 
 			if ( count( $templates ) == 0 ) {
-				$registration_gdpr_template = __( "By signing up on our site you agree to our terms and conditions [link].  We'll create a new user account for you based on your submissions.  All data you submit will be stored on our servers.  After your registration we'll instantly send you an email with an activation link to verify your mail address.   ", 'buddyforms' );
-				$post_gdpr_template         = __( 'By submitting this form you grant us the rights <br> • to store your submitted contents in our database  <br>• to generate a post on our site based on your data  <br>• to make this post publicly accessible  ', 'buddyforms' );
+				$registration_gdpr_template = __( "By signing up on our site you agree to our terms and conditions [link]. We'll create a new user account for you based on your submissions. All data you submit will be stored on our servers. After your registration we'll instantly send you an email with an activation link to verify your mail address.", 'buddyforms' );
+				$post_gdpr_template         = __( 'By submitting this form you grant us the rights<br>• to store your submitted contents in our database<br>• to generate a post on our site based on your data<br>• to make this post publicly accessible', 'buddyforms' );
 				$contact_gdpr_template      = __( 'By submitting these data you agree that we store all the data from the form our server. We may answer you via mail.', 'buddyforms' );
 				$templates['registration']  = $registration_gdpr_template;
 				$templates['post']          = $post_gdpr_template;
@@ -407,7 +404,7 @@ class BuddyFormsAssets {
 		) {
 
 			// Change the footer text
-			$footer_text = sprintf( __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
+			$footer_text = sprintf( /* translators: %1$s: opening link tag to the plugin reviews; %2$s: closing link tag. */ __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
 		}
 
 		return $footer_text;

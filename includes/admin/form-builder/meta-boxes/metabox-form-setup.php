@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_metabox_form_setup() {
 	global $post;
 
@@ -32,7 +36,9 @@ function buddyforms_metabox_form_setup() {
 	$after_update_submit_message_text = isset( $buddyform['after_update_submit_message_text'] ) ? $buddyform['after_update_submit_message_text'] : buddyforms_default_message_on_update();
 	$empty_submit_list_message_text   = isset( $buddyform['empty_submit_list_message_text'] ) ? $buddyform['empty_submit_list_message_text'] : buddyforms_default_message_on_empty_submission_list();
 
-	$attached_page     = isset( $buddyform['attached_page'] ) ? $buddyform['attached_page'] : 'false';
+	$attached_page     			  = isset( $buddyform['attached_page'] ) ? $buddyform['attached_page'] : 'false';
+	$attached_page_div_id         = isset( $buddyform['attached_page_div_id'] ) ? stripslashes( $buddyform['attached_page_div_id'] ) : '';
+	
 	$status            = isset( $buddyform['status'] ) ? $buddyform['status'] : 'false';
 	$comment_status    = isset( $buddyform['comment_status'] ) ? $buddyform['comment_status'] : 'false';
 	$revision          = isset( $buddyform['revision'] ) ? $buddyform['revision'] : 'false';
@@ -82,10 +88,10 @@ function buddyforms_metabox_form_setup() {
 		'buddyforms_options[after_submit]',
 		array(
 			'display_message'    => __( 'Display Message', 'buddyforms' ),
-			'display_form'       => __( 'Display the Form and Message' ),
+			'display_form'       => __( 'Display the Form and Message', 'buddyforms' ),
 			'display_page'       => __( 'Display Page Contents', 'buddyforms' ),
-			'display_post'       => __( 'Display the Post' ),
-			'display_posts_list' => __( 'Display the User\'s Post List' ),
+			'display_post'       => __( 'Display the Post', 'buddyforms' ),
+			'display_posts_list' => __( 'Display the User\'s Post List', 'buddyforms' ),
 			'redirect'           => __( 'Redirect to url', 'buddyforms' ),
 		),
 		array(
@@ -210,7 +216,7 @@ function buddyforms_metabox_form_setup() {
 		),
 		array(
 			'value'     => $public_submit_login,
-			'shortDesc' => __( 'Give your existing customers the choice to login. Just place a login form above or under the form. The Login Form is only visible for logged of user.', 'buddyforms' ),
+			'shortDesc' => __( 'Give your existing customers the option to log in. Just place a login form above or below the form. The login form is only visible to logged-out users.', 'buddyforms' ),
 			'class'     => 'public-submit-option',
 		)
 	);
@@ -367,7 +373,7 @@ function buddyforms_metabox_form_setup() {
 														  sprintf( '<p class="description">%s<br> %s', __( 'Important!', 'buddyforms' ), __( 'The original page content does not get changed. You are free to use any kind of content on the page itself. View a form or list the users submissions with Shortcodes. For the submissions management new endpoints get create for you. You can combine forms under the same page. Its a powerful option.', 'buddyforms' ) ) .
 														  sprintf( '<a target="_blank" href="http://docs.buddyforms.com/article/139-select-page-in-the-formbuilder">%s</a></p>', __( 'Read the Documentation', 'buddyforms' ) ) .
 														  sprintf( '<h6>%s<br><small class="siteurl_create_html">' . $siteurl_create_html . '</small></h6>', __( 'Form URL', 'buddyforms' ) ) .
-														  sprintf( '<h6>%s<br><small class="siteurl_edit_html">' . $siteurl_edit_html . '</small></h6>', __( 'User Submissions URL', 'buddyforms' ) ) .
+														  sprintf( '<br><h6>%s<br><small class="siteurl_edit_html">' . $siteurl_edit_html . '</small></h6>', __( 'User Submissions URL', 'buddyforms' ) ) .
 														  '</div>'
 	);
 
@@ -383,6 +389,14 @@ function buddyforms_metabox_form_setup() {
 		)
 	);
 
+	$element = new Element_Textbox( '<b>' . __( "Dynamic Content by ID or Class", 'buddyforms' ) . '</b>', "buddyforms_options[attached_page_div_id]", array(
+		'value'     => $attached_page_div_id,
+		'class' => 'bf_hide_if_attached_page_none',
+		'shortDesc' => __( 'Create an individual layout and define the BuddyForms output with an ID or by class. The best practice is to use an ID starting with a # like:"#UniqueID" but it also works with a class name starting with a . Like: ".UniqueClass". Please make sure only to use the class name once so that it acts like an ID.', 'buddyforms' ),
+	) );
+
+	$form_setup['Edit Submissions'][] = $element;
+	
 	$element = new Element_Checkbox(
 		'<b>' . __( 'Admin Bar', 'buddyforms' ) . '</b>',
 		'buddyforms_options[admin_bar]',
@@ -569,7 +583,7 @@ function buddyforms_metabox_form_setup() {
 										</th>
 										<td>
 											<?php echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() ); ?>
-											<p class="description"><?php echo wp_kses( $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() ); ?></p>
+											<p class="description"><?php echo $field->getShortDesc(); // WPCS: XSS ok. ?></p>
 										</td>
 									</tr>
 									<?php
