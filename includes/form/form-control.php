@@ -59,10 +59,6 @@ function buddyforms_process_submission( $args = array() ) {
 		$user_id = get_current_user_id();
 	}
 
-	if ( empty( $user_id ) && ! empty( $post_author ) ) {
-		$user_id = $post_author;
-	}
-
 	// Check if multisite is enabled and switch to the form blog id
 	buddyforms_switch_to_form_blog( $form_slug );
 
@@ -270,17 +266,20 @@ function buddyforms_process_submission( $args = array() ) {
 			$the_post = get_post( $post_id );
 		}
 
-		// Check if the user is author of the post
-		if ( is_user_logged_in() ) {
-			// Check if the post to edit match with the form setting
-			if ( $the_post->post_type !== $post_type ) {
-				$args = array(
-					'hasError'      => true,
-					'error_message' => apply_filters( 'buddyforms_user_can_edit_error_message', __( 'You do not have the required user role to use this form', 'buddyforms' ) ),
-				);
+		// Check if the post to edit match with the form setting. An existing post must match the form's
+		// post type, not the one sent in the request.
+		$target_post        = get_post( $post_id );
+		$expected_post_type = $post_type;
+		if ( ! empty( $target_post ) && $target_post->post_status !== 'auto-draft' && ! empty( $buddyforms[ $form_slug ]['post_type'] ) ) {
+			$expected_post_type = $buddyforms[ $form_slug ]['post_type'];
+		}
+		if ( empty( $target_post ) || $target_post->post_type !== $expected_post_type ) {
+			$args = array(
+				'hasError'      => true,
+				'error_message' => apply_filters( 'buddyforms_user_can_edit_error_message', __( 'You do not have the required user role to use this form', 'buddyforms' ) ),
+			);
 
-				return $args;
-			}
+			return $args;
 		}
 	}
 
@@ -351,26 +350,24 @@ function buddyforms_process_submission( $args = array() ) {
 
 	// check if the user has the roles and capabilities
 	$user_can_edit = false;
-	if ( ! bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
-		$current_post_is_draft   = ( ! empty( $the_post ) && $the_post->post_status == 'draft' );
-		$current_user_can_edit   = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug );
-		$current_user_can_create = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_create', array(), $form_slug );
-		$current_user_can_draft  = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
-		if ( $current_post_is_draft ) {
-			// Let the user edit the draft until is published
-			$user_can_edit = ( $current_user_can_draft || $current_user_can_edit ) && $current_user_can_create;
-		} else {
-			if ( $action == 'save' && bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_create', array(), $form_slug ) ) {
-				$user_can_edit = true;
-			}
-			if ( $action == 'update' && ( bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug ) ) ) {
-				$user_can_edit = true;
+	if ( ! bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
+		$current_user_can_edit   = bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug );
+		$current_user_can_create = bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_create', array(), $form_slug );
+		$current_user_can_draft  = bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
+		if ( $action == 'save' ) {
+			// Public submission only lets visitors create new entries, never change existing ones.
+			$is_public_submit = isset( $buddyforms[ $form_slug ]['public_submit'] ) && $buddyforms[ $form_slug ]['public_submit'] == 'public_submit';
+			$user_can_edit    = $current_user_can_create || $is_public_submit;
+		} elseif ( ! empty( $user_id ) && (int) get_post_field( 'post_author', $post_id ) === (int) $user_id ) {
+			// Only the author can change an existing entry. Add-ons can grant more through the buddyforms_user_can_edit filter.
+			if ( get_post_status( $post_id ) === 'draft' ) {
+				// Let the user edit the draft until is published
+				$user_can_edit = ( $current_user_can_draft || $current_user_can_edit ) && $current_user_can_create;
+			} else {
+				$user_can_edit = $current_user_can_edit;
 			}
 		}
 	} else {
-		$user_can_edit = true;
-	}
-	if ( isset( $buddyforms[ $form_slug ]['public_submit'] ) && $buddyforms[ $form_slug ]['public_submit'] == 'public_submit' ) {
 		$user_can_edit = true;
 	}
 	$user_can_edit = apply_filters( 'buddyforms_user_can_edit', $user_can_edit, $form_slug, $post_id );

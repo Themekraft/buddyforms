@@ -15,3 +15,4 @@
 /.gitattributes
 /assets/resources/tk_icons/Read Me.txt
 /vendor-scope/buddyforms/vendor/*/*/tests
+/.release-tooling

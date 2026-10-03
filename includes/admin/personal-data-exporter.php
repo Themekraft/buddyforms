@@ -9,61 +9,72 @@ function buddyforms_exporter( $email_address, $page = 1 ) {
 	$number       = 500; // Limit us to avoid timing out
 	$page         = (int) $page;
 	$export_items = array();
-	$my_data      = array();
+	$done         = true;
+
+	// Only entries written by the user who owns the requested email address belong in the export.
+	$user = get_user_by( 'email', $email_address );
+	if ( empty( $user ) || empty( $buddyforms ) || ! is_array( $buddyforms ) ) {
+		return array(
+			'data' => $export_items,
+			'done' => $done,
+		);
+	}
+
 	foreach ( $buddyforms as $form_slug => $buddyform ) {
+		if ( empty( $buddyform['post_type'] ) ) {
+			continue;
+		}
 
 		$query_args = array(
-			'post_type'    => $buddyform['post_type'],
-			'author_email' => $email_address,
-			'paged'        => $page,
+			'post_type'      => $buddyform['post_type'],
+			'author'         => $user->ID,
+			'post_status'    => 'any',
+			'meta_key'       => '_bf_form_slug',
+			'meta_value'     => $form_slug,
+			'posts_per_page' => $number,
+			'paged'          => $page,
+			'no_found_rows'  => true,
 		);
 
 		$the_query = new WP_Query( $query_args );
 
-		if ( $the_query->have_posts() ) {
+		foreach ( $the_query->posts as $post ) {
+			$my_data   = array();
+			$my_data[] = array(
+				'name'  => __( 'Title', 'buddyforms' ),
+				'value' => get_the_title( $post ),
+			);
+			$my_data[] = array(
+				'name'  => __( 'Content', 'buddyforms' ),
+				'value' => $post->post_content,
+			);
 
-			$i = 0;
-			while ( $the_query->have_posts() ) {
-				$the_query->the_post();
-
-				$my_data[] = array(
-					'name'  => __( 'Title', 'buddyforms' ),
-					'value' => get_the_title(),
-				);
-				$my_data[] = array(
-					'name'  => __( 'Content', 'buddyforms' ),
-					'value' => get_the_content(),
-				);
-
-				if ( isset( $buddyform['form_fields'] ) ) {
-					foreach ( $buddyform['form_fields'] as $field_key => $field ) {
-						$user_id   = get_the_author_meta( 'ID' );
-						$my_data[] = array(
-							'name'  => $field['name'],
-							'value' => get_post_meta( $user_id, $field['slug'], true ),
-						);
-					}
+			if ( isset( $buddyform['form_fields'] ) ) {
+				foreach ( $buddyform['form_fields'] as $field_key => $field ) {
+					$value     = get_post_meta( $post->ID, $field['slug'], true );
+					$my_data[] = array(
+						'name'  => $field['name'],
+						'value' => is_array( $value ) ? implode( ', ', array_map( 'strval', array_filter( $value, 'is_scalar' ) ) ) : $value,
+					);
 				}
 			}
 
-			wp_reset_postdata();
+			$export_items[] = array(
+				'group_id'    => $buddyform['slug'],
+				'group_label' => $buddyform['name'],
+				'item_id'     => "buddyform-{$buddyform['slug']}-{$post->ID}",
+				'data'        => $my_data,
+			);
 		}
 
-		$item_id = "buddyform-{$buddyform['slug']}";
-
-		$export_items[] = array(
-			'group_id'    => $buddyform['slug'],
-			'group_label' => $buddyform['name'],
-			'item_id'     => $item_id,
-			'data'        => $my_data,
-		);
+		if ( count( $the_query->posts ) === $number ) {
+			$done = false;
+		}
 	}
-
-	// Tell core if we have more comments to work on still
 
 	return array(
 		'data' => $export_items,
-		'done' => true,
+		'done' => $done,
 	);
 }
 

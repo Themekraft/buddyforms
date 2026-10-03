@@ -206,7 +206,6 @@ function validateAndUploadImage(field) {
 
     var current = jQuery(field);
     var id = current.attr("field-id");
-    var accepted_files = current.attr("accepted_files");
     jQuery("#" + id + "_label").text("");
     jQuery("#" + id + "_image").attr('src', "");
     jQuery("#field_" + id).val("");
@@ -225,8 +224,9 @@ function validateAndUploadImage(field) {
             data: {
                 action: 'upload_image_from_url',
                 url: encodeURIComponent(url),
-                accepted_files: accepted_files,
-                id: id
+                id: id,
+                form_slug: current.attr("form-slug"),
+                nonce: buddyformsGlobal.ajaxnonce
             },
             success: function (response) {
                 var result = JSON.parse(response);

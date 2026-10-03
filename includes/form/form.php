@@ -18,10 +18,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function buddyforms_create_edit_form( $args, $echo = true ) {
 	global $current_user, $buddyforms, $wp_query, $bf_form_response_args, $wp, $bf_form_error;
 
-	if ( isset( $_REQUEST['form_slug'] ) && isset( $_REQUEST['post_id'] ) && isset( $_REQUEST['_wpnonce'] ) ) {
+	if ( isset( $_REQUEST['form_slug'] ) && isset( $_REQUEST['post_id'] ) && isset( $_REQUEST['_wpnonce'] ) && ! empty( $_REQUEST['bf_entry_key'] )
+		&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'buddyforms_form_nonce' ) ) {
 		$form_slug       = filter_var( wp_unslash( $_REQUEST['form_slug'] ), FILTER_SANITIZE_STRING );
 		$post_id         = filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT );
-		$transient_name  = sprintf( 'buddyforms_transit_post_page_%s_%s', $form_slug, $post_id );
+		$entry_key       = sanitize_key( wp_unslash( $_REQUEST['bf_entry_key'] ) );
+		$transient_name  = buddyforms_failed_submission_transient_name( $form_slug, $post_id, $entry_key );
 		$transient_entry = get_transient( $transient_name );
 		if ( ! empty( $transient_entry ) ) {
 			/** @var ErrorHandler $global_error */
@@ -204,7 +206,7 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 					// Let the user edit the draft until is published
 					$current_user_can_create = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_create', array(), $form_slug );
 					$current_user_can_draft  = bf_user_can( $current_user->ID, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
-					$user_can_edit           = ( $current_user_can_draft || $current_user_can_edit ) && $current_user_can_create;
+					$user_can_edit           = $the_post->post_author == $current_user->ID && ( $current_user_can_draft || $current_user_can_edit ) && $current_user_can_create;
 				} else {
 					if ( $the_post->post_author == $current_user->ID && $current_user_can_edit ) {
 						$user_can_edit = true;
@@ -455,6 +457,22 @@ function bf_get_default_post_to_edit( $post_type = 'post', $create_in_db = false
  * @since 1.5
  */
 
+/**
+ * Name of the transient that keeps a failed submission so the form can show it again.
+ *
+ * The random key only travels in the redirect back to the visitor who submitted the form,
+ * so nobody else can load the submitted values.
+ *
+ * @param string $form_slug
+ * @param int    $post_id
+ * @param string $entry_key
+ *
+ * @return string
+ */
+function buddyforms_failed_submission_transient_name( $form_slug, $post_id, $entry_key ) {
+	return 'buddyforms_transit_post_page_' . md5( $form_slug . '|' . $post_id . '|' . $entry_key );
+}
+
 add_action( 'wp', 'buddyforms_form_response_no_ajax' );
 function buddyforms_form_response_no_ajax() {
 	global $buddyforms, $bf_form_response_args;
@@ -465,7 +483,8 @@ function buddyforms_form_response_no_ajax() {
 		if ( isset( $_REQUEST['post_id'] ) && isset( $_REQUEST['_wpnonce'] ) ) {
 			$post_id        = filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT );
 			$wp_nonce       = filter_var( wp_unslash( $_REQUEST['_wpnonce'] ), FILTER_SANITIZE_STRING );
-			$transient_name = sprintf( 'buddyforms_transit_post_page_%s_%s', $form_slug, $post_id );
+			$entry_key      = strtolower( wp_generate_password( 32, false ) );
+			$transient_name = buddyforms_failed_submission_transient_name( $form_slug, $post_id, $entry_key );
 		}
 
 		global $wp;
@@ -489,16 +508,18 @@ function buddyforms_form_response_no_ajax() {
 						'error'  => $global_error,
 						'post'   => buddyforms_sanitize( '', $_POST ),
 						'action' => $action,
-					)
+					),
+					HOUR_IN_SECONDS
 				);
 			}
-			$sendback = remove_query_arg( array( 'form_slug', 'post_id', '_wpnonce', 'bf_submitted' ), wp_get_referer() );
+			$sendback = remove_query_arg( array( 'form_slug', 'post_id', '_wpnonce', 'bf_submitted', 'bf_entry_key' ), wp_get_referer() );
 			$sendback = rtrim( $sendback, '/' );
 
 			$sendback = add_query_arg( 'form_slug', $form_slug, $sendback );
 			$sendback = add_query_arg( 'post_id', $post_id, $sendback );
 			$sendback = add_query_arg( 'bf_action', $action, $sendback );
 			$sendback = add_query_arg( '_wpnonce', $wp_nonce, $sendback );
+			$sendback = add_query_arg( 'bf_entry_key', $entry_key, $sendback );
 
 			wp_redirect( $sendback, 302 );
 			exit;
