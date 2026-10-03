@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * These functions are taken from the WordPress 3.6-BETA3-24432 release and heavily modified to work for us in the frontend.
  *

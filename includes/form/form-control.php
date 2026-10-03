@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Process the form submission. Validate all. Saves or update the post and post meta. Sent aut notifications if needed
  *

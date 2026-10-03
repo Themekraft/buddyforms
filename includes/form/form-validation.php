@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
  * The default validation is already covert. Let us do some extra work and also do the advanced validation server site.
  */

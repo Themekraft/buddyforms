@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_gdpr_shortcode_data_request( $atts ) {
 
 	// Captcha

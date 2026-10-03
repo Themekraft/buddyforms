@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Hooks near the bottom of profile page (if current user)
 add_action( 'show_user_profile', 'buddyforms_user_profile_fields' );
 

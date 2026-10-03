@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var string $field_id */
 /** @var string $default_option */
 /** @var string $field_type */

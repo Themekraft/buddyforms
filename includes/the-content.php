@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // We need this function to support yoast seo. For a strange reason yoast seo remove the dashicons
 add_action( 'template_include', 'buddyforms_template_include' );
 function buddyforms_template_include( $template ) {

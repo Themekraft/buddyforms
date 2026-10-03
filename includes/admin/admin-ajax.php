@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use tk\GuzzleHttp\Client;
 use tk\GuzzleHttp\Psr7\Request;
 

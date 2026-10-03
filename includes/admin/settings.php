@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //
 // Add the Settings Page to the BuddyForms Menu
 //

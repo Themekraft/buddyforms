@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function buddyforms_exporter( $email_address, $page = 1 ) {
 	global $buddyforms;
 

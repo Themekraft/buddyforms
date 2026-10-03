@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BuddyFormsSubmissionPage {
 	/**
 	 * @var BuddyForms_Submissions_List_Table

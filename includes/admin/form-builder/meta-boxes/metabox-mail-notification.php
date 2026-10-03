@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function buddyforms_mail_notification_screen() {
 	global $post, $buddyform;
 

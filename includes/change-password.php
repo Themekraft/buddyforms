@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_change_password_form( $redirect_url = '' ) {
 	global $post;
 

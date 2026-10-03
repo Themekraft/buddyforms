@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Plugin Name: BuddyForms
  * Plugin URI:  https://themekraft.com/buddyforms/

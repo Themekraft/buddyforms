@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
  * Freemius helper function to display individual go pro messages for the different arias of the admin ui
  */

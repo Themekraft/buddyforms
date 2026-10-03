@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function buddyforms_permissions_unregistered_screen() {
 	global $buddyform, $buddyforms;
 
