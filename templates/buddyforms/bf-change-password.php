@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var string $current_url */
 ?>
 <?php if ( isset( $_GET['bf-password-reset'] ) && $_GET['bf-password-reset'] == 'true' ) : ?>

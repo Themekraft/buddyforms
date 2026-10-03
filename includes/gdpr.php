@@ -1,10 +1,14 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_gdpr_shortcode_data_request( $atts ) {
 
 	// Captcha
-	$number_one = rand( 1, 9 );
-	$number_two = rand( 1, 9 );
+	$number_one = wp_rand( 1, 9 );
+	$number_two = wp_rand( 1, 9 );
 
 	if ( function_exists( 'wp_create_user_request' ) ) {
 

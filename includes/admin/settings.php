@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 //
 // Add the Settings Page to the BuddyForms Menu
 //
@@ -295,7 +299,7 @@ function buddyforms_settings_page_tabs_content() {
 						<div class="postbox buddyforms-metabox">
 							<h3><span><?php esc_html_e( 'Import Forms', 'buddyforms' ); ?></span></h3>
 							<div class="inside">
-								<p><?php esc_html_e( 'Import the form from a .json file. This file can be obtained by exporting the form from the list view.' ); ?></p>
+								<p><?php esc_html_e( 'Import the form from a .json file. This file can be obtained by exporting the form from the list view.', 'buddyforms' ); ?></p>
 								<form method="post" enctype="multipart/form-data">
 									<!--									<p>-->
 									<!--										<b>Type:</b>-->
@@ -311,7 +315,7 @@ function buddyforms_settings_page_tabs_content() {
 									<p>
 										<input type="hidden" name="buddyforms_action" value="import_settings"/>
 										<?php wp_nonce_field( 'buddyforms_import_nonce', 'buddyforms_import_nonce' ); ?>
-										<?php submit_button( __( 'Import' ), 'secondary', 'submit', false ); ?>
+										<?php submit_button( __( 'Import', 'buddyforms' ), 'secondary', 'submit', false ); ?>
 									</p>
 								</form>
 							</div><!-- .inside -->

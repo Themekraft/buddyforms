@@ -22,8 +22,7 @@
     "freemius/wordpress-sdk": "^2.13.1"
   },
   "require-dev": {
-  	"consolidation/robo": "^1.0.0",
-    "bamarni/composer-bin-plugin": "dev-master"
+  	"bamarni/composer-bin-plugin": "dev-master"
   },
   "extra": {
     "bamarni-bin": {

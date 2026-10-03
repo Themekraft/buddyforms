@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
  * Freemius helper function to display individual go pro messages for the different arias of the admin ui
  */
@@ -35,7 +39,7 @@ function buddyforms_get_go_pro( $h2 = '', $h4 = '', $pros = array(), $link = tru
 		$tmp .= '</ul>';
 
 		if ( $link ) {
-			$tmp .= '<a class="buddyforms_get_pro button button-primary" href="' . buddyforms_core_fs()->get_upgrade_url() . '">' . __( 'Upgrade Now!', 'buddyforms' ) . '</a>';
+			$tmp .= '<a class="buddyforms_get_pro button button-primary" href="' . esc_url( admin_url( 'edit.php?post_type=buddyforms&page=buddyforms_bundle_screen' ) ) . '">' . __( 'Upgrade Now!', 'buddyforms' ) . '</a>';
 		}
 
 		$tmp .= '</div></div>';
@@ -82,7 +86,7 @@ function buddyforms_add_label_to_post_list( $post_states, $post ) {
 		if ( ! empty( $is_buddyform_post ) ) {
 			$title_field = buddyforms_get_form_field_by_slug( $is_buddyform_post, 'buddyforms_form_title' );
 			if ( ! empty( $title_field ) && ! empty( $title_field['generate_title'] ) ) {
-				$post_states = array( '<span class="bf-auto-generated-title">' . __( 'Generated Title', 'buddyform' ) . '</span>' );
+				$post_states = array( '<span class="bf-auto-generated-title">' . __( 'Generated Title', 'buddyforms' ) . '</span>' );
 			}
 		}
 	}
@@ -214,11 +218,11 @@ add_filter( 'display_post_states', 'buddyforms_add_display_post_states', 999, 2 
 function buddyforms_add_display_post_states( $post_states, $post ) {
 
 	if ( $post->ID === (int) get_option( 'buddyforms_preview_page' ) ) {
-		$post_states['buddyforms-preview-page'] = __( 'BuddyForms Preview Page', 'woocommerce' );
+		$post_states['buddyforms-preview-page'] = __( 'BuddyForms Preview Page', 'buddyforms' );
 	}
 
 	if ( $post->ID === (int) get_option( 'buddyforms_submissions_page' ) ) {
-		$post_states['buddyforms-submissions-page'] = __( 'BuddyForms Submissions Page', 'woocommerce' );
+		$post_states['buddyforms-submissions-page'] = __( 'BuddyForms Submissions Page', 'buddyforms' );
 	}
 
 	return $post_states;

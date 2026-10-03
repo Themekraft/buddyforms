@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 add_filter( 'buddyforms_admin_tabs', 'buddyforms_password_strength_admin_tab', 10, 1 );
 function buddyforms_password_strength_admin_tab( $tabs ) {
 

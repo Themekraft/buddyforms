@@ -1,10 +1,10 @@
 === BuddyForms ===
 Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol, gfirem, jnfdev, camiloluna
 Tags: custom form, form builder, registration, user registration, forms
-Requires at least: 4.0
-Tested up to: 6.9
+Requires at least: 5.9
+Tested up to: 7.1
 Stable tag: 2.10.0-beta.6
-Requires PHP: 5.3
+Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -268,15 +268,18 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 * Plugin Check: fixed plugin-header License field, removed the invalid Network header, stripped hidden macOS metadata, removed vestigial empty Freemius leftover directories, and dropped the manual `load_plugin_textdomain()` call (WordPress.org loads translations automatically since WP 4.6).
 * Cleaned up the user-facing English copy: "Admin rights can not get changed" → "cannot be changed", "logged of user" → "logged-out users", "logged off users / not need to get checked" → "logged-out users / do not need to be checked", missing text-domain on a login-form fallback string, and three template-error messages that were embedding `$form_slug` directly into `esc_html__()` calls (now sprintf'd so translators can localize the template). POT regenerated; bundled de_DE / es_ES / fr_FR / pt_BR / pt_PT / zh_CN translations carried forward where the meaning was preserved.
 * Updated Freemius SDK to 2.13.1.
-* Reworked the Go Pro page to use the parameterized shared pricing-page submodule with three site-license tiers.
+* Reworked the Go Pro page to use the parameterized shared pricing-page submodule with three site-license tiers. It now sells the BuddyForms Bundle instead of the all-products bundle.
+* The Go Pro menu is hidden on sites with an active license, including bundle licenses.
+* The Upgrade Now buttons in the form builder now open the Go Pro page instead of the Freemius pricing page.
 * Refreshed the Go Pro page card layout to a responsive CSS grid.
 * Highlighted the Go Pro menu link in the admin sidebar.
 * Cleaned up the Freemius SDK init: removed the dead first-path option lookup, the duplicate has_paid_plans key, and the empty try/catch wrapper.
 * Swapped file_get_contents() for cURL in the captcha implementation.
 * Plugin Check: replaced the forked thickbox library at `assets/resources/bf-thickbox/bf-thickbox.{js,css}` with a 17-line shim that calls WordPress core's `tb_init()` against the `.bf-thickbox` selector list. The 700-line forked library and its bundled stylesheet are gone; the public `bf-thickbox` CSS class and `buddyforms-thickbox` enqueue handle remain stable for downstream add-ons (BuddyForms-Modal, BuddyForms-Moderation, ...).
 * Plugin Check: aligned the readme `===` heading with the plugin-header `Plugin Name: BuddyForms` (was a long SEO-keyword string), aligned the plugin-header License field with the readme (`GPLv3` → `GPLv2`), and aligned `@package` docblocks across `BuddyForms.php` and `includes/` with the readable Plugin Name. Three TextDomainMismatch warnings on the shared pricing-page submodule are now suppressed at the submodule layer.
-* Release tooling: bumped the shared tk_script + pricing-page submodules.
-* Tested up to WordPress 6.9.
+* Plugin Check: every PHP file now prevents direct access, translatable strings use the buddyforms text domain and carry translator comments, and date(), rand(), strip_tags() and utf8_decode() were replaced with their WordPress equivalents.
+* Requires WordPress 5.9 or later and PHP 7.4 or later.
+* Tested up to WordPress 7.1.
 
 = 2.9.0 - 30 May 2025 =
 * Replaced file_get_contents with curl in captcha implementation.

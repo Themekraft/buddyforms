@@ -84,7 +84,7 @@ class BuddyFormsAssets {
 	function register_bf_thickbox() {
 		wp_register_script(
 			'buddyforms-thickbox',
-			BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox.js',
+			BUDDYFORMS_ASSETS . 'resources/bf-thickbox/bf-thickbox-init.js',
 			array( 'jquery', 'thickbox' ),
 			BUDDYFORMS_VERSION,
 			true
@@ -148,7 +148,7 @@ class BuddyFormsAssets {
 					'empty'             => ! empty( $password_strength_settings['hint_text'] ) && ! empty( $password_strength_settings['hint_text'] ) ? $password_strength_settings['hint_text'] : __( 'Strength indicator', 'buddyforms' ),
 					'short'             => ! empty( $password_strength_settings['lavel_1'] ) && ! empty( $password_strength_settings['lavel_1'] ) ? $password_strength_settings['lavel_1'] : __( 'Short: Your password is too short.', 'buddyforms' ),
 					'bad'               => ! empty( $password_strength_settings['lavel_2'] ) && ! empty( $password_strength_settings['lavel_2'] ) ? $password_strength_settings['lavel_2'] : __( 'Password Strength: Weak', 'buddyforms' ),
-					'good'              => ! empty( $password_strength_settings['lavel_3'] ) && ! empty( $password_strength_settings['lavel_3'] ) ? $password_strength_settings['lavel_3'] : _x( 'Password Strength: OK', 'buddyforms' ),
+					'good'              => ! empty( $password_strength_settings['lavel_3'] ) && ! empty( $password_strength_settings['lavel_3'] ) ? $password_strength_settings['lavel_3'] : _x( 'Password Strength: OK', 'password strength', 'buddyforms' ),
 					'strong'            => ! empty( $password_strength_settings['lavel_4'] ) && ! empty( $password_strength_settings['lavel_4'] ) ? $password_strength_settings['lavel_4'] : __( 'Password Strength: Strong', 'buddyforms' ),
 					'mismatch'          => ! empty( $password_strength_settings['mismatch'] ) && ! empty( $password_strength_settings['mismatch'] ) ? $password_strength_settings['mismatch'] : __( 'Mismatch', 'buddyforms' ),
 					'hint_text'         => ! empty( $password_strength_settings['hint_text'] ) && ! empty( $password_strength_settings['hint_text'] ) ? $password_strength_settings['hint_text'] : __( 'Hint: The password should be at least twelve characters long. To make it stronger, use upper and lower case letters, numbers, and symbols like ! \" ? $ % ^ &amp; ).', 'buddyforms' ),
@@ -404,7 +404,7 @@ class BuddyFormsAssets {
 		) {
 
 			// Change the footer text
-			$footer_text = sprintf( __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
+			$footer_text = sprintf( /* translators: %1$s: opening link tag to the plugin reviews; %2$s: closing link tag. */ __( 'If you like <strong>BuddyForms</strong> please leave us a %1$s&#9733;&#9733;&#9733;&#9733;&#9733;%2$s rating. A huge thank you from BuddyForms in advance!', 'buddyforms' ), '<a href="https://wordpress.org/support/view/plugin-reviews/buddyforms?filter=5#postform" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'buddyforms' ) . '">', '</a>' );
 		}
 
 		return $footer_text;

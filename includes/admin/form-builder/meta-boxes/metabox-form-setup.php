@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function buddyforms_metabox_form_setup() {
 	global $post;
 
@@ -84,10 +88,10 @@ function buddyforms_metabox_form_setup() {
 		'buddyforms_options[after_submit]',
 		array(
 			'display_message'    => __( 'Display Message', 'buddyforms' ),
-			'display_form'       => __( 'Display the Form and Message' ),
+			'display_form'       => __( 'Display the Form and Message', 'buddyforms' ),
 			'display_page'       => __( 'Display Page Contents', 'buddyforms' ),
-			'display_post'       => __( 'Display the Post' ),
-			'display_posts_list' => __( 'Display the User\'s Post List' ),
+			'display_post'       => __( 'Display the Post', 'buddyforms' ),
+			'display_posts_list' => __( 'Display the User\'s Post List', 'buddyforms' ),
 			'redirect'           => __( 'Redirect to url', 'buddyforms' ),
 		),
 		array(

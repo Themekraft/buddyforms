@@ -1,10 +1,16 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Plugin Name: BuddyForms
  * Plugin URI:  https://themekraft.com/buddyforms/
  * Description: Contact Forms, Post Forms for User Generated Content and Registration Forms easily build in minutes. Extendable with Addons!
  * Version: 2.10.0-beta.6
+ * Requires at least: 5.9
+ * Requires PHP: 7.4
  * Author: ThemeKraft
  * Author URI: https://themekraft.com/buddyforms/
  * License: GPLv2
@@ -643,7 +649,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		?>
 		<div class="notice notice-error is-dismissible">
 			<p><?php esc_html_e( 'PHP Version Update Required!', 'buddyforms' ); ?></p>
-			<p><?php esc_html_e( 'You are using PHP Version ' . PHP_VERSION, 'buddyforms' ); ?></p>
+			<p><?php /* translators: %s: PHP version running on the server. */ printf( esc_html__( 'You are using PHP Version %s', 'buddyforms' ), esc_html( PHP_VERSION ) ); ?></p>
 			<p><?php esc_html_e( 'Please make sure you have at least php version 5.3 installed.', 'buddyforms' ); ?></p>
 		</div>
 		<?php

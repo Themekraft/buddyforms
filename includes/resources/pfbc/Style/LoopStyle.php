@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var $bfdesign array Form design option */
 /** @var $form_slug string Form slug */
 /** @var $is_registration_form bool Determinate if the current form is a registration form */
