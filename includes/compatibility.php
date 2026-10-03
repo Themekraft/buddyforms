@@ -22,3 +22,30 @@ function front_js_loader1() {
 		wp_enqueue_style( 'media-views-alternative' );
 	}
 }
+
+/**
+ * Let the running copy of BuddyForms satisfy "Requires Plugins: buddyforms".
+ *
+ * WordPress (6.5+) matches plugin dependencies by folder name, and the premium
+ * build lives in `buddyforms-premium`. Without this, add-ons that declare
+ * BuddyForms as a dependency could not be activated next to the premium build.
+ * ACF PRO registers the same mapping for `advanced-custom-fields` since 6.8.2;
+ * older ACF PRO versions are covered here too.
+ *
+ * @param string $slug Dependency slug from a plugin's "Requires Plugins" header.
+ *
+ * @return string
+ */
+function buddyforms_plugin_dependencies_slug( $slug ) {
+	if ( 'buddyforms' === $slug ) {
+		return basename( BUDDYFORMS_INSTALL_PATH );
+	}
+
+	if ( 'advanced-custom-fields' === $slug && defined( 'ACF_PRO' ) && ACF_PRO && defined( 'ACF_PATH' ) ) {
+		return basename( ACF_PATH );
+	}
+
+	return $slug;
+}
+
+add_filter( 'wp_plugin_dependencies_slug', 'buddyforms_plugin_dependencies_slug' );
