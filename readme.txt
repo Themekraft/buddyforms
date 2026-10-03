@@ -277,7 +277,6 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 * Swapped file_get_contents() for cURL in the captcha implementation.
 * Plugin Check: replaced the forked thickbox library at `assets/resources/bf-thickbox/bf-thickbox.{js,css}` with a 17-line shim that calls WordPress core's `tb_init()` against the `.bf-thickbox` selector list. The 700-line forked library and its bundled stylesheet are gone; the public `bf-thickbox` CSS class and `buddyforms-thickbox` enqueue handle remain stable for downstream add-ons (BuddyForms-Modal, BuddyForms-Moderation, ...).
 * Plugin Check: aligned the readme `===` heading with the plugin-header `Plugin Name: BuddyForms` (was a long SEO-keyword string), aligned the plugin-header License field with the readme (`GPLv3` → `GPLv2`), and aligned `@package` docblocks across `BuddyForms.php` and `includes/` with the readable Plugin Name. Three TextDomainMismatch warnings on the shared pricing-page submodule are now suppressed at the submodule layer.
-* Tested up to WordPress 6.9.
 * Plugin Check: every PHP file now prevents direct access, translatable strings use the buddyforms text domain and carry translator comments, and date(), rand(), strip_tags() and utf8_decode() were replaced with their WordPress equivalents.
 * Requires WordPress 5.9 or later and PHP 7.4 or later.
 * Tested up to WordPress 7.1.
