@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.2
+Stable tag: 2.10.3
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,8 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.3 - 06 Oct 2026 =
+* Security: only users who can edit a form can export it, and the export link now carries a nonce.
 = 2.10.2 - 03 Oct 2026 =
 * The premium version now satisfies add-ons that list BuddyForms as a required plugin (WordPress 6.5+ plugin dependencies), and ACF PRO satisfies add-ons that require ACF.
 = 2.10.1 - 03 Oct 2026 =

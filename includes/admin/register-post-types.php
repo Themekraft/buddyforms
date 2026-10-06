@@ -695,7 +695,10 @@ function buddyforms_add_action_buttons( $actions, $post ) {
 
 		$preview_page_id = get_option( 'buddyforms_preview_page', true );
 
-		$actions['export']       = '<a href="' . esc_url( $url ) . '">' . __( 'Export', 'buddyforms' ) . '</a>';
+		if ( current_user_can( 'edit_post', $post->ID ) ) {
+			$url               = wp_nonce_url( $url, 'buddyforms_export_form_' . $post->ID );
+			$actions['export'] = '<a href="' . esc_url( $url ) . '">' . __( 'Export', 'buddyforms' ) . '</a>';
+		}
 		$actions['submissions']  = '<a href="?post_type=buddyforms&page=buddyforms_submissions&form_slug=' . $post->post_name . '">' . __( 'View Submissions', 'buddyforms' ) . '</a>';
 		$actions['preview_link'] = '<a target="_blank" href="' . $base . '/?page_id=' . $preview_page_id . '&preview=true&form_slug=' . $post->post_name . '">' . __( 'Preview Form', 'buddyforms' ) . '</a>';
 
@@ -708,13 +711,23 @@ add_filter( 'post_row_actions', 'buddyforms_add_action_buttons', 10, 2 );
 
 
 function buddyforms_export_form() {
-	if ( isset( $_REQUEST['my_action'] ) && 'export_form' == $_REQUEST['my_action'] ) {
+	if ( isset( $_REQUEST['my_action'] ) && 'export_form' === $_REQUEST['my_action'] ) {
+		$post_id = isset( $_REQUEST['post_id'] ) && is_scalar( $_REQUEST['post_id'] )
+			? filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT ) : false;
 
-		$buddyform_options = get_post_meta( filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT ), '_buddyforms_options', true );
+		if ( ! $post_id || $post_id < 1 || 'buddyforms' !== get_post_type( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( esc_html__( 'You are not allowed to export this form.', 'buddyforms' ), '', array( 'response' => 403 ) );
+		}
+
+		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! is_string( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'buddyforms_export_form_' . $post_id ) ) {
+			wp_die( esc_html__( 'Invalid form export nonce.', 'buddyforms' ), '', array( 'response' => 403 ) );
+		}
+
+		$buddyform_options = get_post_meta( $post_id, '_buddyforms_options', true );
 
 		header( 'Content-Type: application/json' );
 		header( 'Content-Disposition: attachment; filename="BuddyFormsExport.json"' );
-		echo json_encode( $buddyform_options );
+		echo wp_json_encode( $buddyform_options );
 		exit;
 	}
 }
