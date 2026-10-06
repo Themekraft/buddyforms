@@ -24,47 +24,91 @@ function buddyforms_ajax_edit_post() {
 add_action( 'wp_ajax_bf_load_taxonomy', 'buddyforms_ajax_load_taxonomy' );
 add_action( 'wp_ajax_nopriv_bf_load_taxonomy', 'buddyforms_ajax_load_taxonomy' );
 function buddyforms_ajax_load_taxonomy() {
+	global $buddyforms;
+
 	if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		return;
 	}
 
-	if ( ! isset( $_POST['action'] ) || wp_verify_nonce( $_POST['nonce'], 'bf_tax_loading' ) === false ) {
-		wp_die();
+	foreach ( array( 'nonce', 'form_slug' ) as $parameter ) {
+		if ( empty( $_POST[ $parameter ] ) || ! is_string( $_POST[ $parameter ] ) ) {
+			wp_send_json_error( new WP_Error( 'invalid_request', __( 'Invalid taxonomy request.', 'buddyforms' ) ), 400 );
+		}
+	}
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'bf_tax_loading' ) ) {
+		wp_send_json_error( new WP_Error( 'invalid_nonce', __( 'Security check failed.', 'buddyforms' ) ), 403 );
 	}
 
+	foreach ( array( 'field_slug', 'taxonomy' ) as $parameter ) {
+		if ( isset( $_POST[ $parameter ] ) && ! is_string( $_POST[ $parameter ] ) ) {
+			wp_send_json_error( new WP_Error( 'invalid_request', __( 'Invalid taxonomy request.', 'buddyforms' ) ), 400 );
+		}
+	}
+	$form_slug  = sanitize_title( wp_unslash( $_POST['form_slug'] ) );
+	$field_slug = isset( $_POST['field_slug'] ) ? buddyforms_sanitize_slug( wp_unslash( $_POST['field_slug'] ) ) : '';
+	if ( empty( $buddyforms[ $form_slug ] ) ) {
+		wp_send_json_error( new WP_Error( 'invalid_form_slug', __( 'Invalid Form Slug', 'buddyforms' ) ), 403 );
+	}
+
+	// A public nonce does not authorize access to another form or its fields.
+	$user_id = get_current_user_id();
+	$is_public = isset( $buddyforms[ $form_slug ]['public_submit'] ) && 'public_submit' === $buddyforms[ $form_slug ]['public_submit'];
+	if ( isset( $buddyforms[ $form_slug ]['form_type'] ) && 'registration' === $buddyforms[ $form_slug ]['form_type'] ) {
+		$is_public = is_multisite() ? users_can_register_signup_filter() : get_site_option( 'users_can_register' );
+	}
+	if ( ! $is_public
+		&& ! bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_create', array(), $form_slug )
+		&& ! bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug )
+		&& ! bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug )
+		&& ! bf_user_can( $user_id, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
+		wp_send_json_error( new WP_Error( 'forbidden', __( 'You are not allowed to access this form.', 'buddyforms' ) ), 403 );
+	}
+
+	$fields = $field_slug ? array( buddyforms_get_form_field_by_slug( $form_slug, $field_slug ) ) : ( isset( $buddyforms[ $form_slug ]['form_fields'] ) ? $buddyforms[ $form_slug ]['form_fields'] : array() );
+	$requested_taxonomy = isset( $_POST['taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) ) : '';
+	$matches = array();
+	foreach ( $fields as $candidate ) {
+		if ( empty( $candidate['type'] ) || ! in_array( $candidate['type'], array( 'taxonomy', 'category', 'tags' ), true ) || isset( $candidate['hidden_field'] ) ) {
+			continue;
+		}
+		$taxonomy = isset( $candidate['taxonomy'] ) ? $candidate['taxonomy'] : '';
+		if ( 'none' === $taxonomy ) {
+			$taxonomy = 'category' === $candidate['type'] ? 'category' : ( 'tags' === $candidate['type'] ? 'post_tag' : '' );
+		}
+		if ( taxonomy_exists( $taxonomy ) && ( '' === $requested_taxonomy || $taxonomy === $requested_taxonomy ) ) {
+			$matches[] = array( 'field' => $candidate, 'taxonomy' => $taxonomy );
+		}
+	}
+	// Older clients omit field_slug. Only resolve them when the field is unambiguous.
+	if ( 1 !== count( $matches ) ) {
+		wp_send_json_error( new WP_Error( 'invalid_field', __( 'Invalid or ambiguous taxonomy field.', 'buddyforms' ) ), 403 );
+	}
+	$field = $matches[0]['field'];
+	$taxonomy = $matches[0]['taxonomy'];
+
+	$exclude = ! empty( $field['taxonomy_exclude'] ) ? wp_parse_id_list( $field['taxonomy_exclude'] ) : array();
+	$include = ! empty( $field['taxonomy_include'] ) ? wp_parse_id_list( $field['taxonomy_include'] ) : array();
+	if ( $include ) {
+		// WP_Term_Query ignores exclude when include is set. Keep both field restrictions.
+		$include = array_values( array_diff( $include, $exclude ) );
+		if ( ! $include ) {
+			$include = array( 0 );
+		}
+	}
 	$args = array(
 		'fields'       => 'id=>name',
 		'hide_empty'   => 0,
 		'child_of'     => 0,
 		'orderby'      => 'SLUG',
 		'cache_domain' => 'buddyforms_ajax_load_taxonomy',
+		'taxonomy'     => $taxonomy,
+		'order'        => isset( $field['taxonomy_order'] ) && 'DESC' === strtoupper( $field['taxonomy_order'] ) ? 'DESC' : 'ASC',
+		'exclude'      => $exclude,
+		'include'      => $include,
 	);
 
-	$form_slug = '';
-	if ( empty( $_POST['form_slug'] ) ) {
-		wp_send_json_error( new WP_Error( 'invalid_form_slug', 'Invalid Form Slug' ), 500 );
-	} else {
-		$form_slug = sanitize_title( wp_unslash( $_POST['form_slug'] ) );
-	}
-
-	if ( ! empty( $_POST['search'] ) ) {
+	if ( ! empty( $_POST['search'] ) && is_string( $_POST['search'] ) ) {
 		$args['search'] = sanitize_title_for_query( wp_unslash( $_POST['search'] ) );
-	}
-
-	if ( ! empty( $_POST['taxonomy'] ) ) {
-		$args['taxonomy'] = buddyforms_sanitize( '', wp_unslash( $_POST['taxonomy'] ) );
-	}
-
-	if ( ! empty( $_POST['order'] ) ) {
-		$args['order'] = buddyforms_sanitize( '', wp_unslash( $_POST['order'] ) );
-	}
-
-	if ( ! empty( $_POST['exclude'] ) ) {
-		$args['exclude'] = buddyforms_sanitize( '', wp_unslash( $_POST['exclude'] ) );
-	}
-
-	if ( ! empty( $_POST['include'] ) ) {
-		$args['include'] = buddyforms_sanitize( '', wp_unslash( $_POST['include'] ) );
 	}
 
 	$terms_result = false;
