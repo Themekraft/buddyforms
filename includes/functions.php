@@ -152,6 +152,11 @@ function buddyforms_get_template_directory() {
 function buddyforms_locate_template( $slug, $form_slug = '' ) {
 	global $buddyforms, $bp, $the_lp_query, $current_user, $post_id;
 
+	// Template slugs are plain file names; anything else could include files outside the templates folder.
+	if ( ! is_string( $slug ) || ! preg_match( '/^[A-Za-z0-9_-]+$/', $slug ) ) {
+		return;
+	}
+
 	// Backward compatibility @sinde 2.3.3.
 	if ( empty( $form_slug ) ) {
 		global $form_slug;

@@ -297,7 +297,7 @@ function buddyforms_block_list_submissions( $attributes ) {
 	if ( $display ) {
 		if ( isset( $attributes['bf_form_slug'] ) && isset( $buddyforms[ $attributes['bf_form_slug'] ] ) ) {
 
-			$list_style           = empty( $attributes['bf_list_posts_style'] ) ? 'list' : $attributes['bf_list_posts_style'];
+			$list_style           = isset( $attributes['bf_list_posts_style'] ) && in_array( $attributes['bf_list_posts_style'], buddyforms_granted_list_posts_style(), true ) ? $attributes['bf_list_posts_style'] : 'list';
 			$posts_per_page       = empty( $attributes['bf_posts_per_page'] ) ? '10' : $attributes['bf_posts_per_page'];
 			$filter_by_author     = empty( $attributes['bf_by_author'] ) ? 'logged_in_user' : $attributes['bf_by_author'];
 			$filter_by_author_ids = empty( $attributes['bf_author_ids'] ) ? '' : $attributes['bf_author_ids'];
