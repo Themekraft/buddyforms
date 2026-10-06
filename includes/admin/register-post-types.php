@@ -727,7 +727,7 @@ function buddyforms_export_form() {
 
 		header( 'Content-Type: application/json' );
 		header( 'Content-Disposition: attachment; filename="BuddyFormsExport.json"' );
-		echo json_encode( $buddyform_options );
+		echo wp_json_encode( $buddyform_options );
 		exit;
 	}
 }
