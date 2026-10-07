@@ -40,6 +40,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ***************************************************************************
  */
 
+// The other build (free or premium) is already loaded: let Freemius deactivate it
+// when this one is activated, and stop here. Both builds ship the same Composer
+// autoloader class, so loading it twice is a fatal error.
+if ( function_exists( 'buddyforms_core_fs' ) ) {
+	buddyforms_core_fs()->set_basename( true, __FILE__ );
+	return;
+}
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 if ( ! class_exists( 'BuddyForms' ) ) {
