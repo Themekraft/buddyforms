@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: BuddyForms
  * Plugin URI:  https://themekraft.com/buddyforms/
  * Description: Contact Forms, Post Forms for User Generated Content and Registration Forms easily build in minutes. Extendable with Addons!
- * Version: 2.10.4
+ * Version: 2.10.5
  * Requires at least: 5.9
  * Requires PHP: 7.4
  * Author: ThemeKraft
@@ -40,6 +40,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ***************************************************************************
  */
 
+// The other build (free or premium) is already loaded: let Freemius deactivate it
+// when this one is activated, and stop here. Both builds ship the same Composer
+// autoloader class, so loading it twice is a fatal error.
+if ( function_exists( 'buddyforms_core_fs' ) ) {
+	buddyforms_core_fs()->set_basename( true, __FILE__ );
+	return;
+}
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 if ( ! class_exists( 'BuddyForms' ) ) {
@@ -51,7 +59,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		/**
 		 * @var string
 		 */
-		public $version = '2.10.4';
+		public $version = '2.10.5';
 
 		/**
 		 * @var array Frontend Global JS parameters

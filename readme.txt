@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.4
+Stable tag: 2.10.5
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,8 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.5 - 07 Oct 2026 =
+* Fixed a fatal error when activating the premium version while the free version is active. Activating one version now deactivates the other one.
 = 2.10.4 - 06 Oct 2026 =
 * Security: the List Submissions block only accepts the list styles BuddyForms and its add-ons register, and templates are only loaded by plain names.
 * Security: taxonomy searches in forms only return terms from a taxonomy field configured in that form, for users allowed to use the form.
