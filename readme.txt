@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.4
+Stable tag: 2.10.5-beta.1
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
