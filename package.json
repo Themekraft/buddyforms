@@ -16,7 +16,7 @@
     "npm": ">=6.0.0"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^7.0.1",
+    "@wordpress/scripts": "^36.0.0",
     "babel-eslint": "^8.2.1",
     "eslint": "^4.17.0",
     "eslint-config-wordpress": "^2.0.0",
