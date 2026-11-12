@@ -1,7 +1,7 @@
 <?php
 /**
  * Pricing page filter registration for BuddyForms.
- * Provides bundle credentials, copy, and tier data to the shared pricing-page submodule.
+ * The Go Pro page sells BuddyForms Pro. The BuddyForms add-ons are free, so the page does not list them.
  *
  * @package BuddyForms
  */
@@ -21,41 +21,25 @@ if ( ! function_exists( 'buddyforms_pricing_page_config' ) ) {
 			return $config;
 		}
 
-		$config['heading']    = __( 'Get the BuddyForms Bundle', 'buddyforms' );
-		$config['subheading'] = __( 'Unlock every BuddyForms add-on with a single license, plus a year of updates and support.', 'buddyforms' );
+		$config['heading']    = __( 'Get BuddyForms Pro', 'buddyforms' );
+		$config['subheading'] = __( 'Unlock all BuddyForms Pro features with a year of updates and support.', 'buddyforms' );
 
 		$config['bundle'] = array(
-			'product_id' => '7487',
-			'plan_id'    => '12239',
-			'public_key' => 'pk_68d9aeacd7352d37de451d91e3081',
-			'name'       => __( 'BuddyForms Bundle', 'buddyforms' ),
+			'product_id' => '391',
+			'plan_id'    => '583',
+			'public_key' => 'pk_dea3d8c1c831caf06cfea10c7114c',
+			'name'       => __( 'BuddyForms Pro', 'buddyforms' ),
 		);
 
 		$bullets = array(
 			array(
-				'label'     => __( 'All BuddyForms add-ons included', 'buddyforms' ),
+				'label'     => __( 'All BuddyForms Pro features unlocked', 'buddyforms' ),
 				'highlight' => true,
 			),
-			array( 'label' => __( 'BuddyForms', 'buddyforms' ), 'url' => 'https://themekraft.com/plugins/buddyforms/' ),
-			array( 'label' => __( 'BuddyForms ACF', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-advanced-custom-fields/' ),
-			array( 'label' => __( 'BuddyForms Anonymous Author', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-anonymous-author/' ),
-			array( 'label' => __( 'BuddyForms Attach Post with Group', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddypress-group-post/' ),
-			array( 'label' => __( 'BuddyForms Custom Login', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/wordpress-custom-login-page/' ),
-			array( 'label' => __( 'BuddyForms Geo My WP', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-geo-my-wp/' ),
-			array( 'label' => __( 'BuddyForms Hook Fields', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/display-submissions-data/' ),
-			array( 'label' => __( 'BuddyForms Hierarchical Posts', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-hierarchical-posts/' ),
-			array( 'label' => __( 'BuddyForms MailPoet', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-mailpoet/' ),
-			array( 'label' => __( 'BuddyForms Members', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-buddypress-members/' ),
-			array( 'label' => __( 'BuddyForms Moderation', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-content-moderation/' ),
-			array( 'label' => __( 'BuddyForms Pay for Submission', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-pay-for-submissions/' ),
-			array( 'label' => __( 'BuddyForms Pods', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/wordpress-pods-forms/' ),
-			array( 'label' => __( 'BuddyForms Post in Groups', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-buddypress-post-in-groups/' ),
-			array( 'label' => __( 'BuddyForms Profile Image', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddypress-profile-image/' ),
-			array( 'label' => __( 'BuddyForms Remote', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-remote-embed-forms/' ),
-			array( 'label' => __( 'BuddyForms Ultimate Member', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-ultimate-member/' ),
-			array( 'label' => __( 'BuddyForms WooCommerce Bookings', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-woocommerce-bookings/' ),
-			array( 'label' => __( 'BuddyForms WooCommerce Form Elements', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/woocommerce-form-elements/' ),
-			array( 'label' => __( 'BuddyForms WooCommerce Simple Auctions', 'buddyforms' ), 'url' => 'https://themekraft.com/add-on/buddyforms-woocommerce-simple-auction/' ),
+			__( 'Forms for any post type', 'buddyforms' ),
+			__( 'Form permissions by user role', 'buddyforms' ),
+			__( 'Post status, revision and notification options', 'buddyforms' ),
+			__( 'Advanced user registration options', 'buddyforms' ),
 			__( 'One year of support', 'buddyforms' ),
 			__( 'One year of updates', 'buddyforms' ),
 		);
