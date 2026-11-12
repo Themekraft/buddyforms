@@ -91,11 +91,11 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		}
 
 		/**
-		 * Add the BuddyForms Bundle screen menu.
+		 * Add the Go Pro screen menu, which sells BuddyForms Pro.
 		 */
 		public function buddyforms_bundle_screen_menu() {
 			if ( buddyforms_core_fs()->is_not_paying() ) {
-				add_submenu_page( 'edit.php?post_type=buddyforms', __( 'Bundle', 'buddyforms' ), __( 'Go Pro!', 'buddyforms' ), 'manage_options', 'buddyforms_bundle_screen', 'tk_pricing_page_render', 99 );
+				add_submenu_page( 'edit.php?post_type=buddyforms', __( 'BuddyForms Pro', 'buddyforms' ), __( 'Go Pro!', 'buddyforms' ), 'manage_options', 'buddyforms_bundle_screen', 'tk_pricing_page_render', 99 );
 			}
 		}
 
