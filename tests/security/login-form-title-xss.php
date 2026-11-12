@@ -41,8 +41,18 @@ $fields        = array(
 	'content' => array( 'type' => 'content', 'slug' => 'buddyforms_form_content', 'name' => 'Content' ),
 );
 $captcha       = array( 'type' => 'captcha', 'slug' => 'captcha', 'name' => 'Captcha', 'captcha_site_key' => 'site-' . $marker, 'captcha_private_key' => 'private' );
-$render        = function ( $html ) {
-	return apply_filters( 'the_content', $html );
+// Render inside a post, like a real page: some add-ons (Custom Login) check get_the_ID() in the_content.
+$render        = function ( $html, $post_id = 0 ) use ( &$posts ) {
+	global $post;
+	$previous = $post;
+	$post     = get_post( $post_id ? $post_id : $posts['page'] );
+	setup_postdata( $post );
+	$output = apply_filters( 'the_content', $html );
+	$post   = $previous;
+	if ( $previous ) {
+		setup_postdata( $previous );
+	}
+	return $output;
 };
 $heading       = function ( $html ) {
 	return preg_match( '#<h3>(.*?)</h3>#s', $html, $m ) ? $m[1] : null;
@@ -95,7 +105,7 @@ try {
 	if ( 0 !== $result->return_code ) {
 		WP_CLI::line( '     ' . trim( $result->stderr ) );
 	}
-	$entry_html = $entry ? $render( $entry->post_content ) : '';
+	$entry_html = $entry ? $render( $entry->post_content, $entry->ID ) : '';
 
 	$cases = array(
 		'guest submission publishes the escaped payload (precondition)' => function () use ( $entry, $title_payload ) {
