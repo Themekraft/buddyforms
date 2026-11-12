@@ -467,10 +467,10 @@ function buddyforms_settings_page_sidebar() {
 		__( 'Awesome Premium Features', 'buddyforms' ),
 		'',
 		array(
-			__( 'Priority Support', 'buddyforms' ),
-			__( 'More Post Types', 'buddyforms' ),
-			__( 'More Form Elements', 'buddyforms' ),
-			__( 'Admin Metabox Support', 'buddyforms' ),
+			__( 'Forms for any post type', 'buddyforms' ),
+			__( 'Form permissions by user role', 'buddyforms' ),
+			__( 'Category, tag and taxonomy fields', 'buddyforms' ),
+			__( 'Form fields as admin meta boxes', 'buddyforms' ),
 		)
 	);
 }
