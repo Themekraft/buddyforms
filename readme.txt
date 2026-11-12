@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.6
+Stable tag: 2.10.7
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,9 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.7 - 12 Nov 2026 =
+* Security: the title of the login form shortcode and block is always printed as plain text, and output built from shortcode attributes (login form, navigation links) no longer allows script tags or event handler attributes.
+* Fixed the `[bf_new_submission_link]` shortcode, which always linked to `#` and printed a broken `target` attribute.
 = 2.10.6 - 19 Oct 2026 =
 * Security: front-end submissions always save entries as the post type configured in the form, and never as WordPress-internal types or as forms.
 * Security: anonymous registration cannot assign a role that can manage the site or its users. The list of blocked capabilities can be changed with the `buddyforms_registration_blocked_capabilities` filter.
