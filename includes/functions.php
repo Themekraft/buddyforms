@@ -285,7 +285,8 @@ function buddyforms_get_wp_login_form( $form_slug = 'none', $title = '', $args =
 		wp_enqueue_style( 'bf-wp-login-form-css' );
 	}
 
-	$wp_login_form .= '<h3>' . $title . '</h3>';
+	// The title is plain text, it can come from a shortcode or block attribute.
+	$wp_login_form .= '<h3>' . esc_html( $title ) . '</h3>';
 
 	if ( isset( $_GET['bf_login_error_redirect'] ) ) {
 
@@ -332,23 +333,44 @@ function buddyforms_get_wp_login_form( $form_slug = 'none', $title = '', $args =
 	$wp_login_form = str_replace( '</form>', '<input type="hidden" name="caller" value="' . esc_attr( $caller ) . '"></form>', $wp_login_form );
 
 	if ( isset( $wp->request ) ) {
-		$wp_login_form = str_replace( '</form>', '<input type="hidden" name="login_error_redirect" value="' . $wp->request . '"></form>', $wp_login_form );
+		$wp_login_form = str_replace( '</form>', '<input type="hidden" name="login_error_redirect" value="' . esc_attr( $wp->request ) . '"></form>', $wp_login_form );
 	}
 
-	if ( $form_slug != 'none' ) {
-		if ( $buddyforms[ $form_slug ]['public_submit'] == 'registration_form' && $buddyforms[ $form_slug ]['logged_in_only_reg_form'] != 'none' ) {
-			$reg_form_slug = $buddyforms[ $form_slug ]['logged_in_only_reg_form'];
+	if ( buddyforms_login_form_uses_registration_form( $form_slug ) ) {
+		$reg_form_slug = $buddyforms[ $form_slug ]['logged_in_only_reg_form'];
 
-			set_query_var( 'bf_form_slug', $reg_form_slug );
+		set_query_var( 'bf_form_slug', $reg_form_slug );
 
-			$wp_login_form = do_shortcode( '[bf form_slug="' . $reg_form_slug . '"]' );
-		}
+		$wp_login_form = do_shortcode( '[bf form_slug="' . $reg_form_slug . '"]' );
 	}
 	$wp_login_form .= '</div>';
 
 	$wp_login_form = apply_filters( 'buddyforms_wp_login_form', $wp_login_form );
 
 	return $wp_login_form;
+}
+
+/**
+ * Whether the login form of this form is replaced by the registration form chosen in its
+ * "logged in only" settings.
+ *
+ * @param string $form_slug
+ *
+ * @return bool
+ */
+function buddyforms_login_form_uses_registration_form( $form_slug ) {
+	global $buddyforms;
+
+	if ( empty( $form_slug ) || 'none' === $form_slug || ! isset( $buddyforms[ $form_slug ] ) ) {
+		return false;
+	}
+
+	$form = $buddyforms[ $form_slug ];
+
+	return isset( $form['public_submit'], $form['logged_in_only_reg_form'] )
+		&& 'registration_form' === $form['public_submit']
+		&& ! empty( $form['logged_in_only_reg_form'] )
+		&& 'none' !== $form['logged_in_only_reg_form'];
 }
 
 function buddyforms_wp_login_errors_redirect( $errors ) {
@@ -2672,4 +2694,30 @@ function buddyforms_wp_kses_allowed_atts(){
 		),
 	);
 	return $allowed_tags;
+}
+
+/**
+ * Allowed HTML for markup built from shortcode and block attributes (login form, navigation
+ * links). Same as buddyforms_wp_kses_allowed_atts() without script tags and event handler
+ * attributes: the full form render needs those (reCAPTCHA, upload button), these outputs do not.
+ *
+ * @return array
+ */
+function buddyforms_wp_kses_allowed_shortcode_atts() {
+	$allowed_tags = buddyforms_wp_kses_allowed_atts();
+
+	unset( $allowed_tags['script'] );
+
+	foreach ( $allowed_tags as $tag => $attributes ) {
+		if ( ! is_array( $attributes ) ) {
+			continue;
+		}
+		foreach ( array_keys( $attributes ) as $attribute ) {
+			if ( 0 === stripos( $attribute, 'on' ) ) {
+				unset( $allowed_tags[ $tag ][ $attribute ] );
+			}
+		}
+	}
+
+	return apply_filters( 'buddyforms_wp_kses_allowed_shortcode_atts', $allowed_tags );
 }
