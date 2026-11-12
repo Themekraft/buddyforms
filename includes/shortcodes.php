@@ -350,7 +350,7 @@ function buddyforms_nav( $args ) {
 	$args['label'] = isset( $args['label_add'] ) ? $args['label_add'] : __( 'Add New', 'buddyforms' );
 	$tmp          .= buddyforms_button_add_new( $args );
 
-	return wp_kses( $tmp, buddyforms_wp_kses_allowed_atts() );
+	return wp_kses( $tmp, buddyforms_wp_kses_allowed_shortcode_atts() );
 }
 
 add_shortcode( 'buddyforms_button_view_posts', 'buddyforms_button_view_posts' );
@@ -385,9 +385,9 @@ function buddyforms_button_view_posts( $args ) {
 	}
 
 	$href = '/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/view/' . $form_slug . '/';
-	$button = '<a class="button bf-navigation bf-navigation-view" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_view, buddyforms_wp_kses_allowed_atts() ) . ' </a>';
+	$button = '<a class="button bf-navigation bf-navigation-view" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_view, buddyforms_wp_kses_allowed_shortcode_atts() ) . ' </a>';
 
-	return wp_kses( apply_filters( 'buddyforms_button_view_posts', $button, $args ), buddyforms_wp_kses_allowed_atts() );
+	return wp_kses( apply_filters( 'buddyforms_button_view_posts', $button, $args ), buddyforms_wp_kses_allowed_shortcode_atts() );
 }
 
 add_shortcode( 'buddyforms_button_add_new', 'buddyforms_button_add_new' );
@@ -422,9 +422,9 @@ function buddyforms_button_add_new( $args ) {
 	}
 
 	$href = '/' . get_post( $buddyforms[ $form_slug ]['attached_page'] )->post_name . '/create/' . $form_slug . '/';
-	$button = '<a class="button bf-navigation bf-navigation-create" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_add, buddyforms_wp_kses_allowed_atts() ) . '</a>';
+	$button = '<a class="button bf-navigation bf-navigation-create" href="' . esc_url( $href ) . '"> ' . wp_kses( $label_add, buddyforms_wp_kses_allowed_shortcode_atts() ) . '</a>';
 
-	return wp_kses( apply_filters( 'buddyforms_button_add_new', $button, $args ), buddyforms_wp_kses_allowed_atts() );
+	return wp_kses( apply_filters( 'buddyforms_button_add_new', $button, $args ), buddyforms_wp_kses_allowed_shortcode_atts() );
 }
 
 add_shortcode( 'bf_login_form', 'buddyforms_view_login_form' );
@@ -456,12 +456,18 @@ function buddyforms_view_login_form( $args ) {
 	BuddyFormsAssets::load_tk_font_icons();
 
 	if ( is_user_logged_in() ) {
-		$tmp = '<a href="' . wp_logout_url( $current_url ) . '">' . __( 'Logout', 'buddyforms' ) . '</a>';
-	} else {
-		$tmp = buddyforms_get_wp_login_form( $form_slug, $title, $args );
+		return '<a href="' . esc_url( wp_logout_url( $current_url ) ) . '">' . esc_html__( 'Logout', 'buddyforms' ) . '</a>';
 	}
 
-	return wp_kses( $tmp, buddyforms_wp_kses_allowed_atts() );
+	$tmp = buddyforms_get_wp_login_form( $form_slug, $title, $args );
+
+	// A registration form shown instead of the login form is the full form render, which can
+	// carry scripts (reCAPTCHA). Its own render already filtered it.
+	if ( buddyforms_login_form_uses_registration_form( $form_slug ) ) {
+		return wp_kses( $tmp, buddyforms_wp_kses_allowed_atts() );
+	}
+
+	return wp_kses( $tmp, buddyforms_wp_kses_allowed_shortcode_atts() );
 }
 
 
@@ -532,13 +538,16 @@ function buddyforms_create_submission_link_shortcode( $args ) {
 
 	$target = '';
 	if ( ! empty( $arguments['target'] ) && 'false' !== $arguments['target'] ) {
-		$target = sprintf( ' target="%s" ', $arguments['target'] );
+		$target = sprintf( ' target="%s"', esc_attr( $arguments['target'] ) );
 	}
 	if ( ! empty( $arguments['link'] ) ) {
+		$link = esc_url( $arguments['link'] );
+
 		return sprintf(
-			'<a href="%s" %s >%s</a>',
-			( empty( esc_url( $arguments['link'] ) ) ? esc_url( $arguments['link'] ) : '#' ),
-			esc_attr( $target ), esc_html( $arguments['name'] )
+			'<a href="%s"%s>%s</a>',
+			( empty( $link ) ? '#' : $link ),
+			$target,
+			esc_html( $arguments['name'] )
 		);
 	} else {
 		return esc_html( $arguments['name'] );
