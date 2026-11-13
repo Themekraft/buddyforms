@@ -856,35 +856,14 @@ function buddyforms_metabox_go_pro() {
 
 	buddyforms_go_pro(
 		'<span> </span>',
-		'',
-		array(
-			__( 'Priority Support', 'buddyforms' ),
-			__( 'More Form Elements', 'buddyforms' ),
-			__( 'More Options', 'buddyforms' ),
-		),
-		false
-	);
-	buddyforms_go_pro(
-		'<span> </span>',
 		__( 'Full Control', 'buddyforms' ),
 		array(
-			__( 'Use your form in the backend admin edit screen like ACF', 'buddyforms' ),
-			__( 'Control who can create, edit and delete content', 'buddyforms' ),
-			__( 'Registration Options', 'buddyforms' ),
-			__( 'Disable ajax form submission', 'buddyforms' ),
-			__( 'Local Storage', 'buddyforms' ),
-			__( 'More Notification Options', 'buddyforms' ),
-			__( 'Import - Export Forms', 'buddyforms' ),
-		),
-		false
-	);
-	buddyforms_go_pro(
-		'<span> </span>',
-		__( 'Permissions Management', 'buddyforms' ),
-		array(
-			__( 'Manage User Roles', 'buddyforms' ),
-			__( 'Manage Capabilities', 'buddyforms' ),
-			__( 'More Validation Options', 'buddyforms' ),
+			__( 'Show form fields as a meta box on the admin edit screen', 'buddyforms' ),
+			__( 'Control by user role who can create, edit and delete content', 'buddyforms' ),
+			__( 'More registration options', 'buddyforms' ),
+			__( 'Post status change email notifications', 'buddyforms' ),
+			__( 'Turn off AJAX submission, local storage or JavaScript validation', 'buddyforms' ),
+			__( 'No "Proudly brought to you by BuddyForms" link under your forms', 'buddyforms' ),
 		),
 		false
 	);
@@ -893,11 +872,10 @@ function buddyforms_metabox_go_pro() {
 		__( 'More Post Options', 'buddyforms' ),
 		array(
 			__( 'All Post Types', 'buddyforms' ),
-			__( 'Posts Revision', 'buddyforms' ),
+			__( 'Post Status', 'buddyforms' ),
 			__( 'Comment Status', 'buddyforms' ),
-			__( 'Enable Login on the form', 'buddyforms' ),
-			__( 'Create an account during submission?', 'buddyforms' ),
-			__( 'Featured Image Support', 'buddyforms' ),
+			__( 'Front-end revisions', 'buddyforms' ),
+			__( 'Category, tag and taxonomy fields', 'buddyforms' ),
 		),
 		false
 	);
