@@ -256,9 +256,11 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 
 	// If post_id == 0 a new post is created
 	if ( $post_id == 0 ) {
-		// check if auto-draft exist
+		// Reuse this user's auto-draft for the form if there is one. WooCommerce renames
+		// product auto-drafts to "AUTO-DRAFT", so match that too, or Product forms create
+		// a new draft on every view.
 		global $wpdb;
-		$query   = $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE 1=1 AND post_title ='Auto Draft' AND post_content = '' AND post_author = %s AND post_type = %s AND {$wpdb->postmeta}.meta_key = '_bf_form_slug' AND {$wpdb->postmeta}.meta_value = %s ORDER BY ID DESC", $current_user->ID, $post_type, $form_slug );
+		$query   = $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE 1=1 AND post_status = 'auto-draft' AND post_title IN ('Auto Draft', 'AUTO-DRAFT') AND post_content = '' AND post_author = %s AND post_type = %s AND {$wpdb->postmeta}.meta_key = '_bf_form_slug' AND {$wpdb->postmeta}.meta_value = %s ORDER BY ID DESC", $current_user->ID, $post_type, $form_slug );
 		$post_id = (int) $wpdb->get_var( $query );
 		if ( empty( $post_id ) ) {
 			$the_post = bf_get_default_post_to_edit( $post_type, true );
