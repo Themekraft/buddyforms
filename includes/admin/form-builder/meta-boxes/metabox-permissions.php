@@ -28,23 +28,23 @@ function buddyforms_permissions_unregistered_screen() {
 		)
 	);
 
-	if ( isset( $buddyform['form_type'] ) && $buddyform['form_type'] !== 'registration' ) {
-		$public_submit_create_account = isset( $buddyform['public_submit_create_account'] ) ? $buddyform['public_submit_create_account'] : 'false';
-		$element                      = new Element_Checkbox(
-			'<b>' . __( 'Create an account?', 'buddyforms' ) . '</b>',
-			'buddyforms_options[public_submit_create_account]',
-			array( 'public_submit_create_account' => __( 'Create account during submission', 'buddyforms' ) ),
-			array(
-				'value'     => $public_submit_create_account,
-				'shortDesc' => __( 'Create a new user during form submission', 'buddyforms' ),
-			)
-		);
+	// Rendered for every form type so it is there when the type changes in the form builder.
+	// conditionals.js hides it for registration forms.
+	$public_submit_create_account = isset( $buddyform['public_submit_create_account'] ) ? $buddyform['public_submit_create_account'] : 'false';
+	$element                      = new Element_Checkbox(
+		'<b>' . __( 'Create an account?', 'buddyforms' ) . '</b>',
+		'buddyforms_options[public_submit_create_account]',
+		array( 'public_submit_create_account' => __( 'Create account during submission', 'buddyforms' ) ),
+		array(
+			'value'     => $public_submit_create_account,
+			'shortDesc' => __( 'Create a new user during form submission', 'buddyforms' ),
+		)
+	);
 
-		$element->setAttribute( 'id', 'public_submit_create_account' );
-		$element->setAttribute( 'class', 'public-submit-option public_submit_create_account' );
+	$element->setAttribute( 'id', 'public_submit_create_account' );
+	$element->setAttribute( 'class', 'public-submit-option public_submit_create_account' );
 
-		$form_setup[] = $element;
-	}
+	$form_setup[] = $element;
 
 	$hide_registration_for_logged_in = isset( $buddyform['hide_for_logged_in_users'] ) ? $buddyform['hide_for_logged_in_users'] : 'no';
 
