@@ -254,8 +254,8 @@ function buddyforms_permissions_screen() {
 								<label for="role_role"><?php echo wp_kses( $field->getLabel(), buddyforms_wp_kses_allowed_atts() ); ?></label>
 							</th>
 							<td>
-								<?php echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() ); ?>
-								<p class="description"><?php echo wp_kses( $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() ); ?></p>
+								<?php buddyforms_form_builder_render_field( $field ); ?>
+								<p class="description"><?php echo wp_kses( (string) $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() ); ?></p>
 							</td>
 						</tr>
 						<?php

@@ -2306,6 +2306,22 @@ function buddyforms_form_element_gdpr( $form_fields, $args ) {
 }
 
 /**
+ * Output a pfbc element in the form builder.
+ *
+ * The elements echo their own sanitized markup and render() returns nothing, so
+ * wrapping render() in wp_kses() passed null to it. Only a returned string still
+ * needs escaping here.
+ *
+ * @param Element $field The element to output.
+ */
+function buddyforms_form_builder_render_field( $field ) {
+	$rendered = $field->render();
+	if ( is_string( $rendered ) && '' !== $rendered ) {
+		echo wp_kses( $rendered, buddyforms_wp_kses_allowed_atts() );
+	}
+}
+
+/**
  * @param $form_fields
  * @param string      $field_id
  * @param string      $striped
@@ -2342,8 +2358,8 @@ function buddyforms_display_field_group_table( $form_fields, $field_id = 'global
 								<label for="form_title"><?php echo wp_kses_post( $field->getLabel() ); ?></label>
 							</th>
 							<td>
-								<?php echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() ); ?>
-								<p class="description"><?php echo wp_kses_post( $field->getShortDesc() ); ?></p>
+								<?php buddyforms_form_builder_render_field( $field ); ?>
+								<p class="description"><?php echo wp_kses_post( (string) $field->getShortDesc() ); ?></p>
 							</td>
 						</tr>
 						<?php
