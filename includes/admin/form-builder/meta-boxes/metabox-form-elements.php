@@ -123,8 +123,8 @@ function buddyforms_metabox_form_elements( $post, $buddyform = false ) {
 
 	foreach ( $form_setup as $key => $field ) {
 		echo wp_kses( $field->getLabel(), buddyforms_wp_kses_allowed_atts() );
-		echo wp_kses( $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() );
-		echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() );
+		echo wp_kses( (string) $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() );
+		buddyforms_form_builder_render_field( $field );
 	}
 }
 
