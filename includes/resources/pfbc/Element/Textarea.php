@@ -25,7 +25,7 @@ class Element_Textarea extends Element {
 	 * @param $value
 	 * @param $field_options
 	 */
-	public function __construct( $label, $name, $value, array $field_options = null ) {
+	public function __construct( $label, $name, $value, ?array $field_options = null ) {
 		global $field_id;
 
 		$properties = array(

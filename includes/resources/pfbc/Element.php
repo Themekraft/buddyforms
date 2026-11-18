@@ -46,7 +46,7 @@ abstract class Element extends Base {
 	 * @param array|null $properties
 	 * @param array|null $field_options
 	 */
-	public function __construct( $label, $name, array $properties = null, array $field_options = null ) {
+	public function __construct( $label, $name, ?array $properties = null, ?array $field_options = null ) {
 		$configuration = array(
 			'label' => $label,
 			'name'  => $name,

@@ -23,7 +23,7 @@ class Element_Button extends Element {
 	 * @param string     $type
 	 * @param array|null $properties
 	 */
-	public function __construct( $label = 'Submit', $type = '', array $properties = null ) {
+	public function __construct( $label = 'Submit', $type = '', ?array $properties = null ) {
 		if ( ! is_array( $properties ) ) {
 			$properties = array();
 		}

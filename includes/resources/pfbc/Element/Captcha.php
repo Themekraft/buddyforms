@@ -11,7 +11,7 @@ class Element_Captcha extends Element {
 	 * @param array|null $properties
 	 * @param null       $customfield
 	 */
-	public function __construct( $label = '', array $properties = null, $customfield = null ) {
+	public function __construct( $label = '', ?array $properties = null, $customfield = null ) {
 		parent::__construct( $label, 'recaptcha_response_field', $properties, $customfield );
 	}
 

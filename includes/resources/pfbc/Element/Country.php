@@ -14,7 +14,7 @@ class Element_Country extends Element_Select {
 	 * @param array|null $properties
 	 * @param null       $field_options
 	 */
-	public function __construct( $label, $name, array $properties = null, $field_options = null ) {
+	public function __construct( $label, $name, ?array $properties = null, $field_options = null ) {
 		self::init_country_list();
 		self::$country_list = apply_filters( 'buddyforms_country_output_values', self::$country_list, $properties );
 
