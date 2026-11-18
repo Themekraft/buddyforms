@@ -109,6 +109,16 @@ class ReCaptcha
      * @var RequestMethod
      */
     private $requestMethod;
+    /** @var string|null */
+    private $hostname;
+    /** @var string|null */
+    private $apkPackageName;
+    /** @var string|null */
+    private $action;
+    /** @var float|null */
+    private $threshold;
+    /** @var int|null */
+    private $timeoutSeconds;
     /**
      * Create a configured instance to use the reCAPTCHA service.
      *
@@ -116,16 +126,16 @@ class ReCaptcha
      * @param RequestMethod $requestMethod method used to send the request. Defaults to POST.
      * @throws \RuntimeException if $secret is invalid
      */
-    public function __construct($secret, \tk\ReCaptcha\RequestMethod $requestMethod = null)
+    public function __construct($secret, ?RequestMethod $requestMethod = null)
     {
         if (empty($secret)) {
             throw new \RuntimeException('No secret provided');
         }
-        if (!\is_string($secret)) {
+        if (!is_string($secret)) {
             throw new \RuntimeException('The provided secret must be a string');
         }
         $this->secret = $secret;
-        $this->requestMethod = \is_null($requestMethod) ? new \tk\ReCaptcha\RequestMethod\Post() : $requestMethod;
+        $this->requestMethod = is_null($requestMethod) ? new RequestMethod\Post() : $requestMethod;
     }
     /**
      * Calls the reCAPTCHA siteverify API to verify whether the user passes
@@ -139,35 +149,35 @@ class ReCaptcha
     {
         // Discard empty solution submissions
         if (empty($response)) {
-            $recaptchaResponse = new \tk\ReCaptcha\Response(\false, array(self::E_MISSING_INPUT_RESPONSE));
+            $recaptchaResponse = new Response(\false, array(self::E_MISSING_INPUT_RESPONSE));
             return $recaptchaResponse;
         }
-        $params = new \tk\ReCaptcha\RequestParameters($this->secret, $response, $remoteIp, self::VERSION);
+        $params = new RequestParameters($this->secret, $response, $remoteIp, self::VERSION);
         $rawResponse = $this->requestMethod->submit($params);
-        $initialResponse = \tk\ReCaptcha\Response::fromJson($rawResponse);
+        $initialResponse = Response::fromJson($rawResponse);
         $validationErrors = array();
-        if (isset($this->hostname) && \strcasecmp($this->hostname, $initialResponse->getHostname()) !== 0) {
+        if (isset($this->hostname) && strcasecmp($this->hostname, (string) $initialResponse->getHostname()) !== 0) {
             $validationErrors[] = self::E_HOSTNAME_MISMATCH;
         }
-        if (isset($this->apkPackageName) && \strcasecmp($this->apkPackageName, $initialResponse->getApkPackageName()) !== 0) {
+        if (isset($this->apkPackageName) && strcasecmp($this->apkPackageName, (string) $initialResponse->getApkPackageName()) !== 0) {
             $validationErrors[] = self::E_APK_PACKAGE_NAME_MISMATCH;
         }
-        if (isset($this->action) && \strcasecmp($this->action, $initialResponse->getAction()) !== 0) {
+        if (isset($this->action) && strcasecmp($this->action, (string) $initialResponse->getAction()) !== 0) {
             $validationErrors[] = self::E_ACTION_MISMATCH;
         }
         if (isset($this->threshold) && $this->threshold > $initialResponse->getScore()) {
             $validationErrors[] = self::E_SCORE_THRESHOLD_NOT_MET;
         }
         if (isset($this->timeoutSeconds)) {
-            $challengeTs = \strtotime($initialResponse->getChallengeTs());
-            if ($challengeTs > 0 && \time() - $challengeTs > $this->timeoutSeconds) {
+            $challengeTs = strtotime((string) $initialResponse->getChallengeTs());
+            if ($challengeTs > 0 && time() - $challengeTs > $this->timeoutSeconds) {
                 $validationErrors[] = self::E_CHALLENGE_TIMEOUT;
             }
         }
         if (empty($validationErrors)) {
             return $initialResponse;
         }
-        return new \tk\ReCaptcha\Response(\false, \array_merge($initialResponse->getErrorCodes(), $validationErrors), $initialResponse->getHostname(), $initialResponse->getChallengeTs(), $initialResponse->getApkPackageName(), $initialResponse->getScore(), $initialResponse->getAction());
+        return new Response(\false, array_merge($initialResponse->getErrorCodes(), $validationErrors), $initialResponse->getHostname(), $initialResponse->getChallengeTs(), $initialResponse->getApkPackageName(), $initialResponse->getScore(), $initialResponse->getAction());
     }
     /**
      * Provide a hostname to match against in verify()
@@ -213,7 +223,7 @@ class ReCaptcha
      */
     public function setScoreThreshold($threshold)
     {
-        $this->threshold = \floatval($threshold);
+        $this->threshold = floatval($threshold);
         return $this;
     }
     /**

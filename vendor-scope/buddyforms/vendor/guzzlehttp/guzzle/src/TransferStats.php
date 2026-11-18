@@ -38,7 +38,7 @@ final class TransferStats
      * @param mixed                  $handlerErrorData Handler error data.
      * @param array                  $handlerStats     Handler specific stats.
      */
-    public function __construct(\tk\Psr\Http\Message\RequestInterface $request, ?\tk\Psr\Http\Message\ResponseInterface $response = null, ?float $transferTime = null, $handlerErrorData = null, array $handlerStats = [])
+    public function __construct(RequestInterface $request, ?ResponseInterface $response = null, ?float $transferTime = null, $handlerErrorData = null, array $handlerStats = [])
     {
         $this->request = $request;
         $this->response = $response;
@@ -46,21 +46,21 @@ final class TransferStats
         $this->handlerErrorData = $handlerErrorData;
         $this->handlerStats = $handlerStats;
     }
-    public function getRequest() : \tk\Psr\Http\Message\RequestInterface
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }
     /**
      * Returns the response that was received (if any).
      */
-    public function getResponse() : ?\tk\Psr\Http\Message\ResponseInterface
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
     /**
      * Returns true if a response was received.
      */
-    public function hasResponse() : bool
+    public function hasResponse(): bool
     {
         return $this->response !== null;
     }
@@ -80,7 +80,7 @@ final class TransferStats
     /**
      * Get the effective URI the request was sent to.
      */
-    public function getEffectiveUri() : \tk\Psr\Http\Message\UriInterface
+    public function getEffectiveUri(): UriInterface
     {
         return $this->request->getUri();
     }
@@ -89,14 +89,14 @@ final class TransferStats
      *
      * @return float|null Time in seconds.
      */
-    public function getTransferTime() : ?float
+    public function getTransferTime(): ?float
     {
         return $this->transferTime;
     }
     /**
      * Gets an array of all of the handler specific transfer data.
      */
-    public function getHandlerStats() : array
+    public function getHandlerStats(): array
     {
         return $this->handlerStats;
     }
@@ -109,6 +109,6 @@ final class TransferStats
      */
     public function getHandlerStat(string $stat)
     {
-        return isset($this->handlerStats[$stat]) ? $this->handlerStats[$stat] : null;
+        return $this->handlerStats[$stat] ?? null;
     }
 }

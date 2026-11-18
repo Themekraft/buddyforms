@@ -45,5 +45,5 @@ interface RequestMethod
      * @param RequestParameters $params Request parameters
      * @return string Body of the reCAPTCHA response
      */
-    public function submit(\tk\ReCaptcha\RequestParameters $params);
+    public function submit(RequestParameters $params);
 }

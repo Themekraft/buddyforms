@@ -9,11 +9,15 @@ BuddyForms is a commercial plugin available from [BuddyForms](https://themekraft
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/gfirem/akamai-release-node/tags). 
 
 
-## Dependencies Manager 
-We are using `bamarni/composer-bin-plugin` to scope the dependencies and avoid collisions with 3rd party plugins.
-Any production library need to be scoped using the next command.
-Example of command:
-- `composer bin buddyforms [composer-command]`
+## Scoped libraries
+BuddyForms bundles Guzzle and google/recaptcha under `vendor-scope/buddyforms/vendor`, prefixed with the `tk\` namespace by [php-scoper](https://github.com/humbug/php-scoper) so they never collide with the copies other plugins ship. Use them as `\tk\GuzzleHttp\Client`, `\tk\ReCaptcha\ReCaptcha`, etc. The scoped folder is committed (it is gitignored, so use `git add -f`).
+
+The requirements live in `vendor-scope/buddyforms/composer.json` (pinned in its `composer.lock`, resolved for PHP 7.4, the plugin's minimum) and the php-scoper configuration in `scoper.inc.php`. To rebuild, run from the plugin root (needs Docker):
+
+- `bin/build-vendor-scope.sh` rebuilds from the lock file.
+- `bin/build-vendor-scope.sh --update` updates the lock to the newest versions that still support PHP 7.4, then rebuilds.
+
+Then lint the result on the oldest and newest supported PHP versions and test the captcha field before committing.
 
 ## Important
 If you want to use the last version of BuddyForms from the develop branch you need to install composer and run the next command from the plugin folder 

@@ -7,7 +7,6 @@ use tk\GuzzleHttp\HandlerStack;
 use tk\GuzzleHttp\Promise as P;
 use tk\GuzzleHttp\Promise\PromiseInterface;
 use tk\GuzzleHttp\TransferStats;
-use tk\GuzzleHttp\Utils;
 use tk\Psr\Http\Message\RequestInterface;
 use tk\Psr\Http\Message\ResponseInterface;
 use tk\Psr\Http\Message\StreamInterface;
@@ -46,35 +45,35 @@ class MockHandler implements \Countable
      * @param callable|null $onFulfilled Callback to invoke when the return value is fulfilled.
      * @param callable|null $onRejected  Callback to invoke when the return value is rejected.
      */
-    public static function createWithMiddleware(array $queue = null, callable $onFulfilled = null, callable $onRejected = null) : \tk\GuzzleHttp\HandlerStack
+    public static function createWithMiddleware(?array $queue = null, ?callable $onFulfilled = null, ?callable $onRejected = null): HandlerStack
     {
-        return \tk\GuzzleHttp\HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
+        return HandlerStack::create(new self($queue, $onFulfilled, $onRejected));
     }
     /**
      * The passed in value must be an array of
-     * {@see \Psr\Http\Message\ResponseInterface} objects, Exceptions,
+     * {@see ResponseInterface} objects, Exceptions,
      * callables, or Promises.
      *
      * @param array<int, mixed>|null $queue       The parameters to be passed to the append function, as an indexed array.
      * @param callable|null          $onFulfilled Callback to invoke when the return value is fulfilled.
      * @param callable|null          $onRejected  Callback to invoke when the return value is rejected.
      */
-    public function __construct(array $queue = null, callable $onFulfilled = null, callable $onRejected = null)
+    public function __construct(?array $queue = null, ?callable $onFulfilled = null, ?callable $onRejected = null)
     {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
         if ($queue) {
             // array_values included for BC
-            $this->append(...\array_values($queue));
+            $this->append(...array_values($queue));
         }
     }
-    public function __invoke(\tk\Psr\Http\Message\RequestInterface $request, array $options) : \tk\GuzzleHttp\Promise\PromiseInterface
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         if (!$this->queue) {
             throw new \OutOfBoundsException('Mock queue is empty');
         }
         if (isset($options['delay']) && \is_numeric($options['delay'])) {
-            \usleep((int) $options['delay'] * 1000);
+            \usleep((int) ($options['delay'] * 1000));
         }
         $this->lastRequest = $request;
         $this->lastOptions = $options;
@@ -87,14 +86,14 @@ class MockHandler implements \Countable
                 $options['on_headers']($response);
             } catch (\Exception $e) {
                 $msg = 'An error was encountered during the on_headers event';
-                $response = new \tk\GuzzleHttp\Exception\RequestException($msg, $request, $response, $e);
+                $response = new RequestException($msg, $request, $response, $e);
             }
         }
         if (\is_callable($response)) {
             $response = $response($request, $options);
         }
-        $response = $response instanceof \Throwable ? \tk\GuzzleHttp\Promise\Create::rejectionFor($response) : \tk\GuzzleHttp\Promise\Create::promiseFor($response);
-        return $response->then(function (?\tk\Psr\Http\Message\ResponseInterface $value) use($request, $options) {
+        $response = $response instanceof \Throwable ? P\Create::rejectionFor($response) : P\Create::promiseFor($response);
+        return $response->then(function (?ResponseInterface $value) use ($request, $options) {
             $this->invokeStats($request, $options, $value);
             if ($this->onFulfilled) {
                 ($this->onFulfilled)($value);
@@ -106,17 +105,17 @@ class MockHandler implements \Countable
                     \fwrite($sink, $contents);
                 } elseif (\is_string($sink)) {
                     \file_put_contents($sink, $contents);
-                } elseif ($sink instanceof \tk\Psr\Http\Message\StreamInterface) {
+                } elseif ($sink instanceof StreamInterface) {
                     $sink->write($contents);
                 }
             }
             return $value;
-        }, function ($reason) use($request, $options) {
+        }, function ($reason) use ($request, $options) {
             $this->invokeStats($request, $options, null, $reason);
             if ($this->onRejected) {
                 ($this->onRejected)($reason);
             }
-            return \tk\GuzzleHttp\Promise\Create::rejectionFor($reason);
+            return P\Create::rejectionFor($reason);
         });
     }
     /**
@@ -125,49 +124,49 @@ class MockHandler implements \Countable
      *
      * @param mixed ...$values
      */
-    public function append(...$values) : void
+    public function append(...$values): void
     {
         foreach ($values as $value) {
-            if ($value instanceof \tk\Psr\Http\Message\ResponseInterface || $value instanceof \Throwable || $value instanceof \tk\GuzzleHttp\Promise\PromiseInterface || \is_callable($value)) {
+            if ($value instanceof ResponseInterface || $value instanceof \Throwable || $value instanceof PromiseInterface || \is_callable($value)) {
                 $this->queue[] = $value;
             } else {
-                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found ' . \tk\GuzzleHttp\Utils::describeType($value));
+                throw new \TypeError('Expected a Response, Promise, Throwable or callable. Found ' . \get_debug_type($value));
             }
         }
     }
     /**
      * Get the last received request.
      */
-    public function getLastRequest() : ?\tk\Psr\Http\Message\RequestInterface
+    public function getLastRequest(): ?RequestInterface
     {
         return $this->lastRequest;
     }
     /**
      * Get the last received request options.
      */
-    public function getLastOptions() : array
+    public function getLastOptions(): array
     {
         return $this->lastOptions;
     }
     /**
      * Returns the number of remaining items in the queue.
      */
-    public function count() : int
+    public function count(): int
     {
         return \count($this->queue);
     }
-    public function reset() : void
+    public function reset(): void
     {
         $this->queue = [];
     }
     /**
      * @param mixed $reason Promise or reason.
      */
-    private function invokeStats(\tk\Psr\Http\Message\RequestInterface $request, array $options, \tk\Psr\Http\Message\ResponseInterface $response = null, $reason = null) : void
+    private function invokeStats(RequestInterface $request, array $options, ?ResponseInterface $response = null, $reason = null): void
     {
         if (isset($options['on_stats'])) {
             $transferTime = $options['transfer_time'] ?? 0;
-            $stats = new \tk\GuzzleHttp\TransferStats($request, $response, $transferTime, $reason);
+            $stats = new TransferStats($request, $response, $transferTime, $reason);
             $options['on_stats']($stats);
         }
     }

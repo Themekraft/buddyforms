@@ -1,14 +1,18 @@
 <?php
 
+declare (strict_types=1);
 namespace tk\GuzzleHttp\Promise;
 
 /**
  * Represents a promise that iterates over many promises and invokes
  * side-effect functions in the process.
+ *
+ * @final
  */
-class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
+class EachPromise implements PromisorInterface
 {
     private $pending = [];
+    private $nextPendingIndex = 0;
     /** @var \Iterator|null */
     private $iterable;
     /** @var callable|int|null */
@@ -21,6 +25,8 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
     private $aggregate;
     /** @var bool|null */
     private $mutex;
+    /** @var bool */
+    private $stepWhileLocked = \false;
     /**
      * Configuration hash can include the following key value pairs:
      *
@@ -44,7 +50,11 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
      */
     public function __construct($iterable, array $config = [])
     {
-        $this->iterable = \tk\GuzzleHttp\Promise\Create::iterFor($iterable);
+        if (!is_iterable($iterable)) {
+            \tk\trigger_deprecation('guzzlehttp/promises', '2.5', 'Passing a non-iterable to %s::%s() is deprecated; guzzlehttp/promises 3.0 will require an iterable.', __CLASS__, __FUNCTION__);
+            $iterable = [$iterable];
+        }
+        $this->iterable = Create::iterFor($iterable);
         if (isset($config['concurrency'])) {
             $this->concurrency = $config['concurrency'];
         }
@@ -56,7 +66,7 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
         }
     }
     /** @psalm-suppress InvalidNullableReturnType */
-    public function promise()
+    public function promise(): PromiseInterface
     {
         if ($this->aggregate) {
             return $this->aggregate;
@@ -65,51 +75,61 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
             $this->createPromise();
             /** @psalm-assert Promise $this->aggregate */
             $this->iterable->rewind();
-            if (!$this->checkIfFinished()) {
-                $this->refillPending();
+            $this->refillPending();
+            if (!$this->pending) {
+                Utils::queue()->add(function (): void {
+                    if (!$this->aggregate || State::isSettled($this->aggregate)) {
+                        return;
+                    }
+                    try {
+                        $this->checkIfFinished();
+                    } catch (\Throwable $e) {
+                        $this->aggregate->reject($e);
+                    }
+                });
             }
         } catch (\Throwable $e) {
-            /**
-             * @psalm-suppress NullReference
-             * @phpstan-ignore-next-line
-             */
-            $this->aggregate->reject($e);
-        } catch (\Exception $e) {
-            /**
-             * @psalm-suppress NullReference
-             * @phpstan-ignore-next-line
-             */
             $this->aggregate->reject($e);
         }
         /**
          * @psalm-suppress NullableReturnStatement
-         * @phpstan-ignore-next-line
          */
         return $this->aggregate;
     }
-    private function createPromise()
+    private function createPromise(): void
     {
         $this->mutex = \false;
-        $this->aggregate = new \tk\GuzzleHttp\Promise\Promise(function () {
-            \reset($this->pending);
-            // Consume a potentially fluctuating list of promises while
-            // ensuring that indexes are maintained (precluding array_shift).
-            while ($promise = \current($this->pending)) {
-                \next($this->pending);
-                $promise->wait();
-                if (\tk\GuzzleHttp\Promise\Is::settled($this->aggregate)) {
+        $this->aggregate = new Promise(function (): void {
+            while (\true) {
+                if ($this->checkIfFinished()) {
+                    return;
+                }
+                reset($this->pending);
+                // Consume a potentially fluctuating list of promises while
+                // ensuring that indexes are maintained (precluding array_shift).
+                while ($promise = current($this->pending)) {
+                    next($this->pending);
+                    $promise->wait();
+                    if (State::isSettled($this->aggregate)) {
+                        return;
+                    }
+                }
+                // Refill and re-sweep; give up only when nothing remains.
+                $this->refillPending();
+                if (State::isSettled($this->aggregate) || !$this->pending) {
                     return;
                 }
             }
         });
         // Clear the references when the promise is resolved.
-        $clearFn = function () {
+        $clearFn = function (): void {
             $this->iterable = $this->concurrency = $this->pending = null;
             $this->onFulfilled = $this->onRejected = null;
+            $this->nextPendingIndex = 0;
         };
         $this->aggregate->then($clearFn, $clearFn);
     }
-    private function refillPending()
+    private function refillPending(): void
     {
         if (!$this->concurrency) {
             // Add all pending promises.
@@ -118,8 +138,12 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
             return;
         }
         // Add only up to N pending promises.
-        $concurrency = \is_callable($this->concurrency) ? \call_user_func($this->concurrency, \count($this->pending)) : $this->concurrency;
-        $concurrency = \max($concurrency - \count($this->pending), 0);
+        $concurrency = is_callable($this->concurrency) ? ($this->concurrency)(count($this->pending)) : $this->concurrency;
+        // The callable can settle the aggregate; admit nothing more.
+        if (State::isSettled($this->aggregate)) {
+            return;
+        }
+        $concurrency = max($concurrency - count($this->pending), 0);
         // Concurrency may be set to 0 to disallow new promises.
         if (!$concurrency) {
             return;
@@ -133,57 +157,59 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
         while (--$concurrency && $this->advanceIterator() && $this->addPending()) {
         }
     }
-    private function addPending()
+    private function addPending(): bool
     {
         if (!$this->iterable || !$this->iterable->valid()) {
             return \false;
         }
-        $promise = \tk\GuzzleHttp\Promise\Create::promiseFor($this->iterable->current());
+        $promise = Create::promiseFor($this->iterable->current());
         $key = $this->iterable->key();
-        // Iterable keys may not be unique, so we add the promises at the end
-        // of the pending array and retrieve the array index being used
-        $this->pending[] = null;
-        \end($this->pending);
-        $idx = \key($this->pending);
-        $this->pending[$idx] = $promise->then(function ($value) use($idx, $key) {
+        // Iterable keys may not be unique, so we use a counter to
+        // guarantee uniqueness
+        $idx = $this->nextPendingIndex++;
+        $this->pending[$idx] = $promise->then(function ($value) use ($idx, $key): void {
             if ($this->onFulfilled) {
-                \call_user_func($this->onFulfilled, $value, $key, $this->aggregate);
+                ($this->onFulfilled)($value, $key, $this->aggregate);
             }
             $this->step($idx);
-        }, function ($reason) use($idx, $key) {
+        }, function ($reason) use ($idx, $key): void {
             if ($this->onRejected) {
-                \call_user_func($this->onRejected, $reason, $key, $this->aggregate);
+                ($this->onRejected)($reason, $key, $this->aggregate);
             }
             $this->step($idx);
         });
         return \true;
     }
-    private function advanceIterator()
+    private function advanceIterator(): bool
     {
         // Place a lock on the iterator so that we ensure to not recurse,
         // preventing fatal generator errors.
         if ($this->mutex) {
+            $this->stepWhileLocked = \true;
             return \false;
         }
         $this->mutex = \true;
         try {
             $this->iterable->next();
             $this->mutex = \false;
-            return \true;
         } catch (\Throwable $e) {
             $this->aggregate->reject($e);
             $this->mutex = \false;
             return \false;
-        } catch (\Exception $e) {
-            $this->aggregate->reject($e);
-            $this->mutex = \false;
-            return \false;
         }
+        // Run the completion check that locked steps skipped.
+        if ($this->stepWhileLocked) {
+            $this->stepWhileLocked = \false;
+            if (!State::isSettled($this->aggregate)) {
+                $this->checkIfFinished();
+            }
+        }
+        return \true;
     }
-    private function step($idx)
+    private function step(int $idx): void
     {
         // If the promise was already resolved, then ignore this step.
-        if (\tk\GuzzleHttp\Promise\Is::settled($this->aggregate)) {
+        if (State::isSettled($this->aggregate)) {
             return;
         }
         unset($this->pending[$idx]);
@@ -195,7 +221,8 @@ class EachPromise implements \tk\GuzzleHttp\Promise\PromisorInterface
             $this->refillPending();
         }
     }
-    private function checkIfFinished()
+    /** @phpstan-impure */
+    private function checkIfFinished(): bool
     {
         if (!$this->pending && !$this->iterable->valid()) {
             // Resolve the promise if there's nothing left to do.

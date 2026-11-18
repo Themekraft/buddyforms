@@ -1,6 +1,15 @@
 {
     "require": {
-        "guzzlehttp\/guzzle": "^7.2",
-        "google\/recaptcha": "^1.2"
+        "guzzlehttp/guzzle": "^7.16",
+        "google/recaptcha": "^1.2.4"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "platform-check": false,
+        "autoloader-suffix": "BuddyFormsVendorScope",
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }

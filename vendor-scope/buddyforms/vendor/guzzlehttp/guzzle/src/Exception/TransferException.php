@@ -2,6 +2,6 @@
 
 namespace tk\GuzzleHttp\Exception;
 
-class TransferException extends \RuntimeException implements \tk\GuzzleHttp\Exception\GuzzleException
+class TransferException extends \RuntimeException implements GuzzleException
 {
 }
