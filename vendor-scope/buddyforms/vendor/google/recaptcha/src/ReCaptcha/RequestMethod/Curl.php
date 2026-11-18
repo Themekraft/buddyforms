@@ -46,7 +46,7 @@ class Curl
      */
     public function init($url = null)
     {
-        return \curl_init($url);
+        return curl_init($url);
     }
     /**
      * @see http://php.net/curl_setopt_array
@@ -56,7 +56,7 @@ class Curl
      */
     public function setoptArray($ch, array $options)
     {
-        return \curl_setopt_array($ch, $options);
+        return curl_setopt_array($ch, $options);
     }
     /**
      * @see http://php.net/curl_exec
@@ -65,7 +65,7 @@ class Curl
      */
     public function exec($ch)
     {
-        return \curl_exec($ch);
+        return curl_exec($ch);
     }
     /**
      * @see http://php.net/curl_close
@@ -73,6 +73,6 @@ class Curl
      */
     public function close($ch)
     {
-        \curl_close($ch);
+        curl_close($ch);
     }
 }

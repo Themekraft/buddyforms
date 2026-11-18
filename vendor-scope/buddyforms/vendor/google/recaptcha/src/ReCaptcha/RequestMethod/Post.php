@@ -40,7 +40,7 @@ use tk\ReCaptcha\RequestParameters;
 /**
  * Sends POST requests to the reCAPTCHA service.
  */
-class Post implements \tk\ReCaptcha\RequestMethod
+class Post implements RequestMethod
 {
     /**
      * URL for reCAPTCHA siteverify API
@@ -54,7 +54,7 @@ class Post implements \tk\ReCaptcha\RequestMethod
      */
     public function __construct($siteVerifyUrl = null)
     {
-        $this->siteVerifyUrl = \is_null($siteVerifyUrl) ? \tk\ReCaptcha\ReCaptcha::SITE_VERIFY_URL : $siteVerifyUrl;
+        $this->siteVerifyUrl = is_null($siteVerifyUrl) ? ReCaptcha::SITE_VERIFY_URL : $siteVerifyUrl;
     }
     /**
      * Submit the POST request with the specified parameters.
@@ -62,7 +62,7 @@ class Post implements \tk\ReCaptcha\RequestMethod
      * @param RequestParameters $params Request parameters
      * @return string Body of the reCAPTCHA response
      */
-    public function submit(\tk\ReCaptcha\RequestParameters $params)
+    public function submit(RequestParameters $params)
     {
         $options = array('http' => array(
             'header' => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -71,11 +71,11 @@ class Post implements \tk\ReCaptcha\RequestMethod
             // Force the peer to validate (not needed in 5.6.0+, but still works)
             'verify_peer' => \true,
         ));
-        $context = \stream_context_create($options);
-        $response = \file_get_contents($this->siteVerifyUrl, \false, $context);
+        $context = stream_context_create($options);
+        $response = file_get_contents($this->siteVerifyUrl, \false, $context);
         if ($response !== \false) {
             return $response;
         }
-        return '{"success": false, "error-codes": ["' . \tk\ReCaptcha\ReCaptcha::E_CONNECTION_FAILED . '"]}';
+        return '{"success": false, "error-codes": ["' . ReCaptcha::E_CONNECTION_FAILED . '"]}';
     }
 }

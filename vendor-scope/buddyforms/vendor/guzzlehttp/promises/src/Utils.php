@@ -1,5 +1,6 @@
 <?php
 
+declare (strict_types=1);
 namespace tk\GuzzleHttp\Promise;
 
 final class Utils
@@ -17,17 +18,15 @@ final class Utils
      * }
      * </code>
      *
-     * @param TaskQueueInterface $assign Optionally specify a new queue instance.
-     *
-     * @return TaskQueueInterface
+     * @param TaskQueueInterface|null $assign Optionally specify a new queue instance.
      */
-    public static function queue(\tk\GuzzleHttp\Promise\TaskQueueInterface $assign = null)
+    public static function queue(?TaskQueueInterface $assign = null): TaskQueueInterface
     {
         static $queue;
         if ($assign) {
             $queue = $assign;
         } elseif (!$queue) {
-            $queue = new \tk\GuzzleHttp\Promise\TaskQueue();
+            $queue = new TaskQueue();
         }
         return $queue;
     }
@@ -36,19 +35,17 @@ final class Utils
      * returns a promise that is fulfilled or rejected with the result.
      *
      * @param callable $task Task function to run.
-     *
-     * @return PromiseInterface
      */
-    public static function task(callable $task)
+    public static function task(callable $task): PromiseInterface
     {
         $queue = self::queue();
-        $promise = new \tk\GuzzleHttp\Promise\Promise([$queue, 'run']);
-        $queue->add(function () use($task, $promise) {
+        $promise = new Promise([$queue, 'run']);
+        $queue->add(function () use ($task, $promise): void {
             try {
-                $promise->resolve($task());
+                if (State::isPending($promise)) {
+                    $promise->resolve($task());
+                }
             } catch (\Throwable $e) {
-                $promise->reject($e);
-            } catch (\Exception $e) {
                 $promise->reject($e);
             }
         });
@@ -65,19 +62,19 @@ final class Utils
      * key mapping to the rejection reason of the promise.
      *
      * @param PromiseInterface $promise Promise or value.
-     *
-     * @return array
      */
-    public static function inspect(\tk\GuzzleHttp\Promise\PromiseInterface $promise)
+    public static function inspect(PromiseInterface $promise): array
     {
         try {
-            return ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::FULFILLED, 'value' => $promise->wait()];
-        } catch (\tk\GuzzleHttp\Promise\RejectionException $e) {
-            return ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::REJECTED, 'reason' => $e->getReason()];
+            return ['state' => PromiseInterface::FULFILLED, 'value' => $promise->wait()];
         } catch (\Throwable $e) {
-            return ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::REJECTED, 'reason' => $e];
-        } catch (\Exception $e) {
-            return ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::REJECTED, 'reason' => $e];
+            if ($e instanceof AggregateException) {
+                return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
+            }
+            if ($e instanceof RejectionException) {
+                return ['state' => PromiseInterface::REJECTED, 'reason' => $e->getReason()];
+            }
+            return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
         }
     }
     /**
@@ -89,14 +86,13 @@ final class Utils
      * @see inspect for the inspection state array format.
      *
      * @param PromiseInterface[] $promises Traversable of promises to wait upon.
-     *
-     * @return array
      */
-    public static function inspectAll($promises)
+    public static function inspectAll($promises): array
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         $results = [];
         foreach ($promises as $key => $promise) {
-            $results[$key] = inspect($promise);
+            $results[$key] = self::inspect($promise);
         }
         return $results;
     }
@@ -109,13 +105,11 @@ final class Utils
      *
      * @param iterable<PromiseInterface> $promises Iterable of PromiseInterface objects to wait on.
      *
-     * @return array
-     *
-     * @throws \Exception on error
-     * @throws \Throwable on error in PHP >=7
+     * @throws \Throwable on error
      */
-    public static function unwrap($promises)
+    public static function unwrap($promises): array
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         $results = [];
         foreach ($promises as $key => $promise) {
             $results[$key] = $promise->wait();
@@ -132,24 +126,30 @@ final class Utils
      *
      * @param mixed $promises  Promises or values.
      * @param bool  $recursive If true, resolves new promises that might have been added to the stack during its own resolution.
-     *
-     * @return PromiseInterface
      */
-    public static function all($promises, $recursive = \false)
+    public static function all($promises, bool $recursive = \false): PromiseInterface
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         $results = [];
-        $promise = \tk\GuzzleHttp\Promise\Each::of($promises, function ($value, $idx) use(&$results) {
+        $promise = Each::of($promises, function ($value, $idx) use (&$results): void {
             $results[$idx] = $value;
-        }, function ($reason, $idx, \tk\GuzzleHttp\Promise\Promise $aggregate) {
-            $aggregate->reject($reason);
-        })->then(function () use(&$results) {
-            \ksort($results);
+        }, function ($reason, $idx, Promise $aggregate): void {
+            if (State::isPending($aggregate)) {
+                $aggregate->reject($reason);
+            }
+        })->then(function () use (&$results) {
+            ksort($results);
             return $results;
         });
         if (\true === $recursive) {
-            $promise = $promise->then(function ($results) use($recursive, &$promises) {
+            $promise = $promise->then(function ($results) use ($recursive, &$promises) {
+                // A consumed generator cannot be traversed again, so a
+                // recursive pass has nothing further to observe.
+                if ($promises instanceof \Generator) {
+                    return $results;
+                }
                 foreach ($promises as $promise) {
-                    if (\tk\GuzzleHttp\Promise\Is::pending($promise)) {
+                    if (State::isPending($promise)) {
                         return self::all($promises, $recursive);
                     }
                 }
@@ -171,29 +171,28 @@ final class Utils
      *
      * @param int   $count    Total number of promises.
      * @param mixed $promises Promises or values.
-     *
-     * @return PromiseInterface
      */
-    public static function some($count, $promises)
+    public static function some(int $count, $promises): PromiseInterface
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         $results = [];
         $rejections = [];
-        return \tk\GuzzleHttp\Promise\Each::of($promises, function ($value, $idx, \tk\GuzzleHttp\Promise\PromiseInterface $p) use(&$results, $count) {
-            if (\tk\GuzzleHttp\Promise\Is::settled($p)) {
+        return Each::of($promises, function ($value, $idx, PromiseInterface $p) use (&$results, $count): void {
+            if (State::isSettled($p)) {
                 return;
             }
             $results[$idx] = $value;
-            if (\count($results) >= $count) {
+            if (count($results) >= $count) {
                 $p->resolve(null);
             }
-        }, function ($reason) use(&$rejections) {
+        }, function ($reason) use (&$rejections): void {
             $rejections[] = $reason;
-        })->then(function () use(&$results, &$rejections, $count) {
-            if (\count($results) !== $count) {
-                throw new \tk\GuzzleHttp\Promise\AggregateException('Not enough promises to fulfill count', $rejections);
+        })->then(function () use (&$results, &$rejections, $count) {
+            if (count($results) !== $count) {
+                throw new AggregateException('Not enough promises to fulfill count', $rejections);
             }
-            \ksort($results);
-            return \array_values($results);
+            ksort($results);
+            return array_values($results);
         });
     }
     /**
@@ -201,11 +200,10 @@ final class Utils
      * fulfillment value is not an array of 1 but the value directly.
      *
      * @param mixed $promises Promises or values.
-     *
-     * @return PromiseInterface
      */
-    public static function any($promises)
+    public static function any($promises): PromiseInterface
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         return self::some(1, $promises)->then(function ($values) {
             return $values[0];
         });
@@ -219,19 +217,33 @@ final class Utils
      * @see inspect for the inspection state array format.
      *
      * @param mixed $promises Promises or values.
-     *
-     * @return PromiseInterface
      */
-    public static function settle($promises)
+    public static function settle($promises): PromiseInterface
     {
+        $promises = self::prepareIterable($promises, __FUNCTION__);
         $results = [];
-        return \tk\GuzzleHttp\Promise\Each::of($promises, function ($value, $idx) use(&$results) {
-            $results[$idx] = ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::FULFILLED, 'value' => $value];
-        }, function ($reason, $idx) use(&$results) {
-            $results[$idx] = ['state' => \tk\GuzzleHttp\Promise\PromiseInterface::REJECTED, 'reason' => $reason];
-        })->then(function () use(&$results) {
-            \ksort($results);
+        return Each::of($promises, function ($value, $idx) use (&$results): void {
+            $results[$idx] = ['state' => PromiseInterface::FULFILLED, 'value' => $value];
+        }, function ($reason, $idx) use (&$results): void {
+            $results[$idx] = ['state' => PromiseInterface::REJECTED, 'reason' => $reason];
+        })->then(function () use (&$results) {
+            ksort($results);
             return $results;
         });
+    }
+    private static function prepareIterable($promises, string $method): iterable
+    {
+        if (is_iterable($promises)) {
+            return $promises;
+        }
+        self::triggerNonIterableDeprecation($promises, $method);
+        return [$promises];
+    }
+    private static function triggerNonIterableDeprecation($promises, string $method): void
+    {
+        if (is_iterable($promises)) {
+            return;
+        }
+        \tk\trigger_deprecation('guzzlehttp/promises', '2.5', 'Passing a non-iterable to %s::%s() is deprecated; guzzlehttp/promises 3.0 will require an iterable.', self::class, $method);
     }
 }
