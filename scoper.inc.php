@@ -2,71 +2,93 @@
 
 declare(strict_types=1);
 
+/*
+ * php-scoper (0.18+) configuration for the libraries bundled under vendor-scope/buddyforms.
+ *
+ * Everything is moved under the `tk\` namespace so BuddyForms' copies of Guzzle and reCAPTCHA
+ * never clash with other plugins that ship their own. See readme.md ("Scoped libraries") for
+ * the build steps.
+ */
+
 use Isolated\Symfony\Component\Finder\Finder;
 
 return [
-    // The prefix configuration. If a non null value will be used, a random prefix will be generated.
-	'prefix' => 'tk',
+	'prefix'      => 'tk',
 
-    // By default when running php-scoper add-prefix, it will prefix all relevant code found in the current working
-    // directory. You can however define which files should be scoped by defining a collection of Finders in the
-    // following configuration key.
-    //
-    // For more see: https://github.com/humbug/php-scoper#finders-and-paths
-    'finders' => [
-        Finder::create()
-            ->files()
-            ->in('vendor-scope/buddyforms'),
-    ],
+	// The plugin still supports PHP 7.4: parse and print code for that version.
+	'php-version' => '7.4',
 
-    // Whitelists a list of files. Unlike the other whitelist related features, this one is about completely leaving
-    // a file untouched.
-    // Paths are relative to the configuration file unless if they are already absolute
-    'files-whitelist' => [
-        'src/a-whitelisted-file.php',
-    ],
+	'finders'     => [
+		Finder::create()
+			->files()
+			->ignoreVCS( true )
+			// Keep the code and the LICENSE files, drop docs and tooling files.
+			->notName( '/\\.(md|dist|neon|xml|yaml|yml)$|^Makefile$|^composer\\.lock$/' )
+			->exclude( [ 'doc', 'docs', 'test', 'tests', 'Tests', 'examples' ] )
+			->in( 'vendor-scope/buddyforms/vendor' ),
+		Finder::create()->append( [ 'vendor-scope/buddyforms/composer.json' ] ),
+	],
 
-    // When scoping PHP files, there will be scenarios where some of the code being scoped indirectly references the
-    // original namespace. These will include, for example, strings or string manipulations. PHP-Scoper has limited
-    // support for prefixing such strings. To circumvent that, you can define patchers to manipulate the file to your
-    // heart contents.
-    //
-    // For more see: https://github.com/humbug/php-scoper#patchers
-    'patchers' => [
-        function (string $filePath, string $prefix, string $contents): string {
-            // Change the contents here.
+	// symfony/polyfill-php80 and ralouphie/getallheaders must stay global: their functions and
+	// classes are guarded by function_exists()/PHP_VERSION_ID checks, and Guzzle calls them by
+	// their global names (get_debug_type(), getallheaders()...) on older PHP versions.
+	'exclude-namespaces' => [
+		'Symfony\\Polyfill',
+	],
+	'exclude-files' => [
+		'vendor-scope/buddyforms/vendor/ralouphie/getallheaders/src/getallheaders.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/bootstrap.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/Resources/stubs/Attribute.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+		'vendor-scope/buddyforms/vendor/symfony/polyfill-php80/Resources/stubs/ValueError.php',
+	],
 
-            return $contents;
-        },
-    ],
+	'patchers'    => [
+		// google/recaptcha 1.2.4 is the last release that supports PHP 7.4, and it declares
+		// implicitly nullable parameters (`Type $x = null`), deprecated since PHP 8.4. Make them
+		// explicitly nullable (`?Type $x = null`), which is valid from PHP 7.1.
+		static function ( string $file_path, string $prefix, string $contents ): string {
+			if ( false === strpos( $file_path, '/google/recaptcha/' ) ) {
+				return $contents;
+			}
 
-    // PHP-Scoper's goal is to make sure that all code for a project lies in a distinct PHP namespace. However, you
-    // may want to share a common API between the bundled code of your PHAR and the consumer code. For example if
-    // you have a PHPUnit PHAR with isolated code, you still want the PHAR to be able to understand the
-    // PHPUnit\Framework\TestCase class.
-    //
-    // A way to achieve this is by specifying a list of classes to not prefix with the following configuration key. Note
-    // that this does not work with functions or constants neither with classes belonging to the global namespace.
-    //
-    // Fore more see https://github.com/humbug/php-scoper#whitelist
-    'whitelist' => [
-        // 'PHPUnit\Framework\TestCase',   // A specific class
-        // 'PHPUnit\Framework\*',          // The whole namespace
-        // '*',                            // Everything
-    ],
+			return (string) preg_replace(
+				'/([(,]\s*)(?<!\?)([A-Za-z_\\\\][A-Za-z0-9_\\\\]*)(\s+\$\w+\s*=\s*null\b)/',
+				'$1?$2$3',
+				$contents
+			);
+		},
+		// google/recaptcha 1.2.4 also creates dynamic properties (deprecated since PHP 8.2) and
+		// passes the response's null fields to strcasecmp()/strtotime() (deprecated since PHP 8.1).
+		// Declare the properties and cast to string, which is what PHP did implicitly.
+		static function ( string $file_path, string $prefix, string $contents ): string {
+			if ( '/google/recaptcha/src/ReCaptcha/ReCaptcha.php' !== substr( $file_path, -strlen( '/google/recaptcha/src/ReCaptcha/ReCaptcha.php' ) ) ) {
+				return $contents;
+			}
 
-    // If `true` then the user defined constants belonging to the global namespace will not be prefixed.
-    //
-    // For more see https://github.com/humbug/php-scoper#constants--constants--functions-from-the-global-namespace
-    'whitelist-global-constants' => true,
+			$replacements = [
+				'    private $requestMethod;'                                              => "    private \$requestMethod;\n    /** @var string|null */\n    private \$hostname;\n    /** @var string|null */\n    private \$apkPackageName;\n    /** @var string|null */\n    private \$action;\n    /** @var float|null */\n    private \$threshold;\n    /** @var int|null */\n    private \$timeoutSeconds;",
+				'strcasecmp($this->hostname, $initialResponse->getHostname())'             => 'strcasecmp($this->hostname, (string) $initialResponse->getHostname())',
+				'strcasecmp($this->apkPackageName, $initialResponse->getApkPackageName())' => 'strcasecmp($this->apkPackageName, (string) $initialResponse->getApkPackageName())',
+				'strcasecmp($this->action, $initialResponse->getAction())'                 => 'strcasecmp($this->action, (string) $initialResponse->getAction())',
+				'strtotime($initialResponse->getChallengeTs())'                            => 'strtotime((string) $initialResponse->getChallengeTs())',
+			];
+			foreach ( $replacements as $search => $replace ) {
+				if ( 1 !== substr_count( $contents, $search ) ) {
+					throw new RuntimeException( "ReCaptcha.php patch no longer applies: $search" );
+				}
+				$contents = str_replace( $search, $replace, $contents );
+			}
 
-    // If `true` then the user defined classes belonging to the global namespace will not be prefixed.
-    //
-    // For more see https://github.com/humbug/php-scoper#constants--constants--functions-from-the-global-namespace
-    'whitelist-global-classes' => true,
+			return $contents;
+		},
+	],
 
-    // If `true` then the user defined functions belonging to the global namespace will not be prefixed.
-    //
-    // For more see https://github.com/humbug/php-scoper#constants--constants--functions-from-the-global-namespace
-    'whitelist-global-functions' => true,
+	// Keep every symbol inside the prefix. The aliases php-scoper writes to scoper-autoload.php
+	// are not needed: BuddyForms loads vendor/autoload.php and only uses the tk\ names.
+	'expose-global-constants' => false,
+	'expose-global-classes'   => false,
+	'expose-global-functions' => false,
 ];
