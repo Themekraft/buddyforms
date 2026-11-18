@@ -32,7 +32,7 @@ function from_setup_form_type(value) {
             jQuery('.bf_show_if_f_type_registration').hide();
             jQuery('.bf_show_if_f_type_all').show();
             jQuery('.bf_show_if_f_type_contact').show();
-            jQuery('.public-submit-option, .permission_roles').show();
+            jQuery('.permission_nav, .permission_roles').show();
 
             // Show/Hide after submission post options
             jQuery('#bf-after-submission-action option[value=display_form]').hide();
@@ -46,6 +46,9 @@ function from_setup_form_type(value) {
             jQuery('#form_post_type').val('bf_submissions');
             jQuery('#attached_page').val('none');
 
+            // A registration form creates the account itself, never during submission
+            jQuery('#public_submit_create_account-0').prop('checked', false);
+
             jQuery('.registrations_nav, .bf_hide_if_attached_page_none').show();
 
             // Hide
@@ -58,8 +61,8 @@ function from_setup_form_type(value) {
             jQuery('.bf_show_if_f_type_registration').show();
             jQuery('.bf_show_if_f_type_all').show(); // todo: only show correct fields
 
-            // Hide after submission post options
-            //jQuery('#bf-after-submission-action option[value=display_form]').hide();
+            // Show/Hide after submission post options
+            jQuery('#bf-after-submission-action option[value=display_form]').show();
             jQuery('#bf-after-submission-action option[value=display_post]').hide();
             jQuery('#bf-after-submission-action option[value=display_posts_list]').hide();
 
@@ -78,6 +81,9 @@ function from_setup_form_type(value) {
             // View all post related nav items
             jQuery('.create-content_nav,.permission_nav, .edit-submissions_nav, .bf_show_if_f_type_post, .notifications_nav').show();
 
+            // Logged in user permissions apply to post forms, also when unregistered users can submit
+            jQuery('.permission_roles').show();
+
             // Show the corresponding form elements in the form select
             jQuery('.bf_show_if_f_type_contact').hide();
             jQuery('.bf_show_if_f_type_registration').hide();
@@ -87,6 +93,31 @@ function from_setup_form_type(value) {
             break;
     }
 
+    // Options that depend on the form type and on "Public Submittable"
+    from_setup_public_submit(value);
+
+}
+
+// Show the unregistered user options that match the "Public Submittable" choice and the form type
+function from_setup_public_submit(form_type) {
+    if (typeof form_type === 'undefined') {
+        form_type = jQuery('#bf-form-type-select').val();
+    }
+
+    var public_submit = jQuery('.public_submit_select input:radio:checked').val();
+
+    if (public_submit === 'registration_form') {
+        jQuery('.registration-form-option').show();
+        jQuery('.public-submit-option').hide();
+    } else {
+        jQuery('.registration-form-option').hide();
+        // Login above/under the form and "Create account during submission" do not apply to registration forms
+        if (form_type === 'registration') {
+            jQuery('.public-submit-option').hide();
+        } else {
+            jQuery('.public-submit-option').show();
+        }
+    }
 }
 
 // Post Type Select function for the metabox visibility buddyforms-metabox-show-if-post-type-none
@@ -537,14 +568,7 @@ jQuery(document).ready(function (jQuery) {
     });
 
     jQuery(document.body).on('click', '.public_submit_select input', function () {
-        if (jQuery(this).val() == 'public_submit') {
-            jQuery('.public-submit-option').show();
-            jQuery('.registration-form-option').hide();
-        }
-        if (jQuery(this).val() == 'registration_form') {
-            jQuery('.registration-form-option').show();
-            jQuery('.public-submit-option').hide();
-        }
+        from_setup_public_submit();
     });
     jQuery(".public_submit_select input:radio:checked").trigger("click");
 
