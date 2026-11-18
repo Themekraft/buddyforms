@@ -11,7 +11,7 @@ class Element_YesNo extends Element_Radio {
 	 * @param $name
 	 * @param array|null $properties
 	 */
-	public function __construct( $label, $name, array $properties = null ) {
+	public function __construct( $label, $name, ?array $properties = null ) {
 		$options = array(
 			'1' => 'Yes',
 			'0' => 'No',

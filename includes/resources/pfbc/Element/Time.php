@@ -12,7 +12,7 @@ class Element_Time extends Element_Textbox {
 	 * @param $field_options
 	 * @param array|null    $properties
 	 */
-	public function __construct( $label, $name, $field_options, array $properties = null ) {
+	public function __construct( $label, $name, $field_options, ?array $properties = null ) {
 		if ( ! empty( $properties['class'] ) ) {
 			$properties['class'] .= ' bf_jquerytimeaddon ';
 		} else {

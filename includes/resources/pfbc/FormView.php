@@ -22,7 +22,7 @@ abstract class FormView extends Base {
 	 *
 	 * @param array|null $properties
 	 */
-	public function __construct( array $properties = null ) {
+	public function __construct( ?array $properties = null ) {
 		$this->configure( $properties );
 	}
 
