@@ -265,6 +265,11 @@ function buddyforms_process_submission( $args = array() ) {
 	// Ok let us start processing the post form
 	do_action( 'buddyforms_process_submission_start', $args );
 
+	// A revision only counts when it belongs to the entry being saved.
+	if ( ! empty( $revision_id ) && (int) wp_is_post_revision( $revision_id ) !== (int) $post_id ) {
+		$revision_id = false;
+	}
+
 	if ( $post_id != 0 && $form_type !== 'registration' ) {
 		if ( ! empty( $revision_id ) ) {
 			$the_post = get_post( $revision_id );
@@ -288,6 +293,12 @@ function buddyforms_process_submission( $args = array() ) {
 	// Check if the Auto-Draft post generate by our forms
 	// was already take by another user, if so, generate a new one.
 	if ( $post_id !== 0 && isset( $_POST['form_action'] ) && $_POST['form_action'] === 'create' && get_post_status( $post_id ) !== 'auto-draft' ) {
+		$the_post = bf_get_default_post_to_edit( $post_type, true );
+		$post_id  = $the_post->ID;
+	}
+
+	// Never reuse another user's auto-draft: a new entry always belongs to the user who submits it.
+	if ( ! empty( $post_id ) && $form_type !== 'registration' && 'auto-draft' === get_post_status( $post_id ) && (int) get_post_field( 'post_author', $post_id ) !== (int) $user_id ) {
 		$the_post = bf_get_default_post_to_edit( $post_type, true );
 		$post_id  = $the_post->ID;
 	}
