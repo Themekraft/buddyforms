@@ -40,9 +40,13 @@ function buddyforms_track( $event_name, $data_args = array() ) {
 			}
 		}
 	} catch ( Exception $ex ) {
-		error_log( 'buddyforms::' . $ex->getMessage(), E_USER_NOTICE );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'buddyforms::' . $ex->getMessage(), E_USER_NOTICE ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only logged with WP_DEBUG on.
+		}
 	} catch ( \tk\GuzzleHttp\Exception\GuzzleException $ex ) {
-		error_log( 'buddyforms::GuzzleException::' . $ex->getMessage(), E_USER_NOTICE );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'buddyforms::GuzzleException::' . $ex->getMessage(), E_USER_NOTICE ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only logged with WP_DEBUG on.
+		}
 	}
 }
 
