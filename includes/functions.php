@@ -1896,6 +1896,7 @@ function buddyforms_filter_frontend_js_form_options( $options, $form_slug, $bf_p
 		$form_slug,
 		$bf_post_id
 	);
+	$result = array();
 	foreach ( $granted as $item ) {
 		if ( isset( $options[ $item ] ) ) {
 			$result[ $item ] = $options[ $item ];
