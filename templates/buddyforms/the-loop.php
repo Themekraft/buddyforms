@@ -22,7 +22,7 @@ $css = ob_get_clean();
 $the_loop_css = buddyforms_minify_css( $css );
 file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/css/bf-the-loop-css-' . $form_slug . '.css', $the_loop_css );
 $the_loop_css_url = BUDDYFORMS_ASSETS . 'css/bf-the-loop-css-' . $form_slug . '.css';
-wp_register_style( 'bf-the-loop-css-' . $form_slug, $the_loop_css_url );
+wp_register_style( 'bf-the-loop-css-' . $form_slug, $the_loop_css_url, array(), BUDDYFORMS_VERSION );
 wp_enqueue_style( 'bf-the-loop-css-' . $form_slug );
 ?>
 

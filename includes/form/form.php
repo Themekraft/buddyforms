@@ -108,7 +108,7 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 		if ( $echo ) {
 			file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/css/bf-global-css-' . $form_slug . '.css', $global_css );
 			$login_form_css_url = BUDDYFORMS_ASSETS . 'css/bf-global-css-' . $form_slug . '.css';
-			wp_register_style( 'bf-global-css-' . $form_slug, $login_form_css_url );
+			wp_register_style( 'bf-global-css-' . $form_slug, $login_form_css_url, array(), BUDDYFORMS_VERSION );
 			wp_enqueue_style( 'bf-global-css-' . $form_slug );
 		} else {
 			$form_output .= $global_css;

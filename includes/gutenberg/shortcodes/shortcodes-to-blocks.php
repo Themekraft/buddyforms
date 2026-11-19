@@ -19,7 +19,9 @@ function buddyforms_shortcodes_to_block_init() {
 	wp_register_script(
 		'bf-embed-form',
 		plugins_url( 'shortcodes-to-blocks.js', __FILE__ ),
-		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-editor' )
+		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-editor' ),
+		BUDDYFORMS_VERSION,
+		false
 	);
 
 	//
