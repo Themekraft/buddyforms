@@ -320,10 +320,7 @@ function buddyforms_ajax_delete_post() {
 				// If true then Delete the files attached to the entry
 				$column_val = get_post_meta( $post_id, $field, true );
 				if ( ! empty( $column_val ) ) {
-					$attachmet_id = explode( ',', $column_val );
-					foreach ( $attachmet_id as $id ) {
-						wp_delete_attachment( $id, true );
-					}
+					buddyforms_delete_entry_attachments( $column_val, $post_id );
 				}
 			}
 		}

@@ -1202,6 +1202,11 @@ function buddyforms_update_post_meta( $post_id, $custom_fields ) {
 			$slug = buddyforms_sanitize_slug( $customfield['name'] );
 		}
 
+		// Upload and featured image fields only keep the files this entry can use.
+		if ( in_array( $customfield['type'], array( 'upload', 'featured_image' ), true ) && isset( $_POST[ $slug ] ) ) {
+			$_POST[ $slug ] = is_string( $_POST[ $slug ] ) ? implode( ',', buddyforms_filter_submitted_attachment_ids( wp_unslash( $_POST[ $slug ] ), $post_id, $customfield ) ) : '';
+		}
+
 		// Update the post
 		if ( isset( $_POST[ $slug ] ) && ! ( $_POST[ $slug ] == 'user_pass' || $_POST[ $slug ] == 'user_pass_confirm' ) ) {
 			$field_value = buddyforms_sanitize( $customfield['type'], wp_unslash( $_POST[ $slug ] ) );
