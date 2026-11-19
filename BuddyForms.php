@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: BuddyForms
  * Plugin URI:  https://themekraft.com/buddyforms/
  * Description: Contact Forms, Post Forms for User Generated Content and Registration Forms easily build in minutes. Extendable with Addons!
- * Version: 2.10.7
+ * Version: 2.10.8
  * Requires at least: 5.9
  * Requires PHP: 7.4
  * Author: ThemeKraft
@@ -59,7 +59,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		/**
 		 * @var string
 		 */
-		public $version = '2.10.7';
+		public $version = '2.10.8';
 
 		/**
 		 * @var array Frontend Global JS parameters
@@ -91,11 +91,11 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		}
 
 		/**
-		 * Add the BuddyForms Bundle screen menu.
+		 * Add the Go Pro screen menu, which sells BuddyForms Pro.
 		 */
 		public function buddyforms_bundle_screen_menu() {
 			if ( buddyforms_core_fs()->is_not_paying() ) {
-				add_submenu_page( 'edit.php?post_type=buddyforms', __( 'Bundle', 'buddyforms' ), __( 'Go Pro!', 'buddyforms' ), 'manage_options', 'buddyforms_bundle_screen', 'tk_pricing_page_render', 99 );
+				add_submenu_page( 'edit.php?post_type=buddyforms', __( 'BuddyForms Pro', 'buddyforms' ), __( 'Go Pro!', 'buddyforms' ), 'manage_options', 'buddyforms_bundle_screen', 'tk_pricing_page_render', 99 );
 			}
 		}
 
@@ -525,6 +525,33 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		}
 
 		/**
+		 * Find a page by its exact title.
+		 *
+		 * Same query as get_page_by_title(), which is deprecated since WordPress 6.2.
+		 *
+		 * @param string $title Page title.
+		 *
+		 * @return WP_Post|null The oldest page with that title in any status, or null.
+		 */
+		private function find_page_by_title( $title ) {
+			$query = new WP_Query(
+				array(
+					'title'                  => $title,
+					'post_type'              => 'page',
+					'post_status'            => get_post_stati(),
+					'posts_per_page'         => 1,
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'no_found_rows'          => true,
+					'orderby'                => 'post_date ID',
+					'order'                  => 'ASC',
+				)
+			);
+
+			return empty( $query->posts ) ? null : get_post( $query->posts[0] );
+		}
+
+		/**
 		 * Plugin activation
 		 *
 		 * @since  2.0
@@ -532,7 +559,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 		function plugin_activation() {
 
 			$title        = apply_filters( 'buddyforms_preview_page_title', __( 'BuddyForms Preview Page', 'buddyforms' ) );
-			$preview_page = get_page_by_title( $title );
+			$preview_page = $this->find_page_by_title( $title );
 			if ( ! $preview_page ) {
 				// Create preview page object
 				$preview_post = array(
@@ -552,7 +579,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 			update_option( 'buddyforms_preview_page', $page_id );
 
 			$title            = apply_filters( 'buddyforms_submissions_page_title', __( 'BuddyForms Submissions Page', 'buddyforms' ) );
-			$submissions_page = get_page_by_title( $title );
+			$submissions_page = $this->find_page_by_title( $title );
 			if ( ! $submissions_page ) {
 				// Create submissions page object
 				$preview_post = array(

@@ -15,7 +15,7 @@ interface ClientInterface
     /**
      * The Guzzle major version.
      */
-    const MAJOR_VERSION = 7;
+    public const MAJOR_VERSION = 7;
     /**
      * Send an HTTP request.
      *
@@ -25,7 +25,7 @@ interface ClientInterface
      *
      * @throws GuzzleException
      */
-    public function send(\tk\Psr\Http\Message\RequestInterface $request, array $options = []) : \tk\Psr\Http\Message\ResponseInterface;
+    public function send(RequestInterface $request, array $options = []): ResponseInterface;
     /**
      * Asynchronously send an HTTP request.
      *
@@ -33,7 +33,7 @@ interface ClientInterface
      * @param array            $options Request options to apply to the given
      *                                  request and to the transfer.
      */
-    public function sendAsync(\tk\Psr\Http\Message\RequestInterface $request, array $options = []) : \tk\GuzzleHttp\Promise\PromiseInterface;
+    public function sendAsync(RequestInterface $request, array $options = []): PromiseInterface;
     /**
      * Create and send an HTTP request.
      *
@@ -47,7 +47,7 @@ interface ClientInterface
      *
      * @throws GuzzleException
      */
-    public function request(string $method, $uri, array $options = []) : \tk\Psr\Http\Message\ResponseInterface;
+    public function request(string $method, $uri, array $options = []): ResponseInterface;
     /**
      * Create and send an asynchronous HTTP request.
      *
@@ -60,7 +60,7 @@ interface ClientInterface
      * @param string|UriInterface $uri     URI object or string.
      * @param array               $options Request options to apply.
      */
-    public function requestAsync(string $method, $uri, array $options = []) : \tk\GuzzleHttp\Promise\PromiseInterface;
+    public function requestAsync(string $method, $uri, array $options = []): PromiseInterface;
     /**
      * Get a client configuration option.
      *

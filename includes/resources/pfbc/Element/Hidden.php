@@ -16,7 +16,7 @@ class Element_Hidden extends Element {
 	 * @param string     $value
 	 * @param array|null $properties
 	 */
-	public function __construct( $name, $value = '', array $properties = null ) {
+	public function __construct( $name, $value = '', ?array $properties = null ) {
 		if ( ! is_array( $properties ) ) {
 			$properties = array();
 		}

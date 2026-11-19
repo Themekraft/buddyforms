@@ -15,7 +15,7 @@ abstract class Validation extends Base {
 	 * @param string $message
 	 * @param array  $field_options
 	 */
-	public function __construct( $message = '', array $field_options = null ) {
+	public function __construct( $message = '', ?array $field_options = null ) {
 		if ( ! empty( $message ) ) {
 			$this->message = $message;
 		}

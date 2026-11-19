@@ -12,7 +12,7 @@ class Element_Date extends Element_Textbox {
 	 * @param $field_options
 	 * @param array|null    $properties
 	 */
-	public function __construct( $label, $name, $field_options, array $properties = null ) {
+	public function __construct( $label, $name, $field_options, ?array $properties = null ) {
 		$element_class = ' bf_datetimepicker ';
 		if ( ! empty( $properties['class'] ) ) {
 			$properties['class'] .= sprintf( ' %s ', $element_class );

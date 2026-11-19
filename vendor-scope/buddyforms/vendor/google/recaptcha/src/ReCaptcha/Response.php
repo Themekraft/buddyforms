@@ -82,22 +82,22 @@ class Response
      */
     public static function fromJson($json)
     {
-        $responseData = \json_decode($json, \true);
+        $responseData = json_decode($json, \true);
         if (!$responseData) {
-            return new \tk\ReCaptcha\Response(\false, array(\tk\ReCaptcha\ReCaptcha::E_INVALID_JSON));
+            return new Response(\false, array(ReCaptcha::E_INVALID_JSON));
         }
         $hostname = isset($responseData['hostname']) ? $responseData['hostname'] : null;
         $challengeTs = isset($responseData['challenge_ts']) ? $responseData['challenge_ts'] : null;
         $apkPackageName = isset($responseData['apk_package_name']) ? $responseData['apk_package_name'] : null;
-        $score = isset($responseData['score']) ? \floatval($responseData['score']) : null;
+        $score = isset($responseData['score']) ? floatval($responseData['score']) : null;
         $action = isset($responseData['action']) ? $responseData['action'] : null;
         if (isset($responseData['success']) && $responseData['success'] == \true) {
-            return new \tk\ReCaptcha\Response(\true, array(), $hostname, $challengeTs, $apkPackageName, $score, $action);
+            return new Response(\true, array(), $hostname, $challengeTs, $apkPackageName, $score, $action);
         }
-        if (isset($responseData['error-codes']) && \is_array($responseData['error-codes'])) {
-            return new \tk\ReCaptcha\Response(\false, $responseData['error-codes'], $hostname, $challengeTs, $apkPackageName, $score, $action);
+        if (isset($responseData['error-codes']) && is_array($responseData['error-codes'])) {
+            return new Response(\false, $responseData['error-codes'], $hostname, $challengeTs, $apkPackageName, $score, $action);
         }
-        return new \tk\ReCaptcha\Response(\false, array(\tk\ReCaptcha\ReCaptcha::E_UNKNOWN_ERROR), $hostname, $challengeTs, $apkPackageName, $score, $action);
+        return new Response(\false, array(ReCaptcha::E_UNKNOWN_ERROR), $hostname, $challengeTs, $apkPackageName, $score, $action);
     }
     /**
      * Constructor.

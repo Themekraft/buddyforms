@@ -42,7 +42,7 @@ use tk\ReCaptcha\RequestParameters;
  * Note: this requires the cURL extension to be enabled in PHP
  * @see http://php.net/manual/en/book.curl.php
  */
-class CurlPost implements \tk\ReCaptcha\RequestMethod
+class CurlPost implements RequestMethod
 {
     /**
      * Curl connection to the reCAPTCHA service
@@ -60,10 +60,10 @@ class CurlPost implements \tk\ReCaptcha\RequestMethod
      * @param Curl $curl Curl resource
      * @param string $siteVerifyUrl URL for reCAPTCHA siteverify API
      */
-    public function __construct(\tk\ReCaptcha\RequestMethod\Curl $curl = null, $siteVerifyUrl = null)
+    public function __construct(?Curl $curl = null, $siteVerifyUrl = null)
     {
-        $this->curl = \is_null($curl) ? new \tk\ReCaptcha\RequestMethod\Curl() : $curl;
-        $this->siteVerifyUrl = \is_null($siteVerifyUrl) ? \tk\ReCaptcha\ReCaptcha::SITE_VERIFY_URL : $siteVerifyUrl;
+        $this->curl = is_null($curl) ? new Curl() : $curl;
+        $this->siteVerifyUrl = is_null($siteVerifyUrl) ? ReCaptcha::SITE_VERIFY_URL : $siteVerifyUrl;
     }
     /**
      * Submit the cURL request with the specified parameters.
@@ -71,7 +71,7 @@ class CurlPost implements \tk\ReCaptcha\RequestMethod
      * @param RequestParameters $params Request parameters
      * @return string Body of the reCAPTCHA response
      */
-    public function submit(\tk\ReCaptcha\RequestParameters $params)
+    public function submit(RequestParameters $params)
     {
         $handle = $this->curl->init($this->siteVerifyUrl);
         $options = array(\CURLOPT_POST => \true, \CURLOPT_POSTFIELDS => $params->toQueryString(), \CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded'), \CURLINFO_HEADER_OUT => \false, \CURLOPT_HEADER => \false, \CURLOPT_RETURNTRANSFER => \true, \CURLOPT_SSL_VERIFYPEER => \true);
@@ -81,6 +81,6 @@ class CurlPost implements \tk\ReCaptcha\RequestMethod
         if ($response !== \false) {
             return $response;
         }
-        return '{"success": false, "error-codes": ["' . \tk\ReCaptcha\ReCaptcha::E_CONNECTION_FAILED . '"]}';
+        return '{"success": false, "error-codes": ["' . ReCaptcha::E_CONNECTION_FAILED . '"]}';
     }
 }

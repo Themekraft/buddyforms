@@ -28,23 +28,23 @@ function buddyforms_permissions_unregistered_screen() {
 		)
 	);
 
-	if ( isset( $buddyform['form_type'] ) && $buddyform['form_type'] !== 'registration' ) {
-		$public_submit_create_account = isset( $buddyform['public_submit_create_account'] ) ? $buddyform['public_submit_create_account'] : 'false';
-		$element                      = new Element_Checkbox(
-			'<b>' . __( 'Create an account?', 'buddyforms' ) . '</b>',
-			'buddyforms_options[public_submit_create_account]',
-			array( 'public_submit_create_account' => __( 'Create account during submission', 'buddyforms' ) ),
-			array(
-				'value'     => $public_submit_create_account,
-				'shortDesc' => __( 'Create a new user during form submission', 'buddyforms' ),
-			)
-		);
+	// Rendered for every form type so it is there when the type changes in the form builder.
+	// conditionals.js hides it for registration forms.
+	$public_submit_create_account = isset( $buddyform['public_submit_create_account'] ) ? $buddyform['public_submit_create_account'] : 'false';
+	$element                      = new Element_Checkbox(
+		'<b>' . __( 'Create an account?', 'buddyforms' ) . '</b>',
+		'buddyforms_options[public_submit_create_account]',
+		array( 'public_submit_create_account' => __( 'Create account during submission', 'buddyforms' ) ),
+		array(
+			'value'     => $public_submit_create_account,
+			'shortDesc' => __( 'Create a new user during form submission', 'buddyforms' ),
+		)
+	);
 
-		$element->setAttribute( 'id', 'public_submit_create_account' );
-		$element->setAttribute( 'class', 'public-submit-option public_submit_create_account' );
+	$element->setAttribute( 'id', 'public_submit_create_account' );
+	$element->setAttribute( 'class', 'public-submit-option public_submit_create_account' );
 
-		$form_setup[] = $element;
-	}
+	$form_setup[] = $element;
 
 	$hide_registration_for_logged_in = isset( $buddyform['hide_for_logged_in_users'] ) ? $buddyform['hide_for_logged_in_users'] : 'no';
 
@@ -254,8 +254,8 @@ function buddyforms_permissions_screen() {
 								<label for="role_role"><?php echo wp_kses( $field->getLabel(), buddyforms_wp_kses_allowed_atts() ); ?></label>
 							</th>
 							<td>
-								<?php echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() ); ?>
-								<p class="description"><?php echo wp_kses( $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() ); ?></p>
+								<?php buddyforms_form_builder_render_field( $field ); ?>
+								<p class="description"><?php echo wp_kses( (string) $field->getShortDesc(), buddyforms_wp_kses_allowed_atts() ); ?></p>
 							</td>
 						</tr>
 						<?php

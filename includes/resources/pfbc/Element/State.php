@@ -19,7 +19,7 @@ class Element_State extends Element_Select {
 	 * @param array|null $properties
 	 * @param null       $field_options
 	 */
-	public function __construct( $label, $name, array $properties = null, $field_options = null ) {
+	public function __construct( $label, $name, ?array $properties = null, $field_options = null ) {
 		self::init_state_list();
 		self::$state_list = apply_filters( 'buddyforms_state_output_values', self::$state_list, $properties );
 

@@ -582,7 +582,7 @@ function buddyforms_metabox_form_setup() {
 											<label for="form_title"><?php echo wp_kses( $field->getLabel(), buddyforms_wp_kses_allowed_atts() ); ?></label>
 										</th>
 										<td>
-											<?php echo wp_kses( $field->render(), buddyforms_wp_kses_allowed_atts() ); ?>
+											<?php buddyforms_form_builder_render_field( $field ); ?>
 											<p class="description"><?php echo $field->getShortDesc(); // WPCS: XSS ok. ?></p>
 										</td>
 									</tr>

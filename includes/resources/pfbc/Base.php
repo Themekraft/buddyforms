@@ -14,7 +14,7 @@ abstract class Base {
 	 *
 	 * @return $this
 	 */
-	public function configure( array $properties = null ) {
+	public function configure( ?array $properties = null ) {
 		if ( ! empty( $properties ) ) {
 			$class = get_class( $this );
 
@@ -148,7 +148,7 @@ abstract class Base {
 		if ( is_array( $str ) ) {
 			return array_walk_recursive( $str, array( $this, 'apply_filter' ) );
 		} else {
-			return htmlspecialchars( $str );
+			return htmlspecialchars( (string) $str );
 		}
 	}
 

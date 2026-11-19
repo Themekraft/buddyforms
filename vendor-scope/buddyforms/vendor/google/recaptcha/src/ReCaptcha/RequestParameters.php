@@ -82,10 +82,10 @@ class RequestParameters
     public function toArray()
     {
         $params = array('secret' => $this->secret, 'response' => $this->response);
-        if (!\is_null($this->remoteIp)) {
+        if (!is_null($this->remoteIp)) {
             $params['remoteip'] = $this->remoteIp;
         }
-        if (!\is_null($this->version)) {
+        if (!is_null($this->version)) {
             $params['version'] = $this->version;
         }
         return $params;
@@ -97,6 +97,6 @@ class RequestParameters
      */
     public function toQueryString()
     {
-        return \http_build_query($this->toArray(), '', '&');
+        return http_build_query($this->toArray(), '', '&');
     }
 }
