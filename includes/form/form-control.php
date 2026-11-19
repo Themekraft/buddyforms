@@ -348,6 +348,10 @@ function buddyforms_process_submission( $args = array() ) {
 	$is_draft_enabled   = buddyforms_is_permission_enabled( $form_slug );
 	$post_status        = $buddyforms[ $form_slug ]['status']; // Post status setup in the form
 	$post_status_action = ! empty( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : $post_status; // Post status from the form. default actions draft and publish or setup option
+	// Only the statuses the form offers can be requested; anything else falls back to the form's status.
+	if ( ! in_array( $post_status_action, buddyforms_get_submission_allowed_statuses( $form_slug, $post_id ), true ) ) {
+		$post_status_action = $post_status;
+	}
 	// Check the current post status
 	if ( $post_id != 0 ) {
 		$post_current_status = get_post_status( $post_id );
@@ -431,7 +435,7 @@ function buddyforms_process_submission( $args = array() ) {
 
 	// Override the post status if exist a status field
 	$exist_field_status = buddyforms_exist_field_type_in_form( $form_slug, 'status' );
-	if ( ! empty( $args['status'] ) && $exist_field_status ) {
+	if ( ! empty( $args['status'] ) && $exist_field_status && in_array( $args['status'], buddyforms_get_submission_allowed_statuses( $form_slug, $post_id ), true ) ) {
 		$post_status = $args['status'];
 	}
 	$post_status = apply_filters( 'buddyforms_create_edit_form_post_status', $post_status, $form_slug );
@@ -568,6 +572,52 @@ function buddyforms_process_submission( $args = array() ) {
 	}
 
 	return $args;
+}
+
+/**
+ * Post statuses a submission can ask for: the form's status, draft when the user can save drafts,
+ * the options of the form's Status field and the entry's current status.
+ *
+ * @param string $form_slug
+ * @param int    $post_id
+ *
+ * @return array
+ * @since 2.10.10
+ */
+function buddyforms_get_submission_allowed_statuses( $form_slug, $post_id = 0 ) {
+	global $buddyforms;
+
+	$allowed = array();
+	if ( ! empty( $buddyforms[ $form_slug ]['status'] ) ) {
+		$allowed[] = $buddyforms[ $form_slug ]['status'];
+	}
+	if ( buddyforms_is_permission_enabled( $form_slug ) ) {
+		$allowed[] = 'draft';
+	}
+	if ( ! empty( $buddyforms[ $form_slug ]['form_fields'] ) && is_array( $buddyforms[ $form_slug ]['form_fields'] ) ) {
+		foreach ( $buddyforms[ $form_slug ]['form_fields'] as $field ) {
+			if ( ! empty( $field['type'] ) && 'status' === $field['type'] && ! empty( $field['post_status'] ) && is_array( $field['post_status'] ) ) {
+				$allowed = array_merge( $allowed, $field['post_status'] );
+			}
+		}
+	}
+	if ( ! empty( $post_id ) ) {
+		$current_status = get_post_status( $post_id );
+		if ( ! empty( $current_status ) && 'auto-draft' !== $current_status ) {
+			$allowed[] = $current_status;
+		}
+	}
+
+	/**
+	 * Filter the post statuses a submission can ask for.
+	 *
+	 * @param array  $allowed
+	 * @param string $form_slug
+	 * @param int    $post_id
+	 *
+	 * @since 2.10.10
+	 */
+	return array_values( array_unique( (array) apply_filters( 'buddyforms_submission_allowed_statuses', $allowed, $form_slug, $post_id ) ) );
 }
 
 /**
