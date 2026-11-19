@@ -875,7 +875,7 @@ function buddyforms_form_elements( &$form, $args, $recovering = false ) {
 						$form->addElement( $upload_element );
 						break;
 					case 'file':
-						wp_enqueue_script( 'media-uploader-js', BUDDYFORMS_ASSETS . 'js/media-uploader.js', array( 'jquery' ) );
+						wp_enqueue_script( 'media-uploader-js', BUDDYFORMS_ASSETS . 'js/media-uploader.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 
 						$attachment_ids = $customfield_val;
 

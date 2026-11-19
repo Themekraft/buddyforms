@@ -482,7 +482,7 @@ function buddyforms_process_settings_import() {
 	if ( empty( $_POST['buddyforms_action'] ) || 'import_settings' != $_POST['buddyforms_action'] ) {
 		return false;
 	}
-	if ( ! wp_verify_nonce( $_POST['buddyforms_import_nonce'], 'buddyforms_import_nonce' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['buddyforms_import_nonce'] ) ), 'buddyforms_import_nonce' ) ) {
 		return false;
 	}
 	if ( ! current_user_can( 'manage_options' ) ) {

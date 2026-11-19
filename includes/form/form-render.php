@@ -113,7 +113,7 @@ function buddyforms_form_html( $args ) {
 			// $form_html .= $global_js;
 			file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/js/bf-global-js-' . $form_slug . '.js', $global_js );
 			$form_global_js_url = BUDDYFORMS_ASSETS . 'js/bf-global-js-' . $form_slug . '.js';
-			wp_register_script( 'bf-global-js-' . $form_slug, $form_global_js_url );
+			wp_register_script( 'bf-global-js-' . $form_slug, $form_global_js_url, array(), BUDDYFORMS_VERSION, false );
 			wp_enqueue_script( 'bf-global-js-' . $form_slug );
 		}
 	}

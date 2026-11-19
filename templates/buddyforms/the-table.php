@@ -16,7 +16,7 @@ $css = ob_get_clean();
 $table_css = buddyforms_minify_css( $css );
 file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/css/bf-table-css-' . $form_slug . '.css', $table_css );
 $form_table_css_url = BUDDYFORMS_ASSETS . 'css/bf-table-css-' . $form_slug . '.css';
-wp_register_style( 'bf-table-css-' . $form_slug, $form_table_css_url );
+wp_register_style( 'bf-table-css-' . $form_slug, $form_table_css_url, array(), BUDDYFORMS_VERSION );
 wp_enqueue_style( 'bf-table-css-' . $form_slug );
 ?>
 

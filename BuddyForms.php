@@ -629,7 +629,7 @@ if ( ! class_exists( 'BuddyForms' ) ) {
 
 		public static function error_log( $message ) {
 			if ( ! empty( $message ) ) {
-				error_log( 'buddyforms -- ' . $message );
+				error_log( 'buddyforms -- ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional: logs reCAPTCHA verification failures for the site admin.
 			}
 		}
 	}
