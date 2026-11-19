@@ -110,10 +110,9 @@ function buddyforms_form_html( $args ) {
 		echo "/* ]]> */\n";
 		$global_js = ob_get_clean();
 		if ( ! empty( $global_js ) ) {
-			// $form_html .= $global_js;
-			file_put_contents( dirname( BUDDYFORMS_INCLUDES_PATH ) . '/assets/js/bf-global-js-' . $form_slug . '.js', $global_js );
-			$form_global_js_url = BUDDYFORMS_ASSETS . 'js/bf-global-js-' . $form_slug . '.js';
-			wp_register_script( 'bf-global-js-' . $form_slug, $form_global_js_url );
+			// These values are per visitor (nonces, entry data), so they are printed in the page and never written to a shared file.
+			wp_register_script( 'bf-global-js-' . $form_slug, false, array(), BUDDYFORMS_VERSION, true );
+			wp_add_inline_script( 'bf-global-js-' . $form_slug, $global_js );
 			wp_enqueue_script( 'bf-global-js-' . $form_slug );
 		}
 	}
