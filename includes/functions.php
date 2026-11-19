@@ -1526,6 +1526,50 @@ function buddyforms_current_user_can_edit_entry( $form_slug, $post_id ) {
 }
 
 /**
+ * Whether the current user can open an existing entry, or one of its revisions, in a form.
+ *
+ * New entries (auto-drafts) are always fine. A registration form entry can only be opened by the user it
+ * belongs to or by users with the form's "all" permission; any other entry needs
+ * buddyforms_current_user_can_edit_entry().
+ *
+ * @param string $form_slug
+ * @param int    $post_id
+ * @param int    $revision_id
+ *
+ * @return bool
+ * @since 2.10.10
+ */
+function buddyforms_current_user_can_load_entry( $form_slug, $post_id, $revision_id = 0 ) {
+	global $buddyforms;
+
+	$post_id     = absint( $post_id );
+	$revision_id = absint( $revision_id );
+
+	if ( ! empty( $revision_id ) && (int) wp_is_post_revision( $revision_id ) !== $post_id ) {
+		return false;
+	}
+
+	if ( empty( $revision_id ) && 'auto-draft' === get_post_status( $post_id ) ) {
+		return true;
+	}
+
+	if ( ! empty( $buddyforms[ $form_slug ]['form_type'] ) && 'registration' === $buddyforms[ $form_slug ]['form_type'] ) {
+		$current_user_id = get_current_user_id();
+		if ( empty( $current_user_id ) || get_post_meta( $post_id, '_bf_form_slug', true ) !== $form_slug ) {
+			return false;
+		}
+		if ( bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
+			return true;
+		}
+
+		return (int) get_post_field( 'post_author', $post_id ) === $current_user_id
+			|| (int) get_post_meta( $post_id, '_bf_registration_user_id', true ) === $current_user_id;
+	}
+
+	return buddyforms_current_user_can_edit_entry( $form_slug, $post_id );
+}
+
+/**
  * Keep only the attachments a submission can link to an entry.
  *
  * An upload or featured image field may only point to files that already belong to the entry
