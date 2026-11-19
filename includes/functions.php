@@ -1478,6 +1478,38 @@ function buddyforms_current_user_can_upload_to_form( $form_slug ) {
 }
 
 /**
+ * Capability needed to create, change and delete forms in the form builder.
+ *
+ * Forms decide who can register and with which role, which post types visitors can write to and which
+ * roles get BuddyForms permissions, so by default only administrators can manage them.
+ *
+ * @return string
+ * @since 2.10.10
+ */
+function buddyforms_form_builder_capability() {
+	/**
+	 * Filter the capability needed to manage forms in the form builder.
+	 *
+	 * @param string $capability Default 'manage_options'.
+	 *
+	 * @since 2.10.10
+	 */
+	$capability = apply_filters( 'buddyforms_form_builder_capability', 'manage_options' );
+
+	return ( is_string( $capability ) && '' !== $capability ) ? $capability : 'manage_options';
+}
+
+/**
+ * Whether the current user can manage forms in the form builder.
+ *
+ * @return bool
+ * @since 2.10.10
+ */
+function buddyforms_current_user_can_manage_forms() {
+	return current_user_can( buddyforms_form_builder_capability() );
+}
+
+/**
  * Whether the current user can load an existing entry into a form to change it.
  *
  * The entry must belong to the form, be of the form's post type, and the user needs the form's "all"
