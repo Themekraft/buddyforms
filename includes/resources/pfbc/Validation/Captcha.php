@@ -41,7 +41,7 @@ class Validation_Captcha extends Validation {
 			$version = 'v2';
 		}
 		if ( $version === 'v2' ) {
-			$captcha = sanitize_text_field( $_POST['g-recaptcha-response'] );
+			$captcha = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) : '';
 			$resp    = $this->validate_google_captcha( $captcha, $this->privateKey );
 			$result  = ! empty( $resp['success'] ) && boolval( $resp['success'] ) === true;
 		} else {
@@ -54,8 +54,9 @@ class Validation_Captcha extends Validation {
 				$action = 'form';
 			}
 			$action     = preg_replace( '/[^a-zA-Z0-9]+/', '', $action );
-			$captcha    = sanitize_text_field( $_POST['bf-cpchtk'] );
-			$recaptcha  = new \tk\ReCaptcha\ReCaptcha( $this->privateKey );
+			$captcha    = isset( $_POST['bf-cpchtk'] ) ? sanitize_text_field( wp_unslash( $_POST['bf-cpchtk'] ) ) : '';
+			// CurlPost, not the library's default Post transport: Post uses file_get_contents(), which fails with connection-failed when allow_url_fopen is off.
+			$recaptcha  = new \tk\ReCaptcha\ReCaptcha( $this->privateKey, new \tk\ReCaptcha\RequestMethod\CurlPost() );
 			$resp       = $recaptcha->setExpectedHostname( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) )
 									->setExpectedAction( $action )
 									->setScoreThreshold( floatval( $score ) )

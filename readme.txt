@@ -271,6 +271,7 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 * Fixed the Permission tab of the form builder, which kept the role permissions and the options for unregistered users hidden after changing the form type, until the form was saved and reloaded.
 * Fixed PHP 8 deprecation notices in the form builder and the form classes, and a WordPress deprecation notice when activating the plugin.
 * Updated the bundled Guzzle and reCAPTCHA libraries, which logged deprecation notices on PHP 8.4 and later.
+* Fixed reCAPTCHA v3 rejecting every submission on servers with allow_url_fopen turned off, and a PHP warning when a form was sent without the reCAPTCHA token.
 = 2.10.7 - 12 Nov 2026 =
 * Security: the title of the login form shortcode and block is always printed as plain text, and output built from shortcode attributes (login form, navigation links) no longer allows script tags or event handler attributes.
 * Fixed the `[bf_new_submission_link]` shortcode, which always linked to `#` and printed a broken `target` attribute.
