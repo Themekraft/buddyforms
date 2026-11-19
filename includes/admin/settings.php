@@ -433,7 +433,7 @@ function buddyforms_settings_page_tabs_content() {
 													echo '<select name="buddyforms_gdpr[terms]" id="buddyforms_gdpr_terms">';
 													$pages['none'] = 'No Terms';
 													foreach ( $pages as $page_id => $page_name ) {
-														echo '<option ' . selected( $buddyforms_gdpr['terms'], $page_id ) . 'value="' . esc_attr( $page_id ) . '">' . esc_html( $page_name ) . '</option>';
+														echo '<option ' . selected( isset( $buddyforms_gdpr['terms'] ) ? $buddyforms_gdpr['terms'] : '', $page_id ) . 'value="' . esc_attr( $page_id ) . '">' . esc_html( $page_name ) . '</option>';
 													}
 													echo '</select>';
 												}
