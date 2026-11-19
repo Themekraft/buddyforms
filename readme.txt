@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.8
+Stable tag: 2.10.9
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,9 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.9 - 19 Nov 2026 =
+* Fixed a critical error when a registration form fails validation and shows the login form again.
+
 = 2.10.8 - 18 Nov 2026 =
 * Changed: the Go Pro page now sells BuddyForms Pro. The BuddyForms add-ons are free and are no longer listed there.
 * Changed: the Go Pro boxes in the form builder and settings sidebars now list only features that need BuddyForms Pro.
