@@ -115,7 +115,7 @@ function buddyforms_layout_defaults( $form_type = '' ) {
 function buddyforms_load_form_layout() {
 	global $buddyforms;
 
-	$form_slug = filter_var( wp_unslash( $_POST['form_slug'] ), FILTER_SANITIZE_STRING );
+	$form_slug = buddyforms_sanitize_string( wp_unslash( $_POST['form_slug'] ) );
 	$json      = array();
 
 	if ( $form_slug == 'bf_global' ) {
@@ -156,7 +156,7 @@ function buddyforms_layout_screen( $option_name = 'buddyforms_options' ) {
 	$form_setup = array();
 
 	$form_type = '';
-	if ( isset( $buddyforms[ $form_slug ]['form_type'] ) ) {
+	if ( ! empty( $form_slug ) && isset( $buddyforms[ $form_slug ]['form_type'] ) ) {
 		$form_type = $buddyforms[ $form_slug ]['form_type'];
 	}
 
@@ -657,7 +657,7 @@ function buddyforms_layout_screen( $option_name = 'buddyforms_options' ) {
 
 		echo '<p><select id="bf_form_layout_select" style="width: 50% !important; margin-right: 10px">';
 		echo '<option value="bf_global">Global Settings</option>';
-		if ( isset( $buddyforms ) ) {
+		if ( ! empty( $buddyforms ) && is_array( $buddyforms ) ) {
 			foreach ( $buddyforms as $form_slug => $form ) {
 				echo '<option value="' . esc_attr( $form_slug ) . '">' . esc_html( $form['name'] ) . '</option>';
 			}

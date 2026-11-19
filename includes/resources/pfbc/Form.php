@@ -144,8 +144,9 @@ class Form extends Base {
 		directory, you may need to set this property in the form's configure method or directly in this
 		constructor.*/
 		$path = dirname( __FILE__ ) . '/Resources';
-		if ( strpos( $path, filter_var( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ), FILTER_SANITIZE_STRING ) ) !== false ) {
-			$this->resourcesPath = substr( $path, strlen( filter_var( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ), FILTER_SANITIZE_STRING ) ) );
+		$document_root = isset( $_SERVER['DOCUMENT_ROOT'] ) ? buddyforms_sanitize_string( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) : '';
+		if ( strpos( $path, $document_root ) !== false ) {
+			$this->resourcesPath = substr( $path, strlen( $document_root ) );
 		} else {
 			$this->resourcesPath = '/PFBC/Resources';
 		}

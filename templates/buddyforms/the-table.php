@@ -149,8 +149,8 @@ wp_enqueue_style( 'bf-table-css-' . $form_slug );
 					$next_posts_link    = get_next_posts_link( '&larr;' . __( 'Previous Entries', 'buddyforms' ), $the_lp_query->max_num_pages );
 					$previos_posts_link = get_previous_posts_link( __( 'Next Entries', 'buddyforms' ) . '&rarr;' );
 					?>
-					<div class="alignright"><?php echo wp_kses( apply_filters( 'buddyforms_previos_posts_link', $previos_posts_link, $form_slug ), buddyforms_wp_kses_allowed_atts() ); ?></div>
-					<div class="alignleft"><?php echo wp_kses( apply_filters( 'buddyforms_next_posts_link', $next_posts_link, $form_slug ), buddyforms_wp_kses_allowed_atts() ); ?></div>
+					<div class="alignright"><?php echo wp_kses( (string) apply_filters( 'buddyforms_previos_posts_link', $previos_posts_link, $form_slug ), buddyforms_wp_kses_allowed_atts() ); ?></div>
+					<div class="alignleft"><?php echo wp_kses( (string) apply_filters( 'buddyforms_next_posts_link', $next_posts_link, $form_slug ), buddyforms_wp_kses_allowed_atts() ); ?></div>
 				<?php endif; ?>
 
 			</div>

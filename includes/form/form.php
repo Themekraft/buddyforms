@@ -20,7 +20,7 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 
 	if ( isset( $_REQUEST['form_slug'] ) && isset( $_REQUEST['post_id'] ) && isset( $_REQUEST['_wpnonce'] ) && ! empty( $_REQUEST['bf_entry_key'] )
 		&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'buddyforms_form_nonce' ) ) {
-		$form_slug       = filter_var( wp_unslash( $_REQUEST['form_slug'] ), FILTER_SANITIZE_STRING );
+		$form_slug       = buddyforms_sanitize_string( wp_unslash( $_REQUEST['form_slug'] ) );
 		$post_id         = filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT );
 		$entry_key       = sanitize_key( wp_unslash( $_REQUEST['bf_entry_key'] ) );
 		$transient_name  = buddyforms_failed_submission_transient_name( $form_slug, $post_id, $entry_key );
@@ -484,7 +484,7 @@ function buddyforms_form_response_no_ajax() {
 		$form_slug = get_query_var( 'form_slug' );
 		if ( isset( $_REQUEST['post_id'] ) && isset( $_REQUEST['_wpnonce'] ) ) {
 			$post_id        = filter_var( wp_unslash( $_REQUEST['post_id'] ), FILTER_VALIDATE_INT );
-			$wp_nonce       = filter_var( wp_unslash( $_REQUEST['_wpnonce'] ), FILTER_SANITIZE_STRING );
+			$wp_nonce       = buddyforms_sanitize_string( wp_unslash( $_REQUEST['_wpnonce'] ) );
 			$entry_key      = strtolower( wp_generate_password( 32, false ) );
 			$transient_name = buddyforms_failed_submission_transient_name( $form_slug, $post_id, $entry_key );
 		}

@@ -87,7 +87,7 @@ class BuddyFormsSubmissionPage {
 		if ( isset( $_GET['form_slug'] ) ) {
 			$current_screen->set_parentage( $parent_file );
 			$current_screen->render_screen_meta();
-			$selected_form = filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING );
+			$selected_form = buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) );
 		}
 		?>
 
@@ -156,10 +156,10 @@ class BuddyFormsSubmissionPage {
 
 
 		<?php if ( isset( $_GET['form_slug'] ) ) : ?>
-			<?php if ( $this->has_the_capability( filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) ) ) : ?>
+			<?php if ( $this->has_the_capability( buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ) ) ) : ?>
 				<?php if ( ! isset( $_GET['entry'] ) ) { ?>
 					<form id="filter" method="get">
-						<input type="hidden" name="page" value="<?php echo esc_attr( filter_var( wp_unslash( $_REQUEST['page'] ), FILTER_SANITIZE_STRING ) ); ?>"/>
+						<input type="hidden" name="page" value="<?php echo esc_attr( buddyforms_sanitize_string( wp_unslash( $_REQUEST['page'] ) ) ); ?>"/>
 						<?php $this->bf_submissions_table->display(); ?>
 					</form>
 				<?php } ?>
@@ -209,7 +209,7 @@ class BuddyFormsSubmissionPage {
 
 		$action    = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
 		$entry     = isset( $_GET['post'] ) ? filter_var( wp_unslash( $_GET['post'] ), FILTER_VALIDATE_INT ) : '';
-		$form_slug = isset( $_GET['form_slug'] ) ? filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) : '';
+		$form_slug = isset( $_GET['form_slug'] ) ? buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ) : '';
 		// Only clean up files of an entry the user is really deleting: the core delete link nonce must be valid,
 		// the entry must belong to this form and the user must be able to delete it.
 		if ( $action === 'delete' && ! empty( $entry ) && $this->has_the_capability( $form_slug )
@@ -301,14 +301,14 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 	function column_ID( $item ) {
 		global $buddyforms;
 
-		$form_slug = isset( $_GET['form_slug'] ) ? filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) : '';
+		$form_slug = isset( $_GET['form_slug'] ) ? buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ) : '';
 		$actions   = array(
 			'edit'   => sprintf( '<a href="post.php?post=%s&action=%s">%s</a>', $item->ID, 'edit', __( 'Edit', 'buddyforms' ) ),
 			'delete' => '<a href="' . get_delete_post_link( $item->ID, '', true ) . '&form_slug=' . $form_slug . '" class="submitdelete deletion" onclick="return confirm(\'' . __( 'Are you sure you want to delete that entry?', 'buddyforms' ) . '\');" title="' . __( 'Delete', 'buddyforms' ) . '">' . __( 'Delete', 'buddyforms' ) . '</a>',
 		);
 
 		if ( isset( $buddyforms[ $_GET['form_slug'] ]['post_type'] ) && $buddyforms[ $form_slug ]['post_type'] == 'bf_submissions' ) {
-			$actions['edit'] = sprintf( '<a href="?post_type=buddyforms&page=%s&action=%s&entry=%s&form_slug=%s">%s</a>', filter_var( wp_unslash( $_REQUEST['page'] ), FILTER_SANITIZE_STRING ), 'edit', $item->ID, $form_slug, __( 'View Submission', 'buddyforms' ) );
+			$actions['edit'] = sprintf( '<a href="?post_type=buddyforms&page=%s&action=%s&entry=%s&form_slug=%s">%s</a>', buddyforms_sanitize_string( wp_unslash( $_REQUEST['page'] ) ), 'edit', $item->ID, $form_slug, __( 'View Submission', 'buddyforms' ) );
 		}
 
 		// Return the title contents
@@ -325,7 +325,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 	 */
 	function column_default( $item, $column_name ) {
 		$bf_value = get_post_meta( intval( $item->ID ), $column_name, true );
-		$bf_field = buddyforms_get_form_field_by_slug( filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ), $column_name );
+		$bf_field = buddyforms_get_form_field_by_slug( buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ), $column_name );
 		if ( $bf_field !== false ) {
 			$this->get_column_values( $column_name, $bf_field['type'], $item, $bf_value, $bf_field );
 		}
@@ -389,7 +389,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		);
 
 		if ( isset( $_GET['form_slug'] ) && isset( $buddyforms[ $_GET['form_slug'] ]['form_fields'] ) ) {
-			foreach ( $buddyforms[ filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) ]['form_fields'] as $key => $field ) {
+			foreach ( $buddyforms[ buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ) ]['form_fields'] as $key => $field ) {
 				if ( ! empty( $field['slug'] ) && ! in_array( $field['slug'], $this->exclude_columns ) ) {
 					$columns[ $field['slug'] ] = ! empty( $field['name'] ) ? sanitize_text_field( $field['name'] ) : sanitize_text_field( $field['slug'] );
 				}
@@ -405,7 +405,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		$data = array();
 		if ( isset( $_GET['form_slug'] ) ) {
 			$customkey   = '_bf_form_slug'; // set to your custom key
-			$customvalue = ! empty( $_GET['form_slug'] ) ? filter_var( wp_unslash( $_GET['form_slug'] ), FILTER_SANITIZE_STRING ) : '';
+			$customvalue = ! empty( $_GET['form_slug'] ) ? buddyforms_sanitize_string( wp_unslash( $_GET['form_slug'] ) ) : '';
 			$sql_args    = array( 'ID', 'post_title', 'post_author' );
 			$sql_select  = implode( ', ', $sql_args );
 			if ( ! empty( $author_to_filter ) ) {

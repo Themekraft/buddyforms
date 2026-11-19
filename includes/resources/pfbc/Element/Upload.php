@@ -130,7 +130,11 @@ class Element_Upload extends Element_Textbox {
 					$file_already_uploaded = isset( $media_attached_to_post[ $id_value ] );
 					// If the file was already uploaded don´t execute the attachment logic
 					if ( ! $file_already_uploaded && ! empty( $id_value ) ) {
-						$metadata    = wp_prepare_attachment_for_js( $id_value );
+						$metadata = wp_prepare_attachment_for_js( $id_value );
+						// Skip anything that is not an attachment, such as a tampered value.
+						if ( empty( $metadata ) ) {
+							continue;
+						}
 						$file_name   = $metadata['filename'];
 						$wp_filetype = wp_check_filetype( $file_name, null );
 						$attachment  = array(

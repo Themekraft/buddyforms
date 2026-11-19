@@ -143,7 +143,7 @@ function buddyforms_ajax_process_edit_post() {
 	$form_data = array();
 
 	if ( isset( $_POST['data'] ) ) {
-		parse_str( filter_var( wp_unslash( $_POST['data'] ), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES ), $form_data );
+		parse_str( buddyforms_sanitize_string( wp_unslash( $_POST['data'] ), false ), $form_data );
 		$_POST = $form_data;
 	}
 
