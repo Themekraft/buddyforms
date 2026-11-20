@@ -9,6 +9,9 @@ use tk\GuzzleHttp\Psr7\Request;
 
 add_action( 'wp_ajax_buddyforms_post_types_taxonomies', 'buddyforms_post_types_taxonomies' );
 function buddyforms_post_types_taxonomies() {
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
 
 	if ( ! isset( $_POST['post_type'] ) ) {
 		echo 'false';
@@ -33,6 +36,9 @@ add_action( 'wp_ajax_buddyforms_close_submission_default_page_notification', 'bu
  * @return bool
  */
 function buddyforms_close_submission_default_page_notification() {
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
 	if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		die();
 	}
@@ -45,6 +51,9 @@ function buddyforms_close_submission_default_page_notification() {
 
 add_action( 'wp_ajax_buddyforms_update_taxonomy_default', 'buddyforms_update_taxonomy_default' );
 function buddyforms_update_taxonomy_default() {
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
 
 	if ( ! isset( $_POST['taxonomy'] ) || $_POST['taxonomy'] == 'none' ) {
 		$tmp = '<option value="none">' . __( 'First you need to select a Taxonomy to select the Taxonomy defaults', 'buddyforms' ) . '</option>';
@@ -120,6 +129,10 @@ function buddyforms_new_page() {
 add_action( 'wp_ajax_buddyforms_url_builder', 'buddyforms_url_builder' );
 function buddyforms_url_builder() {
 	global $post;
+
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
 	$page_id   = filter_var( wp_unslash( $_POST['attached_page'] ), FILTER_VALIDATE_INT );
 	$form_slug = filter_var( wp_unslash( $_POST['form_slug'] ), FILTER_SANITIZE_STRING );
 	$post      = get_post( $page_id );

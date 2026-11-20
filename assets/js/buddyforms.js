@@ -327,7 +327,7 @@ function BuddyForms() {
             jQuery.ajax({
                 type: 'POST',
                 url: buddyformsGlobal.admin_url,
-                data: {"action": "buddyforms_ajax_delete_post", "post_id": post_id},
+                data: {"action": "buddyforms_ajax_delete_post", "post_id": post_id, "nonce": buddyformsGlobal.ajaxnonce},
                 success: function (data) {
                     if (isNaN(data)) {
                         alert(data);

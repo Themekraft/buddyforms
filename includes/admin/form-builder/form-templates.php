@@ -278,6 +278,10 @@ add_action( 'wp_ajax_buddyforms_form_template', 'buddyforms_form_template' );
 function buddyforms_form_template() {
 	global $post, $buddyform;
 
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
+
 	if ( empty( $post ) ) {
 		$post = new stdClass();
 	}
