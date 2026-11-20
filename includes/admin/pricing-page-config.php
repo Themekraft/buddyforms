@@ -21,8 +21,8 @@ if ( ! function_exists( 'buddyforms_pricing_page_config' ) ) {
 			return $config;
 		}
 
-		$config['heading']    = __( 'Get BuddyForms Pro', 'buddyforms' );
-		$config['subheading'] = __( 'Unlock all BuddyForms Pro features with a year of updates and support.', 'buddyforms' );
+		$config['heading']    = __( 'Go Pro to publish anything from the front end', 'buddyforms' );
+		$config['subheading'] = __( 'The free version builds contact, registration and post forms. Pro turns BuddyForms into a full front-end publishing system.', 'buddyforms' );
 
 		$config['bundle'] = array(
 			'product_id' => '391',
@@ -36,10 +36,12 @@ if ( ! function_exists( 'buddyforms_pricing_page_config' ) ) {
 				'label'     => __( 'All BuddyForms Pro features unlocked', 'buddyforms' ),
 				'highlight' => true,
 			),
-			__( 'Forms for any post type', 'buddyforms' ),
-			__( 'Form permissions by user role', 'buddyforms' ),
-			__( 'Post status, revision and notification options', 'buddyforms' ),
-			__( 'Advanced user registration options', 'buddyforms' ),
+			__( 'Any post type: WooCommerce products, events, listings or any custom post type', 'buddyforms' ),
+			__( 'Permissions by role: choose which roles can use a form, and create, edit and delete posts', 'buddyforms' ),
+			__( 'Post status, revisions and notifications: drafts, default status, front-end revisions and status emails', 'buddyforms' ),
+			__( 'Registration options: auto-generated passwords, username from the email address, moderated profile updates', 'buddyforms' ),
+			__( 'File uploads with size and file-type limits', 'buddyforms' ),
+			__( 'More fields: Taxonomy, Range slider, Price, State, Hidden, HTML and Form Actions', 'buddyforms' ),
 			__( 'One year of support', 'buddyforms' ),
 			__( 'One year of updates', 'buddyforms' ),
 		);
