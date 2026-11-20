@@ -5,8 +5,8 @@ Requires at least: 5.9
 Tested up to: 7.1
 Stable tag: 2.10.9
 Requires PHP: 7.4
-License: GPLv2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 BuddyForms is a versatile plugin that allows the creation of post forms, registration forms, profile forms, content forms, and supports file uploads.
 
