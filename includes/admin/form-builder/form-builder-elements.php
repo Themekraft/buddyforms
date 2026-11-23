@@ -16,6 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 function buddyforms_display_form_element( $args ) {
 	global $post, $buddyform;
 
+	if ( wp_doing_ajax() && ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
+
 	if ( ! $post && isset( $_POST['post_id'] ) && $_POST['post_id'] != 0 ) {
 		$post = get_post( intval( $_POST['post_id'] ) );
 	}

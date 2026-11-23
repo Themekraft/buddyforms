@@ -115,6 +115,10 @@ function buddyforms_layout_defaults( $form_type = '' ) {
 function buddyforms_load_form_layout() {
 	global $buddyforms;
 
+	if ( ! buddyforms_current_user_can_manage_forms() ) {
+		wp_die( '', '', array( 'response' => 403 ) );
+	}
+
 	$form_slug = buddyforms_sanitize_string( wp_unslash( $_POST['form_slug'] ) );
 	$json      = array();
 

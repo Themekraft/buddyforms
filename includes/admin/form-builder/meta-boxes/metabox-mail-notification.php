@@ -490,7 +490,7 @@ function buddyforms_new_mail_notification() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) ) {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 
@@ -524,7 +524,7 @@ function buddyforms_test_email() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) || empty( $_POST['notification_id'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) ) {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 
@@ -593,7 +593,7 @@ function buddyforms_new_post_status_mail_notification() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) ) {
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 

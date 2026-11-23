@@ -254,6 +254,23 @@ function buddyforms_create_edit_form( $args, $echo = true ) {
 		}
 	}
 
+	// An existing entry, or one of its revisions, is only loaded into the form for users who can edit it.
+	if ( ! empty( $post_id ) ) {
+		if ( ! buddyforms_current_user_can_load_entry( $form_slug, $post_id, ! empty( $revision_id ) ? $revision_id : 0 ) ) {
+			$error_message = apply_filters( 'buddyforms_user_can_edit_error_message', __( 'You are not allowed to edit this post. What are you doing here?', 'buddyforms' ), false, $form_slug, $post_id );
+			$echo_content  = '<div class="bf-alert error">' . $error_message . '</div>';
+			if ( buddyforms_is_multisite() ) {
+				restore_current_blog();
+			}
+			if ( $echo ) {
+				echo wp_kses( $echo_content, buddyforms_wp_kses_allowed_atts() );
+				return;
+			}
+
+			return wp_kses( $form_output . $echo_content, buddyforms_wp_kses_allowed_atts() );
+		}
+	}
+
 	// If post_id == 0 a new post is created
 	if ( $post_id == 0 ) {
 		// Reuse this user's auto-draft for the form if there is one. WooCommerce renames

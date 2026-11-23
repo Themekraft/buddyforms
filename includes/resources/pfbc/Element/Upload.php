@@ -47,7 +47,10 @@ class Element_Upload extends Element_Textbox {
 	public static function save_post_meta( $customfield, $post_id ) {
 		if ( $customfield['type'] == 'featured_image' ) {
 			if ( ! empty( $_POST[ $customfield['slug'] ] ) ) {
-				$attachment_id = buddyforms_sanitize( '', $_POST[ $customfield['slug'] ] );
+				$attachment_id = absint( buddyforms_sanitize( '', $_POST[ $customfield['slug'] ] ) );
+				if ( empty( $attachment_id ) || 'attachment' !== get_post_type( $attachment_id ) ) {
+					return;
+				}
 				// Update attachment parent
 				$attachment_args = array(
 					'ID'          => $attachment_id,
@@ -129,12 +132,8 @@ class Element_Upload extends Element_Textbox {
 				foreach ( $attachment_ids as $id_value ) {
 					$file_already_uploaded = isset( $media_attached_to_post[ $id_value ] );
 					// If the file was already uploaded don´t execute the attachment logic
-					if ( ! $file_already_uploaded && ! empty( $id_value ) ) {
-						$metadata = wp_prepare_attachment_for_js( $id_value );
-						// Skip anything that is not an attachment, such as a tampered value.
-						if ( empty( $metadata ) ) {
-							continue;
-						}
+					if ( ! $file_already_uploaded && ! empty( $id_value ) && 'attachment' === get_post_type( $id_value ) ) {
+						$metadata    = wp_prepare_attachment_for_js( $id_value );
 						$file_name   = $metadata['filename'];
 						$wp_filetype = wp_check_filetype( $file_name, null );
 						$attachment  = array(
@@ -163,7 +162,7 @@ class Element_Upload extends Element_Textbox {
 				}
 			}
 		} else {
-			$attach_id = $key_value;
+			$attach_id = absint( $key_value );
 			if ( ! empty( $attach_id ) ) {
 				global $buddyforms;
 
@@ -214,6 +213,10 @@ class Element_Upload extends Element_Textbox {
 
 					// Assign metadata to attachment
 					wp_update_attachment_metadata( $attach_id, $attach_data );
+				}
+
+				if ( 'attachment' !== get_post_type( $attach_id ) ) {
+					return;
 				}
 
 				// And finally assign featured image to post
