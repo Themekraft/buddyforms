@@ -1477,6 +1477,220 @@ function buddyforms_current_user_can_upload_to_form( $form_slug ) {
 		|| bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
 }
 
+/**
+ * Capability needed to create, change and delete forms in the form builder.
+ *
+ * Forms decide who can register and with which role, which post types visitors can write to and which
+ * roles get BuddyForms permissions, so by default only administrators can manage them.
+ *
+ * @return string
+ * @since 2.10.10
+ */
+function buddyforms_form_builder_capability() {
+	/**
+	 * Filter the capability needed to manage forms in the form builder.
+	 *
+	 * @param string $capability Default 'manage_options'.
+	 *
+	 * @since 2.10.10
+	 */
+	$capability = apply_filters( 'buddyforms_form_builder_capability', 'manage_options' );
+
+	return ( is_string( $capability ) && '' !== $capability ) ? $capability : 'manage_options';
+}
+
+/**
+ * Whether the current user can manage forms in the form builder.
+ *
+ * @return bool
+ * @since 2.10.10
+ */
+function buddyforms_current_user_can_manage_forms() {
+	return current_user_can( buddyforms_form_builder_capability() );
+}
+
+/**
+ * Whether the current user can load an existing entry into a form to change it.
+ *
+ * The entry must belong to the form, be of the form's post type, and the user needs the form's "all"
+ * permission or be its author with the edit permission (or draft and create permissions for a draft).
+ * The buddyforms_user_can_edit filter can grant more.
+ *
+ * @param string $form_slug
+ * @param int    $post_id
+ *
+ * @return bool
+ * @since 2.10.10
+ */
+function buddyforms_current_user_can_edit_entry( $form_slug, $post_id ) {
+	global $buddyforms;
+
+	$post_id  = absint( $post_id );
+	$the_post = ! empty( $post_id ) ? get_post( $post_id ) : null;
+	if ( empty( $the_post ) || empty( $form_slug ) || ! is_string( $form_slug ) || empty( $buddyforms[ $form_slug ] ) ) {
+		return false;
+	}
+
+	if ( get_post_meta( $post_id, '_bf_form_slug', true ) !== $form_slug ) {
+		return false;
+	}
+
+	if ( empty( $buddyforms[ $form_slug ]['post_type'] ) || $the_post->post_type !== $buddyforms[ $form_slug ]['post_type'] ) {
+		return false;
+	}
+
+	$current_user_id = get_current_user_id();
+	$user_can_edit   = false;
+	if ( bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
+		$user_can_edit = true;
+	} elseif ( ! empty( $current_user_id ) && (int) $the_post->post_author === $current_user_id ) {
+		$current_user_can_edit = bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_edit', array(), $form_slug );
+		if ( 'draft' === $the_post->post_status ) {
+			$current_user_can_create = bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_create', array(), $form_slug );
+			$current_user_can_draft  = bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_draft', array(), $form_slug );
+			$user_can_edit           = ( $current_user_can_draft || $current_user_can_edit ) && $current_user_can_create;
+		} else {
+			$user_can_edit = $current_user_can_edit;
+		}
+	}
+
+	return (bool) apply_filters( 'buddyforms_user_can_edit', $user_can_edit, $form_slug, $post_id );
+}
+
+/**
+ * Whether the current user can open an existing entry, or one of its revisions, in a form.
+ *
+ * New entries (auto-drafts) are always fine. A registration form entry can only be opened by the user it
+ * belongs to or by users with the form's "all" permission; any other entry needs
+ * buddyforms_current_user_can_edit_entry().
+ *
+ * @param string $form_slug
+ * @param int    $post_id
+ * @param int    $revision_id
+ *
+ * @return bool
+ * @since 2.10.10
+ */
+function buddyforms_current_user_can_load_entry( $form_slug, $post_id, $revision_id = 0 ) {
+	global $buddyforms;
+
+	$post_id     = absint( $post_id );
+	$revision_id = absint( $revision_id );
+
+	if ( ! empty( $revision_id ) && (int) wp_is_post_revision( $revision_id ) !== $post_id ) {
+		return false;
+	}
+
+	if ( empty( $revision_id ) && 'auto-draft' === get_post_status( $post_id ) ) {
+		return true;
+	}
+
+	if ( ! empty( $buddyforms[ $form_slug ]['form_type'] ) && 'registration' === $buddyforms[ $form_slug ]['form_type'] ) {
+		$current_user_id = get_current_user_id();
+		if ( empty( $current_user_id ) || get_post_meta( $post_id, '_bf_form_slug', true ) !== $form_slug ) {
+			return false;
+		}
+		if ( bf_user_can( $current_user_id, 'buddyforms_' . $form_slug . '_all', array(), $form_slug ) ) {
+			return true;
+		}
+
+		return (int) get_post_field( 'post_author', $post_id ) === $current_user_id
+			|| (int) get_post_meta( $post_id, '_bf_registration_user_id', true ) === $current_user_id;
+	}
+
+	return buddyforms_current_user_can_edit_entry( $form_slug, $post_id );
+}
+
+/**
+ * Keep only the attachments a submission can link to an entry.
+ *
+ * An upload or featured image field may only point to files that already belong to the entry
+ * (attached to it, saved in the field or set as its featured image) or to files the current
+ * visitor uploaded that are not attached to anything yet.
+ *
+ * @param string|array $attachment_ids Comma separated IDs or an array of IDs from the request.
+ * @param int          $post_id        The entry being saved.
+ * @param array        $field          The form field.
+ *
+ * @return array
+ * @since 2.10.10
+ */
+function buddyforms_filter_submitted_attachment_ids( $attachment_ids, $post_id, $field = array() ) {
+	$requested = is_array( $attachment_ids ) ? $attachment_ids : explode( ',', (string) $attachment_ids );
+	$post_id   = absint( $post_id );
+
+	$current = array();
+	if ( ! empty( $post_id ) ) {
+		if ( ! empty( $field['slug'] ) ) {
+			$stored = get_post_meta( $post_id, $field['slug'], true );
+			if ( is_string( $stored ) || is_numeric( $stored ) ) {
+				$current = array_map( 'absint', explode( ',', (string) $stored ) );
+			}
+		}
+		$current[] = (int) get_post_thumbnail_id( $post_id );
+	}
+
+	// On multisite a featured image can come from the site that shows the form while the entry is saved
+	// on the form's site; look the file up where it was uploaded.
+	$source_blog_id = 0;
+	if ( is_multisite() && ms_is_switched() && ! empty( $field['type'] ) && 'featured_image' === $field['type'] && ! empty( $GLOBALS['_wp_switched_stack'] ) ) {
+		$source_blog_id = (int) end( $GLOBALS['_wp_switched_stack'] );
+	}
+
+	$current_user_id = get_current_user_id();
+	$allowed         = array();
+	foreach ( $requested as $attachment_id ) {
+		$attachment_id = is_scalar( $attachment_id ) ? absint( trim( (string) $attachment_id ) ) : 0;
+		if ( empty( $attachment_id ) || in_array( $attachment_id, $allowed, true ) ) {
+			continue;
+		}
+		$attachment = $source_blog_id ? get_blog_post( $source_blog_id, $attachment_id ) : get_post( $attachment_id );
+		if ( empty( $attachment ) || 'attachment' !== $attachment->post_type ) {
+			continue;
+		}
+		$parent_id = (int) $attachment->post_parent;
+		if ( ( ! $source_blog_id && ! empty( $post_id ) && $parent_id === $post_id ) || in_array( $attachment_id, $current, true ) ) {
+			$allowed[] = $attachment_id;
+		} elseif ( 0 === $parent_id && (int) $attachment->post_author === $current_user_id ) {
+			$allowed[] = $attachment_id;
+		}
+	}
+
+	/**
+	 * Filter the attachments a submission can link to an entry.
+	 *
+	 * @param array $allowed   Attachment IDs that passed the checks.
+	 * @param array $requested Attachment IDs from the request.
+	 * @param int   $post_id   The entry being saved.
+	 * @param array $field     The form field.
+	 *
+	 * @since 2.10.10
+	 */
+	return array_map( 'absint', (array) apply_filters( 'buddyforms_submitted_attachment_ids', $allowed, $requested, $post_id, $field ) );
+}
+
+/**
+ * Delete the files of an upload field when its entry is deleted, only the ones attached to that entry.
+ *
+ * @param string|array $attachment_ids Comma separated IDs or an array of IDs from the field value.
+ * @param int          $post_id        The deleted entry.
+ *
+ * @since 2.10.10
+ */
+function buddyforms_delete_entry_attachments( $attachment_ids, $post_id ) {
+	$attachment_ids = is_array( $attachment_ids ) ? $attachment_ids : explode( ',', (string) $attachment_ids );
+	foreach ( $attachment_ids as $attachment_id ) {
+		$attachment_id = is_scalar( $attachment_id ) ? absint( $attachment_id ) : 0;
+		if ( empty( $attachment_id ) || 'attachment' !== get_post_type( $attachment_id ) ) {
+			continue;
+		}
+		if ( (int) get_post_field( 'post_parent', $attachment_id ) !== (int) $post_id ) {
+			continue;
+		}
+		wp_delete_attachment( $attachment_id, true );
+	}
+}
+
 add_action( 'wp_ajax_nopriv_handle_dropped_media', 'buddyforms_upload_handle_dropped_media' );
 
 add_action( 'wp_ajax_handle_dropped_media', 'buddyforms_upload_handle_dropped_media' );

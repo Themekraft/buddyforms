@@ -14,16 +14,20 @@ if ( is_user_logged_in() ) {
 	return;
 }
 
-function buddyforms_toogle_wp_login_form() {
-	?>
-		<script>
-			jQuery(document).ready(function () {
-				jQuery(document).on("click", '.bf-show-login', function () {
-					jQuery('.bf-show-login-form').toggle();
+// The template can be included more than once per request (for example when a registration
+// fails and the form is shown again), so declare the function only once.
+if ( ! function_exists( 'buddyforms_toogle_wp_login_form' ) ) {
+	function buddyforms_toogle_wp_login_form() {
+		?>
+			<script>
+				jQuery(document).ready(function () {
+					jQuery(document).on("click", '.bf-show-login', function () {
+						jQuery('.bf-show-login-form').toggle();
+					});
 				});
-			});
-		</script>
-	<?php
+			</script>
+		<?php
+	}
 }
 add_action( 'wp_footer', 'buddyforms_toogle_wp_login_form' );
 

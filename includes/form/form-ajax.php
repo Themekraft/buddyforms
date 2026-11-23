@@ -269,9 +269,15 @@ add_action( 'wp_ajax_buddyforms_ajax_delete_post', 'buddyforms_ajax_delete_post'
  */
 function buddyforms_ajax_delete_post() {
 	global $current_user, $buddyforms;
+
+	if ( ! isset( $_POST['nonce'] ) || ! is_string( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) ) {
+		esc_html_e( 'You are not allowed to delete this entry! What are you doing here?', 'buddyforms' );
+		die();
+	}
+
 	$current_user = wp_get_current_user();
 
-	$post_id  = intval( $_POST['post_id'] );
+	$post_id  = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 	$the_post = get_post( $post_id );
 
 	$form_slug = get_post_meta( $post_id, '_bf_form_slug', true );
@@ -320,10 +326,7 @@ function buddyforms_ajax_delete_post() {
 				// If true then Delete the files attached to the entry
 				$column_val = get_post_meta( $post_id, $field, true );
 				if ( ! empty( $column_val ) ) {
-					$attachmet_id = explode( ',', $column_val );
-					foreach ( $attachmet_id as $id ) {
-						wp_delete_attachment( $id, true );
-					}
+					buddyforms_delete_entry_attachments( $column_val, $post_id );
 				}
 			}
 		}

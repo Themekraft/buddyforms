@@ -407,6 +407,8 @@ function buddyforms_register_post_type() {
 		'not_found_in_trash' => __( 'No Forms found in Trash', 'buddyforms' ),
 	);
 
+	$form_builder_capability = buddyforms_form_builder_capability();
+
 	register_post_type(
 		'buddyforms',
 		array(
@@ -415,6 +417,21 @@ function buddyforms_register_post_type() {
 			'show_ui'             => true,
 			'_builtin'            => false,
 			'capability_type'     => 'post',
+			// Forms control registration roles and permissions, so they are not managed with the regular post capabilities.
+			'capabilities'        => array(
+				'edit_posts'             => $form_builder_capability,
+				'edit_others_posts'      => $form_builder_capability,
+				'edit_private_posts'     => $form_builder_capability,
+				'edit_published_posts'   => $form_builder_capability,
+				'publish_posts'          => $form_builder_capability,
+				'read_private_posts'     => $form_builder_capability,
+				'delete_posts'           => $form_builder_capability,
+				'delete_private_posts'   => $form_builder_capability,
+				'delete_published_posts' => $form_builder_capability,
+				'delete_others_posts'    => $form_builder_capability,
+				'create_posts'           => $form_builder_capability,
+			),
+			'map_meta_cap'        => true,
 			'hierarchical'        => false,
 			'rewrite'             => false,
 			'supports'            => array(

@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.8
+Stable tag: 2.10.10
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -264,6 +264,19 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Loggin Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.10 - 20 Nov 2026 =
+* Security: upload and featured image fields now only accept files uploaded by the submitter or already attached to the entry.
+* Security: forms now check edit permissions before showing an existing entry or one of its revisions.
+* Security: only administrators can create and edit forms by default. To let other roles build forms, use the `buddyforms_form_builder_capability` filter.
+* Security: new entries are always saved with the submitter as author.
+* Security: entries can only be saved with the post statuses the form offers.
+* Security: deleting an entry from the front end now checks the form nonce.
+* Security: per-visitor form settings are no longer written to a shared file.
+* Security: form builder actions now check the user can manage forms.
+
+= 2.10.9 - 19 Nov 2026 =
+* Fixed a critical error when a registration form fails validation and shows the login form again.
+
 = 2.10.8 - 18 Nov 2026 =
 * Changed: the Go Pro page now sells BuddyForms Pro. The BuddyForms add-ons are free and are no longer listed there.
 * Changed: the Go Pro boxes in the form builder and settings sidebars now list only features that need BuddyForms Pro.
