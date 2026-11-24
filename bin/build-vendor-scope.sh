@@ -78,6 +78,16 @@ run "$PHP_IMAGE" php ids.php
 # runtime API (InstalledVersions) report our scoped packages as installed to other plugins.
 rm -f "$work/out/vendor/scoper-autoload.php" "$work/out/vendor/composer/installed.php"
 
+# InstalledVersions.php is scoped to tk\Composer\InstalledVersions, but dump-autoload still maps the
+# global Composer\InstalledVersions to it. When another plugin asked for that class, our loader
+# could include a file that does not define it. Nothing in the scoped packages uses it, so drop it.
+rm -f "$work/out/vendor/composer/InstalledVersions.php"
+sed -i "/'Composer\\\\\\\\InstalledVersions' =>/d" "$work/out/vendor/composer/autoload_classmap.php" "$work/out/vendor/composer/autoload_static.php"
+if grep -q "InstalledVersions" "$work/out/vendor/composer/autoload_classmap.php" "$work/out/vendor/composer/autoload_static.php"; then
+	echo "InstalledVersions is still in the scoped classmap" >&2
+	exit 1
+fi
+
 echo "==> copy into $scope_dir"
 rm -rf "${root:?}/$scope_dir/vendor"
 cp -R "$work/out/vendor" "$root/$scope_dir/vendor"

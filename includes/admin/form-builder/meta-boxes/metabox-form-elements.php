@@ -69,7 +69,7 @@ function buddyforms_metabox_form_elements( $post, $buddyform = false ) {
 			}
 
 			if ( $customfield['type'] == 'acf-field' && $field_slug == 'acf_false' ) {
-				$field_slug = 'acf_' . $customfield['acf_field'];
+				$field_slug = 'acf_' . ( isset( $customfield['acf_field'] ) ? $customfield['acf_field'] : '' );
 			}
 
 			// Make sure we have a field slug and name
@@ -80,7 +80,7 @@ function buddyforms_metabox_form_elements( $post, $buddyform = false ) {
 					'field_id'   => $field_id,
 					'field_type' => sanitize_title( $customfield['type'] ),
 					'form_slug'  => $form_slug,
-					'post_type'  => $buddyform['post_type'],
+					'post_type'  => isset( $buddyform['post_type'] ) ? $buddyform['post_type'] : null,
 				);
 
 				// Get the form element html and add it to the form elements array

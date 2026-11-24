@@ -712,16 +712,6 @@ function buddyforms_add_button_to_submit_box() {
 				<div id="frontend-actions">
 					<label for="button"><?php esc_html_e( 'Frontend', 'buddyforms' ); ?></label>
 					<?php
-						$preview_form_url = $attached_page_permalink . 'create/' . $post->post_name . '/';
-						$url_request      = curl_init( $preview_form_url );
-						curl_setopt( $url_request, CURLOPT_RETURNTRANSFER, true );
-						$httpCode = curl_getinfo( $url_request, CURLINFO_HTTP_CODE );
-					if ( $httpCode == 404 ) {
-						flush_rewrite_rules();
-					}
-						curl_close( $url_request );
-					?>
-					<?php
 					echo '<a class="button button-large bf_button_action" href="' . esc_attr( $attached_page_permalink ) . 'view/' . esc_attr( $post->post_name ) . '/" target="_new"><span class="dashicons dashicons-admin-page"></span> ' . esc_html__( 'Your Submissions', 'buddyforms' ) . '</a>
                 <a class="button button-large bf_button_action" href="' . esc_attr( $attached_page_permalink ) . 'create/' . esc_attr( $post->post_name ) . '/" target="_new"><span class="dashicons dashicons-feedback"></span>    ' . esc_html__( 'The Form', 'buddyforms' ) . '</a>';
 					?>

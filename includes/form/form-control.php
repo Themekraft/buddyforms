@@ -1163,12 +1163,12 @@ function buddyforms_get_field_output( $post_id, $custom_field, $post, $meta_valu
 			if ( is_array( $meta_value ) ) {
 				$terms = array();
 				foreach ( $meta_value as $cat ) {
-					$term    = get_term( $cat, $custom_field['taxonomy'] );
+					$term    = get_term( $cat, isset( $custom_field['taxonomy'] ) ? $custom_field['taxonomy'] : '' );
 					$terms[] = ( ! empty( $term ) && ! is_wp_error( $term ) ) ? $term->name : $cat;
 				}
 				$meta_value = implode( apply_filters( 'buddyforms_implode_separator', ', ', $custom_field['type'], $slug ), $terms );
 			} else {
-				$term       = get_term( $meta_value, $custom_field['taxonomy'] );
+				$term       = get_term( $meta_value, isset( $custom_field['taxonomy'] ) ? $custom_field['taxonomy'] : '' );
 				$meta_value = ( ! empty( $term ) && ! is_wp_error( $term ) ) ? $term->name : $meta_value;
 			}
 			break;
@@ -1282,7 +1282,7 @@ function buddyforms_update_post_meta( $post_id, $custom_fields ) {
 			}
 		}
 
-		if ( $customfield['type'] == 'acf-field' && isset( $_POST['acf'][ $customfield['acf_field'] ] ) ) {
+		if ( $customfield['type'] == 'acf-field' && isset( $customfield['acf_field'], $_POST['acf'][ $customfield['acf_field'] ] ) ) {
 			$field_value = buddyforms_sanitize( $customfield['type'], $_POST['acf'][ $customfield['acf_field'] ] );
 			update_post_meta( $post_id, $slug, $field_value );
 		}

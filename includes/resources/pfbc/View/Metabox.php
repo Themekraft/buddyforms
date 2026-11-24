@@ -29,10 +29,11 @@ class View_Metabox extends FormView {
 			$element->setLabel( '' );
 		}
 
-		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ', wp_kses( $this->renderLabel( $element ), buddyforms_wp_kses_allowed_atts() );
+		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ';
+		$this->echoRendered( $this->renderLabel( $element ) );
 		echo '<div class="bf-input">';
-		echo wp_kses( $element->render(), buddyforms_wp_kses_allowed_atts() );
-		echo wp_kses( $this->renderDescriptions( $element ), buddyforms_wp_kses_allowed_atts() );
+		$this->echoRendered( $element->render() );
+		$this->echoRendered( $this->renderDescriptions( $element ) );
 		echo '</div></div>';
 
 	}

@@ -4,7 +4,7 @@
 function from_setup_form_type(value) {
     from_setup_post_type();
 
-    from_setup_attached_page();
+    from_setup_attached_page(value);
 
     jQuery('.activeform-submission').addClass('active');
     jQuery('#form-submission').addClass('active in');
@@ -141,7 +141,10 @@ function from_setup_post_type() {
 
 }
 
-function from_setup_attached_page() {
+function from_setup_attached_page(form_type) {
+    if (typeof form_type === 'undefined') {
+        form_type = jQuery('#bf-form-type-select').val();
+    }
 
     var attached_page = jQuery('#attached_page').val();
 
@@ -149,7 +152,10 @@ function from_setup_attached_page() {
         jQuery('.buddyforms-metabox-show-if-attached-page,.bf_hide_if_attached_page_none').hide();
         jQuery('.bf_hide_if_attached_page_none').hide();
         jQuery('#bf-after-submission-action option[value=display_posts_list]').hide();
-        jQuery('#public_submit_create_account-0').prop('checked', false);
+        // Contact forms never use an attached page, so they keep "Create account during submission"
+        if (form_type !== 'contact') {
+            jQuery('#public_submit_create_account-0').prop('checked', false);
+        }
     } else {
         jQuery('.buddyforms-metabox-show-if-attached-page,.bf_hide_if_attached_page_none').show();
         jQuery('.bf_hide_if_attached_page_none').show();

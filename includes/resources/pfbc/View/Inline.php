@@ -34,8 +34,10 @@ class View_Inline extends FormView {
 			$element->setLabel( '' );
 		}
 
-		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ', wp_kses( $this->renderLabel( $element ), buddyforms_wp_kses_allowed_atts() );
-		echo wp_kses( $element->render(), $this->renderDescriptions( $element ), buddyforms_wp_kses_allowed_atts() );
+		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ';
+		$this->echoRendered( $this->renderLabel( $element ) );
+		$this->echoRendered( $element->render() );
+		$this->echoRendered( $this->renderDescriptions( $element ) );
 		echo '</div> ';
 	}
 
