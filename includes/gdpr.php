@@ -97,10 +97,10 @@ function buddyforms_gdpr_data_request() {
 	$buddyforms_gdpr_type      = sanitize_key( $_POST['buddyforms_gdpr_data_type'] );
 	$buddyforms_gdpr_email     = sanitize_email( wp_unslash( $_POST['buddyforms_gdpr_data_email'] ) );
 	$buddyforms_gdpr_human     = absint( filter_input( INPUT_POST, 'buddyforms_gdpr_data_human', FILTER_SANITIZE_NUMBER_INT ) );
-	$buddyforms_gdpr_human_key = esc_html( filter_input( INPUT_POST, 'buddyforms_gdpr_data_human_key', FILTER_SANITIZE_STRING ) );
+	$buddyforms_gdpr_human_key = esc_html( isset( $_POST['buddyforms_gdpr_data_human_key'] ) ? buddyforms_sanitize_string( wp_unslash( $_POST['buddyforms_gdpr_data_human_key'] ) ) : '' );
 	$buddyforms_gdpr_numbers   = explode( '000', $buddyforms_gdpr_human_key );
 	$buddyforms_gdpr_answer    = absint( $buddyforms_gdpr_numbers[0] ) + absint( $buddyforms_gdpr_numbers[1] );
-	$buddyforms_gdpr_nonce     = esc_html( filter_input( INPUT_POST, 'buddyforms_gdpr_data_nonce', FILTER_SANITIZE_STRING ) );
+	$buddyforms_gdpr_nonce     = esc_html( isset( $_POST['buddyforms_gdpr_data_nonce'] ) ? buddyforms_sanitize_string( wp_unslash( $_POST['buddyforms_gdpr_data_nonce'] ) ) : '' );
 
 	if ( ! function_exists( 'wp_create_user_request' ) ) {
 		wp_send_json_success( esc_html__( 'The request can’t be processed on this website. This feature requires WordPress 4.9.6 at least.', 'buddyforms' ) );

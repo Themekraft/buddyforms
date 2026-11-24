@@ -134,7 +134,7 @@ function buddyforms_url_builder() {
 		wp_die( '', '', array( 'response' => 403 ) );
 	}
 	$page_id   = filter_var( wp_unslash( $_POST['attached_page'] ), FILTER_VALIDATE_INT );
-	$form_slug = filter_var( wp_unslash( $_POST['form_slug'] ), FILTER_SANITIZE_STRING );
+	$form_slug = isset( $_POST['form_slug'] ) ? buddyforms_sanitize_string( wp_unslash( $_POST['form_slug'] ) ) : '';
 	$post      = get_post( $page_id );
 
 	if ( isset( $post->post_name ) ) {

@@ -3,6 +3,33 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+/**
+ * Replacement for filter_var( $value, FILTER_SANITIZE_STRING ), deprecated since PHP 8.1.
+ *
+ * Removes NUL bytes and tags, and encodes single and double quotes unless $encode_quotes is false
+ * (FILTER_FLAG_NO_ENCODE_QUOTES). Gives the same result as the filter for any value without "<";
+ * with "<" it still removes every tag.
+ *
+ * @since 2.10.9
+ *
+ * @param mixed $value         The value to sanitize.
+ * @param bool  $encode_quotes Encode ' and " as &#39; and &#34;.
+ *
+ * @return string|false The sanitized string, or false for arrays and objects, like the filter.
+ */
+function buddyforms_sanitize_string( $value, $encode_quotes = true ) {
+	if ( is_array( $value ) || is_object( $value ) ) {
+		return false;
+	}
+	$value = preg_replace( '/\x00|<[^>]*>?/', '', (string) $value );
+	if ( $encode_quotes ) {
+		$value = str_replace( array( "'", '"' ), array( '&#39;', '&#34;' ), $value );
+	}
+
+	return $value;
+}
+
 /**
  * Add the forms to the admin bar
  *
@@ -1416,7 +1443,8 @@ function buddyforms_form_display_message( $form_slug, $post_id, $source = 'after
 		$permalink       = get_permalink( $buddyforms[ $form_slug ]['attached_page'] );
 		$display_message = str_ireplace( '[edit_link]', '<a title="' . __( 'Edit Post', 'buddyforms' ) . '" href="' . $permalink . 'edit/' . $form_slug . '/' . $post_id . '">' . __( 'Continue Editing', 'buddyforms' ) . '</a>', $display_message );
 	}
-	$display_message = str_ireplace( '[form_singular_name]', $buddyforms[ $form_slug ]['singular_name'], $display_message );
+	$singular_name   = isset( $buddyforms[ $form_slug ]['singular_name'] ) ? (string) $buddyforms[ $form_slug ]['singular_name'] : '';
+	$display_message = str_ireplace( '[form_singular_name]', $singular_name, $display_message );
 	$display_message = str_ireplace( '[post_title]', get_the_title( $post_id ), $display_message );
 	$display_message = str_ireplace( '[post_link]', '<a title="' . __( 'Display Post', 'buddyforms' ) . '" href="' . get_permalink( $post_id ) . '">' . __( 'Display Post', 'buddyforms' ) . '</a>', $display_message );
 
@@ -2082,6 +2110,7 @@ function buddyforms_filter_frontend_js_form_options( $options, $form_slug, $bf_p
 		$form_slug,
 		$bf_post_id
 	);
+	$result = array();
 	foreach ( $granted as $item ) {
 		if ( isset( $options[ $item ] ) ) {
 			$result[ $item ] = $options[ $item ];
@@ -2367,7 +2396,8 @@ function buddyforms_sanitize_slug( $slug, $context = 'save' ) {
 	// Restore octets.
 	$slug = preg_replace( '|---([a-fA-F0-9][a-fA-F0-9])---|', '%$1', $slug );
 
-	if ( seems_utf8( $slug ) ) {
+	// seems_utf8() is deprecated since WordPress 6.9; core's sanitize_title_with_dashes() uses wp_is_valid_utf8() now.
+	if ( function_exists( 'wp_is_valid_utf8' ) ? wp_is_valid_utf8( $slug ) : seems_utf8( $slug ) ) {
 		$slug = utf8_uri_encode( $slug, 200 );
 	}
 

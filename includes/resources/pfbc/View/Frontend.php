@@ -143,13 +143,15 @@ class View_Frontend extends FormView {
 			}
 		}
 
-		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ', wp_kses( $this->renderLabel( $element ), buddyforms_wp_kses_allowed_atts() ), '<div class="bf-input">';
+		echo '<div class="bf_field_group elem-' . esc_attr( $element->getAttribute( 'id' ) ) . '"> ';
+		$this->echoRendered( $this->renderLabel( $element ) );
+		echo '<div class="bf-input">';
 		if ( isset( $buddyforms[ $form_slug ]['layout']['desc_position'] ) && $buddyforms[ $form_slug ]['layout']['desc_position'] == 'above_field' ) {
-			echo wp_kses( $this->renderDescriptions( $element ), buddyforms_wp_kses_allowed_atts() );
-			echo wp_kses( $element->render(), buddyforms_wp_kses_allowed_atts() );
+			$this->echoRendered( $this->renderDescriptions( $element ) );
+			$this->echoRendered( $element->render() );
 		} else {
-			echo wp_kses( $element->render(), buddyforms_wp_kses_allowed_atts() );
-			echo wp_kses( $this->renderDescriptions( $element ), buddyforms_wp_kses_allowed_atts() );
+			$this->echoRendered( $element->render() );
+			$this->echoRendered( $this->renderDescriptions( $element ) );
 		}
 		echo '</div></div></div>';
 	}

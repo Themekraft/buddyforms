@@ -30,7 +30,7 @@ function buddyforms_preview_form() {
 function buddyforms_append_preview_page( $content ) {
 
 	// GHet the form slug from the url parameter
-	$form_slug = filter_var( wp_unslash( $_REQUEST['form_slug'] ), FILTER_SANITIZE_STRING );
+	$form_slug = buddyforms_sanitize_string( wp_unslash( $_REQUEST['form_slug'] ) );
 	// Create the array for the form
 	$args = array(
 		'form_slug' => $form_slug,

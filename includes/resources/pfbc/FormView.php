@@ -67,7 +67,7 @@ abstract class FormView extends Base {
 	public function renderCSS() {
 		global $buddyforms, $form_slug;
 
-		if ( ! isset( $buddyforms[ $form_slug ]['layout']['desc_disable_css'] ) ) {
+		if ( empty( $form_slug ) || ! isset( $buddyforms[ $form_slug ]['layout']['desc_disable_css'] ) ) {
 			echo 'span.help-inline, span.help-block { color: #888; font-size: .9em; font-style: italic; }';
 		}
 
@@ -75,6 +75,23 @@ abstract class FormView extends Base {
 	}
 
 	public function renderJS() {
+	}
+
+	/**
+	 * Print what a render method returns.
+	 *
+	 * The element, label and description render methods echo their markup and return nothing.
+	 * Passing that null to wp_kses() is deprecated since PHP 8.1, so only a returned string is
+	 * escaped and printed.
+	 *
+	 * @since 2.10.9
+	 *
+	 * @param mixed $rendered The return value of a render method.
+	 */
+	protected function echoRendered( $rendered ) {
+		if ( is_string( $rendered ) && '' !== $rendered ) {
+			echo wp_kses( $rendered, buddyforms_wp_kses_allowed_atts() );
+		}
 	}
 
 	/**

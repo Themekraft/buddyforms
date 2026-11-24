@@ -96,8 +96,8 @@ function buddyforms_display_form_element( $args ) {
 	);
 
 	$field_slug = isset( $customfield['slug'] ) ? buddyforms_sanitize_slug( $customfield['slug'] ) : $name;
-	if ( $customfield['type'] == 'acf-field' && $field_slug == 'acf_false' ) {
-		$field_slug = 'acf_' . $customfield['acf_field'];
+	if ( isset( $customfield['type'] ) && $customfield['type'] == 'acf-field' && $field_slug == 'acf_false' ) {
+		$field_slug = 'acf_' . ( isset( $customfield['acf_field'] ) ? $customfield['acf_field'] : '' );
 	}
 	$form_fields['advanced']['slug'] = new Element_Textbox(
 		'<b>' . __( 'Slug', 'buddyforms' ) . '</b>' . sprintf( '<small>(%s)</small>', __( 'optional', 'buddyforms' ) ),
@@ -2293,7 +2293,7 @@ function buddyforms_form_element_gdpr( $form_fields, $args ) {
 
 	if ( ! empty( $field_id ) && ! empty( $buddyform ) ) {
 		$field_options  = isset( $buddyform['form_fields'][ $field_id ]['options'] ) ? $buddyform['form_fields'][ $field_id ]['options'] : '';
-		$field_type     = $buddyform['form_fields'][ $field_id ]['type'];
+		$field_type     = isset( $buddyform['form_fields'][ $field_id ]['type'] ) ? $buddyform['form_fields'][ $field_id ]['type'] : '';
 		$count          = 1;
 		$default_option = isset( $buddyform['form_fields'][ $field_id ]['default'] ) ? $buddyform['form_fields'][ $field_id ]['default'] : '';
 
