@@ -134,7 +134,8 @@ function buddyforms_sanitize( $type, $value ) {
 			break;
 		default:
 			if ( is_array( $value ) ) {
-				array_walk_recursive( $value, 'sanitize_text_field' );
+				// Sanitize every value of the array and keep the result (checkboxes, multiple selects, taxonomies).
+				$value = map_deep( $value, 'sanitize_text_field' );
 			} else {
 				$value = apply_filters( 'buddyforms_sanitize', sanitize_text_field( $value ), $type );
 			}
