@@ -5,8 +5,8 @@ Requires at least: 5.9
 Tested up to: 7.1
 Stable tag: 2.10.11-beta.1
 Requires PHP: 7.4
-License: GPLv2
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Drag-and-drop form builder for contact, registration and front-end post forms. Pro adds any post type, file uploads, permissions and drafts.
 
