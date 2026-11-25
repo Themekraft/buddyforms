@@ -18,7 +18,7 @@ function front_js_loader1() {
 	$current_theme = wp_get_theme()->get_template();
 	if ( $current_theme === 'enfold' || $current_theme === 'enfold-child' ) {
 		$url_force = get_site_url() . '/wp-includes/css/media-views.css';
-		wp_register_style( 'media-views-alternative', $url_force );
+		wp_register_style( 'media-views-alternative', $url_force, array(), get_bloginfo( 'version' ) );
 		wp_enqueue_style( 'media-views-alternative' );
 	}
 }

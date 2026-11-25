@@ -96,8 +96,8 @@ class BuddyFormsAssets {
 	 */
 	public static function load_select2_assets() {
 		// jQuery Select2 // https://select2.github.io/
-		wp_enqueue_script( 'buddyforms-select2-js', BUDDYFORMS_ASSETS . 'resources/select2/dist/js/select2.full.min.js', array( 'jquery' ), '4.0.3' );
-		wp_enqueue_style( 'buddyforms-select2-css', BUDDYFORMS_ASSETS . 'resources/select2/dist/css/select2.min.css' );
+		wp_enqueue_script( 'buddyforms-select2-js', BUDDYFORMS_ASSETS . 'resources/select2/dist/js/select2.full.min.js', array( 'jquery' ), '4.0.3', false );
+		wp_enqueue_style( 'buddyforms-select2-css', BUDDYFORMS_ASSETS . 'resources/select2/dist/css/select2.min.css', array(), '4.0.3' );
 	}
 
 	/**
@@ -135,9 +135,9 @@ class BuddyFormsAssets {
 		wp_enqueue_script( 'password-strength-meter' );
 		wp_enqueue_script( 'mce-view' );
 		// jQuery Validation http://jqueryvalidation.org/
-		wp_enqueue_script( 'jquery-validation', BUDDYFORMS_ASSETS . 'resources/jquery.validate.min.js', array( 'jquery' ) );
+		wp_enqueue_script( 'jquery-validation', BUDDYFORMS_ASSETS . 'resources/jquery.validate.min.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 		// jQuery Local storage http://garlicjs.org/
-		wp_enqueue_script( 'jquery-garlicjs', BUDDYFORMS_ASSETS . 'resources/garlicjs/garlic.js', array( 'jquery' ) );
+		wp_enqueue_script( 'jquery-garlicjs', BUDDYFORMS_ASSETS . 'resources/garlicjs/garlic.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 		wp_enqueue_media();
 
 		$password_strength_settings = get_option( 'buddyforms_password_strength_settings' );
@@ -167,13 +167,15 @@ class BuddyFormsAssets {
 				'jquery-ui-core',
 				'jquery-ui-datepicker',
 				'jquery-ui-slider',
-			)
+			),
+			BUDDYFORMS_VERSION,
+			false
 		);
 
 		// load dashicons
 		wp_enqueue_style( 'dashicons' );
 
-		wp_enqueue_style( 'gdpr-agreement', BUDDYFORMS_ASSETS . 'css/gdpr.css', array() );
+		wp_enqueue_style( 'gdpr-agreement', BUDDYFORMS_ASSETS . 'css/gdpr.css', array(), BUDDYFORMS_VERSION );
 
 		$gpdr_translations = array(
 			'gdpr_success' => __( 'Your enquiry have been submitted. Check your email to validate your data request.', 'buddyforms' ),
@@ -220,7 +222,7 @@ class BuddyFormsAssets {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-core' );
 
-		wp_enqueue_script( 'buddyforms-loadingoverlay', BUDDYFORMS_ASSETS . 'resources/loadingoverlay/loadingoverlay.min.js', array( 'jquery' ) );
+		wp_enqueue_script( 'buddyforms-loadingoverlay', BUDDYFORMS_ASSETS . 'resources/loadingoverlay/loadingoverlay.min.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 	}
 
 	/**
@@ -236,20 +238,20 @@ class BuddyFormsAssets {
 		global $post;
 
 		if (
-			( isset( $post ) && $post->post_type == 'buddyforms' && isset( $_GET['action'] ) && $_GET['action'] == 'edit'
+			( isset( $post ) && $post->post_type == 'buddyforms' && isset( $_GET['action'] ) && $_GET['action'] == 'edit' // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, only picks which admin assets to load.
 			  || isset( $post ) && $post->post_type == 'buddyforms' && $hook_suffix == 'post-new.php' )
 			|| $hook_suffix == 'buddyforms_page_buddyforms_submissions'
 			|| $hook_suffix == 'buddyforms_page_buddyforms_settings'
 		) {
 			if ( is_rtl() ) {
-				wp_enqueue_style( 'buddyforms-style-rtl', BUDDYFORMS_ASSETS . 'admin/css/admin-rtl.css' );
+				wp_enqueue_style( 'buddyforms-style-rtl', BUDDYFORMS_ASSETS . 'admin/css/admin-rtl.css', array(), BUDDYFORMS_VERSION );
 			}
-			wp_enqueue_style( 'buddyforms-admin-css', BUDDYFORMS_ASSETS . 'admin/css/admin.css' );
+			wp_enqueue_style( 'buddyforms-admin-css', BUDDYFORMS_ASSETS . 'admin/css/admin.css', array(), BUDDYFORMS_VERSION );
 			wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			wp_enqueue_style( 'wp-color-picker' );
 			// wp_enqueue_style( 'buddyforms', BUDDYFORMS_ASSETS . 'admin/css/buddyforms-admin.css', array() );
 		} else {
-			wp_enqueue_style( 'buddyforms-admin-post-metabox', BUDDYFORMS_ASSETS . 'admin/css/admin-post-metabox.css' );
+			wp_enqueue_style( 'buddyforms-admin-post-metabox', BUDDYFORMS_ASSETS . 'admin/css/admin-post-metabox.css', array(), BUDDYFORMS_VERSION );
 		}
 		// load the tk_icons everywhere in the admin
 		self::load_tk_font_icons();
@@ -259,7 +261,7 @@ class BuddyFormsAssets {
 	 * Load TK icons
 	 */
 	static function load_tk_font_icons() {
-		wp_enqueue_style( 'buddyforms-tk-icons', BUDDYFORMS_ASSETS . 'resources/tk_icons/style.css' );
+		wp_enqueue_style( 'buddyforms-tk-icons', BUDDYFORMS_ASSETS . 'resources/tk_icons/style.css', array(), BUDDYFORMS_VERSION );
 	}
 
 	public static function frontend_assets() {
@@ -281,19 +283,19 @@ class BuddyFormsAssets {
 	function admin_js( $hook_suffix ) {
 		global $post, $wp_query, $buddyforms;
 		// WP Backend global scripts
-		wp_enqueue_script( 'buddyforms-admin-all-js', BUDDYFORMS_ASSETS . 'admin/js/admin-all.js', array( 'jquery' ), BUDDYFORMS_VERSION );
+		wp_enqueue_script( 'buddyforms-admin-all-js', BUDDYFORMS_ASSETS . 'admin/js/admin-all.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 		if (
-			( isset( $post ) && ( $post->post_type == 'buddyforms' || $post->post_type == 'post' ) && isset( $_GET['action'] ) && $_GET['action'] == 'edit'
+			( isset( $post ) && ( $post->post_type == 'buddyforms' || $post->post_type == 'post' ) && isset( $_GET['action'] ) && $_GET['action'] == 'edit' // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, only picks which admin assets to load.
 			  || isset( $post ) && $post->post_type == 'buddyforms' && $hook_suffix == 'post-new.php' )
 			|| $hook_suffix == 'buddyforms_page_buddyforms_submissions'
 			|| $hook_suffix == 'buddyforms_page_buddyforms_settings'
 			|| $hook_suffix == 'buddyforms_page_buddyforms_welcome_screen'
 		) {
-			wp_register_script( 'buddyforms-admin-js', BUDDYFORMS_ASSETS . 'admin/js/admin.js', array(), BUDDYFORMS_VERSION );
-			wp_register_script( 'buddyforms-admin-slugifies-js', BUDDYFORMS_ASSETS . 'admin/js/slugifies.js', array(), BUDDYFORMS_VERSION );
-			wp_register_script( 'buddyforms-admin-deprecated-js', BUDDYFORMS_ASSETS . 'admin/js/deprecated.js', array(), BUDDYFORMS_VERSION );
-			wp_register_script( 'buddyforms-admin-conditionals-js', BUDDYFORMS_ASSETS . 'admin/js/conditionals.js', array(), BUDDYFORMS_VERSION );
-			wp_register_script( 'buddyforms-admin-formbuilder-js', BUDDYFORMS_ASSETS . 'admin/js/formbuilder.js', array(), BUDDYFORMS_VERSION );
+			wp_register_script( 'buddyforms-admin-js', BUDDYFORMS_ASSETS . 'admin/js/admin.js', array(), BUDDYFORMS_VERSION, false );
+			wp_register_script( 'buddyforms-admin-slugifies-js', BUDDYFORMS_ASSETS . 'admin/js/slugifies.js', array(), BUDDYFORMS_VERSION, false );
+			wp_register_script( 'buddyforms-admin-deprecated-js', BUDDYFORMS_ASSETS . 'admin/js/deprecated.js', array(), BUDDYFORMS_VERSION, false );
+			wp_register_script( 'buddyforms-admin-conditionals-js', BUDDYFORMS_ASSETS . 'admin/js/conditionals.js', array(), BUDDYFORMS_VERSION, false );
+			wp_register_script( 'buddyforms-admin-formbuilder-js', BUDDYFORMS_ASSETS . 'admin/js/formbuilder.js', array(), BUDDYFORMS_VERSION, false );
 
 			// Loading shared assets
 			self::shared_styles( $hook_suffix );
@@ -309,9 +311,9 @@ class BuddyFormsAssets {
 			wp_enqueue_script( 'jquery-ui-tabs' );
 			wp_enqueue_script( 'wp-color-picker' );
 			wp_enqueue_script( 'tinymce' );
-			wp_enqueue_script( 'buddyforms-admin-all-js', BUDDYFORMS_ASSETS . 'admin/js/admin-all.js', array( 'jquery' ), BUDDYFORMS_VERSION );
+			wp_enqueue_script( 'buddyforms-admin-all-js', BUDDYFORMS_ASSETS . 'admin/js/admin-all.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 			wp_enqueue_media();
-			wp_enqueue_script( 'media-uploader-js', BUDDYFORMS_ASSETS . 'js/media-uploader.js', array( 'jquery' ) );
+			wp_enqueue_script( 'media-uploader-js', BUDDYFORMS_ASSETS . 'js/media-uploader.js', array( 'jquery' ), BUDDYFORMS_VERSION, false );
 
 			// GDPR Localisation
 			$buddyforms_gdpr = get_option( 'buddyforms_gdpr' );
@@ -418,7 +420,7 @@ class BuddyFormsAssets {
 		global $post;
 
 		if ( isset( $post ) && ( $post->post_type === 'buddyforms' || $post->post_type === 'bf_template' )
-			|| isset( $_GET['post_type'] ) && $_GET['post_type'] === 'buddyforms'
+			|| isset( $_GET['post_type'] ) && $_GET['post_type'] === 'buddyforms' // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, only picks which assets to dequeue.
 			|| $hook_suffix === 'buddyforms_page_buddyforms_settings'
 			|| $hook_suffix === 'buddyforms_page_buddyforms_submissions'
 		) {

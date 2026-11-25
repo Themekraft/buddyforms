@@ -490,7 +490,7 @@ function buddyforms_new_mail_notification() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 
@@ -504,7 +504,9 @@ function buddyforms_new_mail_notification() {
 
 		echo json_encode( $json );
 	} catch ( Exception $ex ) {
-		error_log( 'BuddyForms::' . $ex->getMessage() );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'BuddyForms::' . $ex->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only logged with WP_DEBUG on.
+		}
 	}
 	die();
 }
@@ -524,7 +526,7 @@ function buddyforms_test_email() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) || empty( $_POST['notification_id'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 
@@ -559,7 +561,9 @@ function buddyforms_test_email() {
 			wp_send_json( 'Please review you Site admin email.', 200 );
 		}
 	} catch ( Exception $ex ) {
-		error_log( 'BuddyForms::' . $ex->getMessage() );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'BuddyForms::' . $ex->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only logged with WP_DEBUG on.
+		}
 	}
 	die();
 }
@@ -578,7 +582,7 @@ function buddyforms_wp_mail_failed( $error ) {
 	$message = $error->get_error_message( 'wp_mail_failed' );
 	$data    = $error->get_error_data( 'wp_mail_failed' );
 	if ( ! empty( $message ) && ! empty( $data['headers']['X-Mailer-Type'] ) && $data['headers']['X-Mailer-Type'] === 'WPMailSMTP/Admin/Test' ) {
-		error_log( 'BuddyForms::' . $message );
+		error_log( 'BuddyForms::' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- intentional: reports the failure of the admin test email, which tells the admin to check the logs.
 	}
 }
 
@@ -593,7 +597,7 @@ function buddyforms_new_post_status_mail_notification() {
 		if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) || empty( $_POST['form_slug'] ) ) {
 			die();
 		}
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) || ! buddyforms_current_user_can_manage_forms() ) {
 			die();
 		}
 
@@ -612,7 +616,9 @@ function buddyforms_new_post_status_mail_notification() {
 
 		echo json_encode( $json );
 	} catch ( Exception $ex ) {
-		error_log( 'BuddyForms::' . $ex->getMessage() );
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'BuddyForms::' . $ex->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only logged with WP_DEBUG on.
+		}
 	}
 	die();
 }

@@ -553,7 +553,7 @@ function buddyforms_activate_action() {
 	if ( empty( $_GET['_wpnonce'] ) ) {
 		return;
 	}
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'bf_activate_user' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'bf_activate_user' ) ) {
 		return;
 	}
 	remove_query_arg( array( 'bf_activate_user_notice', 'bf_resend_activation_user_notice' ) );
@@ -598,7 +598,7 @@ function buddyforms_resend_activate_action() {
 	if ( empty( $_GET['_wpnonce'] ) ) {
 		return;
 	}
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'bf_resend_activation' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'bf_resend_activation' ) ) {
 		return;
 	}
 	global $buddyforms;

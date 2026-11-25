@@ -42,7 +42,7 @@ function buddyforms_close_submission_default_page_notification() {
 	if ( ! ( is_array( $_POST ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 		die();
 	}
-	if ( ! isset( $_POST['action'] ) || wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) === false || $_POST['action'] !== 'buddyforms_close_submission_default_page_notification' ) {
+	if ( ! isset( $_POST['action'] ) || wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) === false || $_POST['action'] !== 'buddyforms_close_submission_default_page_notification' ) {
 		die();
 	}
 	update_option( 'close_submission_default_page_notification', 1 );
@@ -154,7 +154,7 @@ function buddyforms_custom_form_template_tracking() {
 	if ( ! isset( $_POST['action'] ) || ! isset( $_POST['nonce'] ) ) {
 		die();
 	}
-	if ( ! wp_verify_nonce( $_POST['nonce'], 'fac_drop' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'fac_drop' ) ) {
 		die();
 	}
 	buddyforms_track(

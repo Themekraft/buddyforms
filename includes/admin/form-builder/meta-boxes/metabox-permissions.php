@@ -118,7 +118,7 @@ function buddyforms_permissions_screen() {
 		}
 	}
 
-	$form_action = ! empty( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : 'create';
+	$form_action = ! empty( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : 'create';
 	// User Roles Description
 	echo wp_kses( $shortDesc_permission, buddyforms_wp_kses_allowed_atts() );
 
