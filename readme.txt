@@ -3,7 +3,7 @@ Contributors: themekraft, svenl77, konrads, buddyforms, shabushabu, projectkarol
 Tags: custom form, form builder, registration, user registration, forms
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 2.10.11-beta.1
+Stable tag: 2.10.11
 Requires PHP: 7.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -194,6 +194,10 @@ If you still get stuck somewhere, our support gets you back on the right track. 
 4. Login/ Logout Form - Add Login Forms and define a custom redirect after login
 
 == Changelog ==
+= 2.10.11 - 25 Nov 2026 =
+* Security: array-shaped form field values are now fully sanitized, and the Submissions list prints stored values as plain text.
+* Changed: aligned the Go Pro page copy with the readme.
+
 = 2.10.10 - 20 Nov 2026 =
 * Security: upload and featured image fields now only accept files uploaded by the submitter or already attached to the entry.
 * Security: forms now check edit permissions before showing an existing entry or one of its revisions.
