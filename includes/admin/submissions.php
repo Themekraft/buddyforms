@@ -332,7 +332,7 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		if ( $column_name == 'Author' ) {
 			$post = get_post( $item->ID );
 			if ( ! empty( $post->post_author ) ) {
-				echo wp_kses( apply_filters( 'bf_submission_column_default_author_meta', get_the_author_meta( 'nickname', $post->post_author ), $post->post_author ), buddyforms_wp_kses_allowed_atts() );
+				echo wp_kses_post( apply_filters( 'bf_submission_column_default_author_meta', esc_html( get_the_author_meta( 'nickname', $post->post_author ) ), $post->post_author ) );
 			} else {
 				esc_html_e( 'Anonymous', 'buddyforms' );
 			}
@@ -343,8 +343,56 @@ class BuddyForms_Submissions_List_Table extends WP_List_Table {
 		$post = get_post( $item->ID );
 
 		$bf_value = buddyforms_get_field_output( $item->ID, $bf_field, $post, $bf_value, $field_slug, false, false );
+		$bf_value = $this->escape_column_value( $bf_value, $field_type );
 
-		echo wp_kses( apply_filters( 'bf_submission_column_default', $bf_value, $item, $field_type, $field_slug ), buddyforms_wp_kses_allowed_atts() );
+		// Filters may add markup (featured image thumbnail, product link), but never scripts or event handlers.
+		echo wp_kses_post( apply_filters( 'bf_submission_column_default', $bf_value, $item, $field_type, $field_slug ) );
+	}
+
+	/**
+	 * Escape a submitted value for the list. Submitted values are shown as text, never as markup.
+	 *
+	 * @param mixed  $value      Value returned by buddyforms_get_field_output().
+	 * @param string $field_type Field type.
+	 *
+	 * @return string
+	 */
+	protected function escape_column_value( $value, $field_type ) {
+		$value = $this->flatten_column_value( $value );
+
+		// The GDPR output is built from the form's own agreement labels and keeps its paragraph markup.
+		if ( 'gdpr' === $field_type ) {
+			return wp_kses_post( $value );
+		}
+
+		return esc_html( $value );
+	}
+
+	/**
+	 * Turn a value into a string: arrays and objects become a comma separated list of their values.
+	 *
+	 * @param mixed $value Value to flatten.
+	 *
+	 * @return string
+	 */
+	protected function flatten_column_value( $value ) {
+		if ( is_object( $value ) ) {
+			$value = get_object_vars( $value );
+		}
+
+		if ( ! is_array( $value ) ) {
+			return is_scalar( $value ) ? (string) $value : '';
+		}
+
+		$parts = array();
+		foreach ( $value as $item ) {
+			$part = $this->flatten_column_value( $item );
+			if ( '' !== $part ) {
+				$parts[] = $part;
+			}
+		}
+
+		return implode( ', ', $parts );
 	}
 
 
